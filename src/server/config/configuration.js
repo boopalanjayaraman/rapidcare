@@ -16,7 +16,8 @@ module.exports = {
     environmentalSettings: {
         domainBaseUrl: "http://localhost:3000",
         currentEnvironment: 'DEV',
-        mailCurrentEnvironmentPrefix : '[DEV]'
+        mailCurrentEnvironmentPrefix : '[DEV]',
+        primaryAdmins: ['aabbbcc@gmail.com'],
     },
     bucketOptions : {
         bucketName : "",

@@ -90,9 +90,6 @@ const userSchema = new Schema({
         },
     },
     profileInfo: {
-        title: {
-            type: String
-        },
         address: {
             type: String
         },

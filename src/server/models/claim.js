@@ -51,8 +51,14 @@ const claimSchema = new Schema({
     isNominee: {
         type : Boolean
     },
+    isPartnerDoctor: {
+        type: Boolean
+    },
     photoDocumentId: {
         type: mongoose.Schema.Types.ObjectId 
+    },
+    claimAmount : {
+        type : Number
     },
     antiFraudAlgorithms :[
         {

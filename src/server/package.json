@@ -32,7 +32,7 @@
     "passport": "^0.4.1",
     "passport-jwt": "^4.0.0",
     "path": "^0.12.7",
-    "typedi": "^0.10.0",
+    "typedi": "^0.8.0",
     "validator": "^13.6.0",
     "winston": "^3.3.3"
   },
