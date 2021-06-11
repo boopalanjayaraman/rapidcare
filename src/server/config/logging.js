@@ -1,7 +1,7 @@
 const options = {
     file: {
         level: 'debug',
-        filename: '../logs/covermypagerlogs.log',
+        filename: '../logs/rapydcarelogs.log',
         handleExceptions : true,
         json: true,
         maxsize: 5242880, //// 5 MB
