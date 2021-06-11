@@ -1,0 +1,42 @@
+{
+  "name": "rapidcareapp",
+  "version": "1.0.0",
+  "description": "backend for rapidcare",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node ./server.js",
+    "server": "nodemon ./server.js",
+    "client-install": "npm install --prefix ../src/client",
+    "client": "npm start --prefix ../src/client",
+    "dev": "concurrently \"npm run server\" \"npm run client\"",
+    "debug": "nodemon --inspect ./server.js",
+    "client:build": "cd ../src/client && npm run build"
+  },
+  "author": "boopalan jayaraman",
+  "license": "ISC",
+  "dependencies": {
+    "app-root-path": "^3.0.0",
+    "bcryptjs": "^2.4.3",
+    "body-parser": "^1.19.0",
+    "compression": "^1.7.4",
+    "concurrently": "^6.2.0",
+    "dateformat": "^4.5.1",
+    "express": "^4.17.1",
+    "helmet": "^4.6.0",
+    "is-empty": "^1.2.0",
+    "jsonwebtoken": "^8.5.1",
+    "moment": "^2.29.1",
+    "mongoose": "^5.12.13",
+    "nodemailer": "^6.6.1",
+    "passport": "^0.4.1",
+    "passport-jwt": "^4.0.0",
+    "path": "^0.12.7",
+    "typedi": "^0.10.0",
+    "validator": "^13.6.0",
+    "winston": "^3.3.3"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.7"
+  }
+}
