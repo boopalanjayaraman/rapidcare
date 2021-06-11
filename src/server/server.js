@@ -47,9 +47,9 @@ require("./config/passport")(passport);
 
 //// map routes
 app.use("/api/users", users);
-app.use("/api/products", products);
-app.use("/api/insurances", insurances);
-app.use("/api/claims", claims);
+//app.use("/api/products", products);
+//app.use("/api/insurances", insurances);
+//app.use("/api/claims", claims);
 
 /// render client build directory content
 /*app.use(express.static(path.join(__dirname, '../client/build')));
