@@ -13,7 +13,7 @@ class Navbar extends Component {
                         }}
                         className = "col s12 brand-logo center black-text">
                             <i className="material-icons" style={{ color: "#5a72d1"}}>fast_forward</i>
-                            <span >RapydCare</span>
+                            <span style={{fontWeight:"bold"}}>RapydCare</span>
                         </Link>
                     </div>
                 </nav>

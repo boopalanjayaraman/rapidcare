@@ -7,7 +7,7 @@ class Landing extends Component{
             <div style={{ height: "75vh" }} className="container valign-wrapper">
             <div className="row">
             <div className="col s12 center-align">
-                <h4>
+                <h4 style={{color: "rgb(90, 114, 209)"}}>
                 Insurance reimagined. {" "}
                 <span style={{ fontFamily: "monospace" }}></span> 
                 </h4>
