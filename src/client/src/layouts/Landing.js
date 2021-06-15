@@ -8,14 +8,18 @@ class Landing extends Component{
             <div className="row">
             <div className="col s12 center-align">
                 <h4>
-                 Healthcare. {" "}
-                <span style={{ fontFamily: "monospace" }}>Fast, Accessible and Affordable.</span> 
+                Insurance reimagined. {" "}
+                <span style={{ fontFamily: "monospace" }}></span> 
                 </h4>
                 <p className="flow-text grey-text text-darken-1">
-                Healthcare and personal insurance reimagined. Faster claims.
+                Small-ticket insurances for Life &amp; Healthcare.  
+                <br/>Get your claims settled in hours, not in days.
+                </p>
+                <p className="flow-text grey-text text-darken-1">
+                
                 </p>
                 <br />
-                <div className="col s6">
+                <div className="col s4">
                 <Link
                     to="/browse"
                     style={{
@@ -28,7 +32,7 @@ class Landing extends Component{
                     Products
                 </Link>
                 </div>
-                <div className="col s6">
+                <div className="col s4">
                 <Link
                     to="/register"
                     style={{
@@ -38,11 +42,11 @@ class Landing extends Component{
                     }}
                     className="btn btn-large waves-effect waves-light hoverable blue accent-3"
                 >
-                    Register
+                    Sign up
                 </Link>
                 
                 </div>
-                <div className="col s6">
+                <div className="col s4">
                 <Link
                     to="/login"
                     style={{
