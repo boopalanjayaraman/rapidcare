@@ -14,7 +14,7 @@ class Landing extends Component{
                 <p className="flow-text grey-text text-darken-1">
                     <ul>
                         <li>Small-ticket insurances for <span className="black-text">Life &amp; Healthcare.</span></li>
-                        <li>Insure when it <span className="black-text">matters</span>.</li>
+                        <li>Protect when it <span className="black-text">matters</span>.</li>
                         <li>Claims in<span className="black-text"> hours</span>, not in days.</li>
                     </ul>
                 </p>

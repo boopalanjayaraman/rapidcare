@@ -78,8 +78,8 @@ class Login extends Component{
                     home
                   </Link>
                   <div className="col s12" style={{ paddingLeft: "11.250px" }}>
-                    <h4>
-                      <b>Login</b> below
+                    <h4 style={{color: "rgb(90, 114, 209)"}}>
+                      Welcome back. Login below.
                     </h4>
                     <p className="grey-text text-darken-1">
                       Don't have an account? <Link to="/register">Register</Link>

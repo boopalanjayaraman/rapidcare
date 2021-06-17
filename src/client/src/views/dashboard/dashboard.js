@@ -52,61 +52,60 @@ class Dashboard extends Component {
         return (
             <div style={{ height: "75vh" }} className="container">
                 <div className="row">
-                    <div className="col s12 center-align">
-                        <h5>
-                            <b>Hey there,</b> {user.name.split(" ")[0]} 
-                        </h5>
-                        <h6 className="flow-text grey-text text-darken-1">
-                                Pick an action to proceed. {" "}
+                    <div className="col s12 right-align">
+                        <h6>
+                            Hello, <b>{user.name.split(' ')[0] } </b>
+                            <a href="#" title='Log out' class='red-text' onClick={this.onLogoutClick}><i className="material-icons right">exit_to_app</i> </a>
+                            <a href="#" title='My Profile' class='indigo-text' onClick={this.onViewMyProfileClick}><i className="material-icons right">account_box</i> </a>
                         </h6>
                     </div>
                 </div>
                 <div className="row">
-                    <div class="col s12 m4">
-                        <div class="card teal">
-                            <div class="card-content teal-text #80cbc4 teal lighten-5">
-                            <span class="card-title">Explore</span>
-                                <span style={{fontSize: "13px"}}>Browse our insurance products. Get one. We got you covered!</span>
+                    <div class="col s12 m6">
+                        <div class="card blue-grey">
+                            <div class="card-content #e3f2fd blue lighten-5">
+                            <div className="#1e88e blue-text text-darken-2"><i className="material-icons left large">accessibility</i> <span class="card-title">Buy Insurance</span></div>
+                            <span style={{fontSize: "13px"}}>Browse our insurance products for you and your business. Get one, We got you covered!</span>
                             </div>
-                            <div class="card-action #80cbc4 teal lighten-2">
+                            <div class="card-action white-text #1e88e blue darken-2">
                                 <a href="#" class='white-text' onClick={this.onBrowseClick}>GO <i className="material-icons left">arrow_forward</i> </a>
                             </div>
                         </div>
                     </div>
-                    <div class="col s12 m4">
+                    <div class="col s12 m6">
                         <div class="card teal">
-                            <div class="card-content teal-text #80cbc4 teal lighten-5">
-                            <span class="card-title">Raise a Claim</span>
+                            <div class="card-content #e3f2fd blue lighten-5">
+                            <div className="#1e88e blue-text text-darken-2"><i className="material-icons left large">attach_money</i> <span class="card-title">Raise a Claim</span></div>
                                 <span style={{fontSize: "13px"}}>Raise a claim and submit supporting documents. It is only a matter of minutes.</span>
                             </div>
-                            <div class="card-action  #80cbc4 teal lighten-2">
+                            <div class="card-action  white-text #1e88e blue darken-2">
                                 <a href="#" class='white-text' onClick={this.onNewClaimClick}>GO <i className="material-icons left">arrow_forward</i> </a>
                             </div>
                         </div>
                     </div>
-                    <div class="col s12 m4">
+                    <div class="col s12 m6">
                         <div class="card teal">
-                            <div class="card-content teal-text #80cbc4 teal lighten-5">
-                            <span class="card-title">My Insurances</span>
-                                <span style={{fontSize: "13px"}}>View the insurances you bought. Manage them.</span>
+                            <div class="card-content #e3f2fd blue lighten-5">
+                            <div className="#1e88e blue-text text-darken-2"><i className="material-icons left large">assignment</i> <span class="card-title">My Insurances</span></div>
+                                <span style={{fontSize: "13px"}}>View the insurances you bought in the past. Renew them.</span>
                             </div>
-                            <div class="card-action  #80cbc4 teal lighten-2">
+                            <div class="card-action white-text #1e88e blue darken-2">
                                 <a href="#" class='white-text'onClick={this.onViewMyInsurancesClick}>GO <i className="material-icons left">arrow_forward</i> </a>
                             </div>
                         </div>
                     </div>
-                    <div class="col s12 m4">
+                    <div class="col s12 m6">
                         <div class="card teal">
-                            <div class="card-content teal-text #80cbc4 teal lighten-5">
-                            <span class="card-title">My Claims</span>
-                                <span style={{fontSize: "13px"}}>View the claims submitted by you. </span>
+                            <div class="card-content #e3f2fd blue lighten-5">
+                            <div className="#1e88e blue-text text-darken-2"><i className="material-icons left large">assessment</i> <span class="card-title">My Claims</span></div>
+                                <span style={{fontSize: "13px"}}>View the claims raised by you in the past and their information. </span>
                             </div>
-                            <div class="card-action #80cbc4 teal lighten-2">
+                            <div class="card-action white-text #1e88e blue darken-2">
                                 <a href="#" class='white-text' onClick={this.onViewMyBidsClick}>GO <i className="material-icons left">arrow_forward</i> </a>
                             </div>
                         </div>
                     </div>
-                    <div class="col s12 m4">
+                    {/* <div class="col s12 m4">
                         <div class="card teal">
                             <div class="card-content teal-text #80cbc4 teal lighten-5">
                             <span class="card-title">My Profile</span>
@@ -128,7 +127,7 @@ class Dashboard extends Component {
                                 <a href="#" class='white-text'onClick={this.onLogoutClick}>GO <i className="material-icons left">arrow_forward</i> </a>
                             </div>
                         </div>
-                    </div>
+                    </div> */}
                 </div>
             </div>
         );
