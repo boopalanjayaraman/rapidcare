@@ -12,14 +12,17 @@ class Landing extends Component{
                 <span style={{ fontFamily: "monospace" }}></span> 
                 </h4>
                 <p className="flow-text grey-text text-darken-1">
-                Small-ticket insurances for Life &amp; Healthcare.  
-                <br/>Get your claims settled in hours, not in days.
+                    <ul>
+                        <li>Small-ticket insurances for <span className="black-text">Life &amp; Healthcare.</span></li>
+                        <li>Insure when it <span className="black-text">matters</span>.</li>
+                        <li>Claims in<span className="black-text"> hours</span>, not in days.</li>
+                    </ul>
                 </p>
                 <p className="flow-text grey-text text-darken-1">
                 
                 </p>
                 <br />
-                <div className="col s4">
+                <div className="col s4 m4">
                 <Link
                     to="/browse"
                     style={{
@@ -27,12 +30,12 @@ class Landing extends Component{
                     borderRadius: "3px",
                     letterSpacing: "1.5px"
                     }}
-                    className="btn btn-large waves-effect waves-light hoverable blue accent-3"
+                    className="btn btn-large waves-effect waves-light hoverable violet accent-3"
                 >
                     Products
                 </Link>
                 </div>
-                <div className="col s4">
+                <div className="col s4 m4">
                 <Link
                     to="/register"
                     style={{
@@ -46,7 +49,7 @@ class Landing extends Component{
                 </Link>
                 
                 </div>
-                <div className="col s4">
+                <div className="col s4 m4">
                 <Link
                     to="/login"
                     style={{
@@ -54,7 +57,8 @@ class Landing extends Component{
                     borderRadius: "3px",
                     letterSpacing: "1.5px"
                     }}
-                    className="btn btn-large btn-flat waves-effect white black-text"
+                    //className="btn btn-large btn-flat waves-effect white black-text"
+                    className="btn btn-large waves-effect waves-light hoverable red accent-3"
                 >
                     Log In
                 </Link>
