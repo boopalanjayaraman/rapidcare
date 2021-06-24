@@ -19,7 +19,7 @@ let logService = Container.get(LogService);
 router.post("/register",  async (req, res)=>{
 
     let data = req.body; 
-    logService.info('register operation is invoked.', {userName: data.username, email: data.loginId});
+    logService.info('register operation is invoked.', {userName: data.username, email: data.loginId, userType: data.userType});
 
     try {
         //// call user service

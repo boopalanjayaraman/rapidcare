@@ -5,6 +5,7 @@ import PropTypes from "prop-types";
 import { connect } from "react-redux";
 import { forgotPasswordAction } from "../actions/userActions";
 import classnames from "classnames";
+import { textProvider } from "../content/textProvider";
 
 class ForgotPassword extends Component{
     //// constructor
@@ -56,17 +57,18 @@ class ForgotPassword extends Component{
 
         const { errors } = this.state;
 
+        const text = textProvider();
+
         return (
             <div className="container">
               <div style={{ marginTop: "4rem" }} className="row">
                 <div className="col s8 offset-s2">
                   <Link to="/" className="btn-flat waves-effect">
-                    <i className="material-icons left">keyboard_backspace</i> Back to
-                    home
+                    <i className="material-icons left">keyboard_backspace</i> { text.forgotPassword_back }
                   </Link>
                   <div className="col s12" style={{ paddingLeft: "11.250px" }}>
-                    <h4>
-                      <b>Forgot Password?</b>
+                    <h4 style={{color: "rgb(90, 114, 209)"}}>
+                      { text.forgotPassword_title }
                     </h4>
                     {/* <p className="grey-text text-darken-1">
                       Don't have an account? <Link to="/register">Register</Link>
@@ -84,7 +86,7 @@ class ForgotPassword extends Component{
                             invalid: errors.email || errors.emailnotfound
                           })}
                       />
-                      <label htmlFor="email">Enter your Login Id (Email) to reset password</label>
+                      <label htmlFor="email">{ text.forgotPassword_loginId }</label>
                       <span className="red-text">{errors.email} </span>
                     </div>
                     <div>
@@ -104,7 +106,7 @@ class ForgotPassword extends Component{
                         type="submit"
                         className="btn btn-large waves-effect waves-light hoverable blue accent-3"
                       >
-                        Submit
+                        { text.forgotPassword_Submit }
                       </button>
                     </div>
                   </form>

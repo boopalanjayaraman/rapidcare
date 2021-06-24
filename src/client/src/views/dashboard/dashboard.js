@@ -2,6 +2,9 @@ import React, { Component } from "react";
 import PropTypes from "prop-types";
 import { connect } from "react-redux";
 import { logoutUser } from "../../actions/authActions";
+import { textProvider } from "../../content/textProvider";
+import ChooseLanguage from "../components/ChooseLanguage";
+import ChooseCountry from "../components/ChooseCountry";
 
 class Dashboard extends Component {
 
@@ -9,8 +12,19 @@ class Dashboard extends Component {
         super();
 
         this.isAdmin = false;
+
+        this.onLanguageChange = this.onLanguageChange.bind(this);
+        this.onCountryChange = this.onCountryChange.bind(this);
     }
 
+    
+    onLanguageChange = e =>{
+        this.setState({chosenLanguage : e });
+    }
+
+    onCountryChange = e =>{
+        this.setState({chosenCountry : e });
+    }
     onLogoutClick = e => {
         e.preventDefault();
         this.props.logoutUser();    
@@ -45,18 +59,29 @@ class Dashboard extends Component {
     render() {
         const { user } = this.props.auth;
 
+        const text = textProvider();
+
         this.isAdmin = this.props.auth.user.isAdmin;
         this.isUser = this.props.auth.user.isUser; //// Approved User
         this.isPartnerDoctor = this.props.auth.user.isPartnerDoctor;
+        this.userType = this.props.auth.user.userType;
+
+        this.userTypeText = text.userType[this.userType];
 
         return (
             <div style={{ height: "75vh" }} className="container">
                 <div className="row">
-                    <div className="col s12 right-align">
+                    <div className="col s2 m2 left-align">
+                        <ChooseLanguage onChange = { this.onLanguageChange }></ChooseLanguage>
+                    </div>
+                    <div className = "col s2 m4 left-align">
+                        <ChooseCountry onChange = { this.onCountryChange }></ChooseCountry>
+                    </div>
+                    <div className="col s12 m6 right-align">
                         <h6>
-                            Hello, <b>{user.name.split(' ')[0] } </b>
-                            <a href="#" title='Log out' class='red-text' onClick={this.onLogoutClick}><i className="material-icons right">exit_to_app</i> </a>
-                            <a href="#" title='My Profile' class='indigo-text' onClick={this.onViewMyProfileClick}><i className="material-icons right">account_box</i> </a>
+                            { text.dashboard_hello } <b>{user.name.split(' ')[0] }</b> <span className="blue-text">({this.userTypeText})</span>
+                            <a href="#" title= { text.dashboard_logout_tooltip } class='red-text' onClick={this.onLogoutClick}><i className="material-icons right">exit_to_app</i> </a>
+                            <a href="#" title= { text.dashboard_myProfile_tooltip } class='indigo-text' onClick={this.onViewMyProfileClick}><i className="material-icons right">account_box</i> </a>
                         </h6>
                     </div>
                 </div>
@@ -64,70 +89,47 @@ class Dashboard extends Component {
                     <div class="col s12 m6">
                         <div class="card blue-grey">
                             <div class="card-content #e3f2fd blue lighten-5">
-                            <div className="#1e88e blue-text text-darken-2"><i className="material-icons left large">accessibility</i> <span class="card-title">Buy Insurance</span></div>
-                            <span style={{fontSize: "13px"}}>Browse our insurance products for you and your business. Get one, We got you covered!</span>
+                            <div className="#1e88e blue-text text-darken-2"><i className="material-icons left large">accessibility</i> <span class="card-title">{ text.dashboard_buyInsurance }</span></div>
+                            <span style={{fontSize: "13px"}}> { text.dashboard_buyInsuranceDesc } </span>
                             </div>
                             <div class="card-action white-text #1e88e blue darken-2">
-                                <a href="#" class='white-text' onClick={this.onBrowseClick}>GO <i className="material-icons left">arrow_forward</i> </a>
+                                <a href="#" class='white-text' onClick={this.onBrowseClick}>{ text.dashboard_go } <i className="material-icons left">arrow_forward</i> </a>
                             </div>
                         </div>
                     </div>
                     <div class="col s12 m6">
                         <div class="card teal">
                             <div class="card-content #e3f2fd blue lighten-5">
-                            <div className="#1e88e blue-text text-darken-2"><i className="material-icons left large">attach_money</i> <span class="card-title">Raise a Claim</span></div>
-                                <span style={{fontSize: "13px"}}>Raise a claim and submit supporting documents. It is only a matter of minutes.</span>
+                            <div className="#1e88e blue-text text-darken-2"><i className="material-icons left large">attach_money</i> <span class="card-title">{ text.dashboard_raiseClaim }</span></div>
+                                <span style={{fontSize: "13px"}}>  { text.dashboard_raiseClaimDesc } </span>
                             </div>
                             <div class="card-action  white-text #1e88e blue darken-2">
-                                <a href="#" class='white-text' onClick={this.onNewClaimClick}>GO <i className="material-icons left">arrow_forward</i> </a>
+                                <a href="#" class='white-text' onClick={this.onNewClaimClick}>{ text.dashboard_go } <i className="material-icons left">arrow_forward</i> </a>
                             </div>
                         </div>
                     </div>
                     <div class="col s12 m6">
                         <div class="card teal">
                             <div class="card-content #e3f2fd blue lighten-5">
-                            <div className="#1e88e blue-text text-darken-2"><i className="material-icons left large">assignment</i> <span class="card-title">My Insurances</span></div>
-                                <span style={{fontSize: "13px"}}>View the insurances you bought in the past. Renew them.</span>
+                            <div className="#1e88e blue-text text-darken-2"><i className="material-icons left large">assignment</i> <span class="card-title"> { text.dashboard_myInsurances } </span></div>
+                                <span style={{fontSize: "13px"}}>  { text.dashboard_myInsurancesDesc } </span>
                             </div>
                             <div class="card-action white-text #1e88e blue darken-2">
-                                <a href="#" class='white-text'onClick={this.onViewMyInsurancesClick}>GO <i className="material-icons left">arrow_forward</i> </a>
+                                <a href="#" class='white-text'onClick={this.onViewMyInsurancesClick}>{ text.dashboard_go } <i className="material-icons left">arrow_forward</i> </a>
                             </div>
                         </div>
                     </div>
                     <div class="col s12 m6">
                         <div class="card teal">
                             <div class="card-content #e3f2fd blue lighten-5">
-                            <div className="#1e88e blue-text text-darken-2"><i className="material-icons left large">assessment</i> <span class="card-title">My Claims</span></div>
-                                <span style={{fontSize: "13px"}}>View the claims raised by you in the past and their information. </span>
+                            <div className="#1e88e blue-text text-darken-2"><i className="material-icons left large">assessment</i> <span class="card-title"> { text.dashboard_myClaims } </span></div>
+                                <span style={{fontSize: "13px"}}> { text.dashboard_myClaimsDesc }  </span>
                             </div>
                             <div class="card-action white-text #1e88e blue darken-2">
-                                <a href="#" class='white-text' onClick={this.onViewMyBidsClick}>GO <i className="material-icons left">arrow_forward</i> </a>
+                                <a href="#" class='white-text' onClick={this.onViewMyBidsClick}>{ text.dashboard_go } <i className="material-icons left">arrow_forward</i> </a>
                             </div>
                         </div>
                     </div>
-                    {/* <div class="col s12 m4">
-                        <div class="card teal">
-                            <div class="card-content teal-text #80cbc4 teal lighten-5">
-                            <span class="card-title">My Profile</span>
-                                <span style={{fontSize: "13px"}}>View / Edit your profile information. </span>
-                            </div>
-                            <div class="card-action  #80cbc4 teal lighten-2">
-                                <a href="#" class='white-text' onClick={this.onViewMyProfileClick}>GO <i className="material-icons left">arrow_forward</i> </a>
-                            </div>
-                        </div>
-                    </div>
-                     
-                    <div class="col s12 m4">
-                        <div class="card teal">
-                            <div class="card-content red-text #ffebee red lighten-5">
-                            <span class="card-title">Log out</span>
-                                <span style={{fontSize: "13px"}}>Sign out of the application. Come back later.</span>
-                            </div>
-                            <div class="card-action  #e57373 red lighten-2">
-                                <a href="#" class='white-text'onClick={this.onLogoutClick}>GO <i className="material-icons left">arrow_forward</i> </a>
-                            </div>
-                        </div>
-                    </div> */}
                 </div>
             </div>
         );

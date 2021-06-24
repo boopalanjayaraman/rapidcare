@@ -55,7 +55,7 @@ module.exports = function validateRegisterInput(data){
     if(!Validator.equals(data.userType, constants.userType_individual)
      && !Validator.equals(data.userType, constants.userType_business)
      && !Validator.equals(data.userType, constants.userType_partnerdoctor)) {
-        errors.dateRange = "Invalid userType.";
+        errors.userType = "Invalid userType.";
     } 
 
     return {

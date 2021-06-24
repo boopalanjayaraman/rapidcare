@@ -174,6 +174,7 @@ class UserService {
                         isAdmin: user.roleInfo.isAdmin,
                         isPartnerDoctor: user.roleInfo.isPartnerDoctor,
                         isLocked: user.isLocked,
+                        userType: user.userType,
                         isActive: user.isActive 
                     };
     

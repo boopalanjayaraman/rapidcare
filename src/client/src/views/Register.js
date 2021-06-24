@@ -12,6 +12,7 @@ import Select from '@material-ui/core/Select';
 import MenuItem from '@material-ui/core/MenuItem';
 
 import TermsAndConditions from '../views/TermsAndConditions';
+import { textProvider } from "../content/textProvider";
 
 const useStyles = (theme) => ({
     select: {
@@ -80,21 +81,22 @@ class Register extends Component{
         const { errors } = this.state;
         const { classes } = this.props;
 
+        const text = textProvider();
+
         return(
             <div className="container">
             <div className="row">
             <div className="col s8 offset-s2">
                 <Link to="/" className="btn-flat waves-effect">
-                <i className="material-icons left">keyboard_backspace</i> Back to
-                home
+                <i className="material-icons left">keyboard_backspace</i> { text.register_back }
                 </Link>
                 <div className="col s12" style={{ paddingLeft: "11.250px" }}>
-                <h4 style={{color: "rgb(90, 114, 209)"}}>
-                    Great. Let's get you signed up.
-                </h4>
-                <p className="grey-text text-darken-1">
-                    Already have an account? <Link to="/login">Log in</Link>
-                </p>
+                    <h4 style={{color: "rgb(90, 114, 209)"}}>
+                        { text.register_title }
+                    </h4>
+                    <p className="grey-text text-darken-1">
+                        { text.register_accountExists } <Link to="/login">{ text.register_Login } </Link>
+                    </p>
                 </div>
                 <form noValidate onSubmit={this.onSubmit}>
                 <div className="input-field col s12">
@@ -108,7 +110,7 @@ class Register extends Component{
                         invalid: errors.username
                       })}
                     />
-                    <label htmlFor="username">Full Name</label>
+                    <label htmlFor="username">{ text.register_fullName }</label>
                     <span className="red-text">{errors.username}</span>
                 </div>
                 <div className="input-field col s12">
@@ -122,7 +124,7 @@ class Register extends Component{
                         invalid: errors.loginId
                       })}
                     />
-                    <label htmlFor="loginId">LoginId (Email)</label>
+                    <label htmlFor="loginId">{ text.register_LoginId }</label>
                     <span className="red-text">{errors.loginId}</span>
                 </div>
                 <div className="input-field col s12">
@@ -136,7 +138,7 @@ class Register extends Component{
                         invalid: errors.password
                       })}
                     />
-                    <label htmlFor="password">Password</label>
+                    <label htmlFor="password">{ text.register_Password }</label>
                     <span className="red-text">{errors.password}</span>
                 </div>
                 <div className="input-field col s12">
@@ -150,7 +152,7 @@ class Register extends Component{
                         invalid: errors.password2
                       })}
                     />
-                    <label htmlFor="password2">Confirm Password</label>
+                    <label htmlFor="password2">{ text.register_ConfirmPassword }</label>
                     <span className="red-text">{errors.password2}</span>
                 </div>
                 <div className="input-field col s12">
@@ -164,8 +166,8 @@ class Register extends Component{
                                 invalid: errors.userType
                               })}
                             >
-                                <MenuItem value="individual">Individual</MenuItem>
-                                <MenuItem value="organization" disabled={true} >organization</MenuItem>
+                                <MenuItem value="individual">{ text.register_userTypeIndividual }</MenuItem>
+                                <MenuItem value="business">{ text.register_userTypeBusiness }</MenuItem>
                         </Select>
                         <span className="red-text">{errors.userType}</span>
                         {/* <label htmlFor="userType">User Type</label> */}
@@ -181,7 +183,7 @@ class Register extends Component{
                                 <Modal
                                     actions={[
                                         <Button modal="close" node="button" waves="green" 
-                                        onClick={this.onSubmit}>Yes, I agree</Button>
+                                        onClick={this.onSubmit}>{ text.register_iAgree }</Button>
                                     ]}
                                     bottomSheet={true}
                                     fixedFooter={false}
@@ -195,10 +197,10 @@ class Register extends Component{
                                             marginTop: "1rem"
                                         }}
                                         className="btn btn-large waves-effect waves-light hoverable blue accent-3">
-                                        Sign up
+                                        { text.register_signUp }
                                         </button>}
                                     >
-                                        <p style={{fontSize:"14px"}}> By clicking on "Yes, I agree" and continuing to sign up, you agree to our terms and conditions below.
+                                        <p style={{fontSize:"14px"}}> { text.register_iAgreeDeclare }
                                         <div style={{height:"130px", overflow:"auto", border: "solid 1px gray", padding: "10px", marginTop: "10px"}}>
                                             <TermsAndConditions/>
                                         </div>

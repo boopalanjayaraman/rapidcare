@@ -44,7 +44,7 @@ const userSchema = new Schema({
     roleInfo: {
         isUser: {
             type: Boolean,
-            default: false
+            default: true
         },
         isAdmin: {
             type: Boolean,
