@@ -15,8 +15,18 @@ const insuranceProductSchema = new Schema({
         type: String,
         required: true
     }, 
+    nameTranslated: {
+        type: Map, //// for each language
+        of: String,
+        required: true
+    },
     description: {
         type: String,
+        required: true
+    },
+    descriptionTranslated: {
+        type: Map, //// for each language
+        of: String,
         required: true
     },
     productUserType: {
@@ -29,7 +39,7 @@ const insuranceProductSchema = new Schema({
         type: Number
     },
     currency: {
-        type: String // "INR", "GBP"
+        type: String // "INR", "USD"
     },
     minDuration : {
         type: String // "weekly", "daily"

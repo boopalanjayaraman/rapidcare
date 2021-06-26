@@ -28,6 +28,9 @@ import NoAccessMessage from './views/user/NoAccessMessage';
 import ConfirmEmail from './views/ConfirmEmail';
 import ForgotPassword from './views/ForgotPassword';
 import ResetPassword from './views/ResetPassword';
+import Browse from './views/products/browse';
+
+import BuyInsurance from './views/products/buyinsurance';
 
 // Check for token to keep user logged in
 if (localStorage.jwtToken) {
@@ -60,11 +63,13 @@ class App extends Component {
                   <Route exact path="/" component={Landing} />
                   <Route exact path="/register" component={Register} />
                   <Route exact path="/login" component={Login} />
+                  <Route exact path="/browseProducts" component={Browse} />
                   <Switch>
                     <PrivateRoute exact path="/dashboard" component={Dashboard} />
                     <PrivateRoute exact path="/myProfile" component={MyProfile} />
                     <PrivateRoute exact path="/viewProfile/:id/:action?" component={ViewProfile} />
                     <PrivateRoute exact path="/noaccessmessage" component={NoAccessMessage} />
+                    <PrivateRoute exact path="/buyinsurance" component={BuyInsurance} />
                   </Switch>
                     <Route exact path="/TermsAndConditions" component={TermsAndConditions} />
                     <Route exact path="/ConfirmEmail/:id/:tokenCode" component={ConfirmEmail} />

@@ -47,7 +47,7 @@ require("./config/passport")(passport);
 
 //// map routes
 app.use("/api/users", users);
-//app.use("/api/products", products);
+app.use("/api/products", products);
 //app.use("/api/insurances", insurances);
 //app.use("/api/claims", claims);
 
@@ -59,7 +59,7 @@ app.get('/*', function (req, res) {
 
 
 const port = process.env.PORT || 5000;
-
+ 
 const LogService = require("./services/logService");
 const Container = require("typedi").Container;
 

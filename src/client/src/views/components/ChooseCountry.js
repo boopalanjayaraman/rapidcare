@@ -11,8 +11,9 @@ class ChooseCountry extends Component{
         super(props);
 
         this.state = {
-            country: localStorage['chosen_country'] ?? 'IN',
-            availableCountries: commonData.countries 
+            country: localStorage['chosen_country'] ?? 'in',
+            availableCountries: commonData.countries,
+            onChange : props.onChange  
         };
     }
 
@@ -34,6 +35,9 @@ class ChooseCountry extends Component{
     onCountryChange = e=>{
         this.setState({country : e.target.value});
         localStorage.setItem("chosen_country", e.target.value);
+        if(this.state.onChange){
+            this.state.onChange(e.target.value);
+        }
     }
 
 

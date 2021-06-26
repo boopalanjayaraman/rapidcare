@@ -162,14 +162,8 @@ export const setBrowseUnlockUsers = (users) => {
 //// act on error
 export const publishError = (err) => {
     let payload_obj = null;
-    //if(err.response.status != "500"){
       payload_obj = err.response.data;
-    // }
-    // else{
-    //   payload_obj = {
-    //       error: "Unexpected error occurred. " + err.toString() 
-    //   };
-    // }
+     
 
     return {
             type: GET_ERRORS,

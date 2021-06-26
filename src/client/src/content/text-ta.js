@@ -13,6 +13,7 @@ const tamilText = {
     landing_time_caption : "ஐந்தே நிமிடங்களில் காப்பீடு. விண்ணப்பங்களோ, காத்திருப்போ அறவே இல்லை.",
     landing_Language : "மொழி",
     landing_Country : "நாடு",
+    landing_claim_caption: 'செயற்கை நுண்ணறிவு தொழில்நுட்பம். கோரிக்கைகள் அதி விரைவில் நிறைவேற்றம். தானியங்கி சேவைகள்.', 
     // register
     register_back:"முன்பக்கம்",
     register_title: "நன்று. உங்கள் கணக்கை துவங்குவோம்.",
@@ -58,6 +59,17 @@ const tamilText = {
     userType : {
         individual : "தன் கணக்கு",
         business : "தொழில் கணக்கு"
+    },
+    browse_insuranceProducts : "நமது காப்பீட்டு திட்டங்கள்",
+    browse_forIndividuals : "தனக்கானவை",
+    browse_forBusinesses : "தொழிலுக்கானவை",
+    browse_startsAt : "குறைந்த பட்சம்",
+    browse_for : "தொகை",
+    //minDuration
+    minDuration : {
+        daily : "தினந்தோறும்",
+        weekly : "வாரந்தோறும்",
+        monthly : "மாதந்தோறும்"
     }
 };
 

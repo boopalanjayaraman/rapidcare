@@ -13,6 +13,7 @@ const englishText = {
     landing_time_caption : "Five minutes to get insured. Zero minutes on Paper work.",
     landing_Language : "Language",
     landing_Country : "Country",
+    landing_claim_caption: 'Artificial Intelligence backed. Super fast Claims. Automated services.',
     // register
     register_back:"Back to home",
     register_title: "Great. Let's get you signed up.",
@@ -58,6 +59,18 @@ const englishText = {
     userType : {
         individual : "individual",
         business : "business"
+    },
+    //browse
+    browse_insuranceProducts : "Our Insurance Products",
+    browse_forIndividuals : "For Individuals",
+    browse_forBusinesses : "For Businesses",
+    browse_startsAt : "Starts at",
+    browse_for : "For",
+    //minDuration
+    minDuration : {
+        daily : "daily",
+        weekly : "weekly",
+        monthly : "monthly"
     }
 };
 

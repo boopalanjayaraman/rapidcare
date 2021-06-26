@@ -13,8 +13,8 @@ const commonData = {
         { text: 'fri', value: 'fri' },
         { text: 'sat', value: 'sat' } ],
     countries: [
-        { text: 'India', displayText: 'India (भारत)', value: 'IN', defaultCurrency: 'INR'},
-        { text: 'United States', displayText: 'United States of America', value: 'US', defaultCurrency: 'USD'}
+        { text: 'India', displayText: 'India (भारत)', value: 'in', defaultCurrency: 'INR'},
+        { text: 'United States', displayText: 'United States of America', value: 'us', defaultCurrency: 'USD'}
     ],
     languages: [
         { text: 'English', value: 'en'},

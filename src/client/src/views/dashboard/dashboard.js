@@ -11,6 +11,11 @@ class Dashboard extends Component {
     constructor(){
         super();
 
+        this.state = {
+            chosenLanguage : "en",
+            chosenCountry : "in"
+        };
+
         this.isAdmin = false;
 
         this.onLanguageChange = this.onLanguageChange.bind(this);

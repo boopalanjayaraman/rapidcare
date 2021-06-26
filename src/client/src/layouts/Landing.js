@@ -53,7 +53,7 @@ class Landing extends Component{
                     <br />
                     <div className="col s12 m12">
                         <Link
-                            to="/browse"
+                            to="/browseProducts"
                             style={{
                             width: "150px",
                             borderRadius: "3px",
@@ -92,7 +92,8 @@ class Landing extends Component{
             </div>
             <div className="row center-align">
                 <div className="col s12">
-                    <span className="grey-text text-darken-1"> { text.landing_time_caption } </span> 
+                    <span className="grey-text text-darken-1"> { text.landing_time_caption } </span>
+                    <p><span className="grey-text text-darken-1"> { text.landing_claim_caption } </span> </p>
                 </div>
                 <div>&nbsp;</div>
             </div>

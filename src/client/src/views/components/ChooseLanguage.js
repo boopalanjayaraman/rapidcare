@@ -35,7 +35,9 @@ class ChooseLanguage extends Component{
     onLanguageChange = e=>{
         this.setState({language : e.target.value});
         localStorage.setItem("chosen_language", e.target.value);
-        this.state.onChange(e.target.value);
+        if(this.state.onChange){
+            this.state.onChange(e.target.value);
+        }
     }
 
 
