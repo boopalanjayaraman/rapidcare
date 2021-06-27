@@ -24,4 +24,22 @@ function validateGetProducts(criteria, currentUser){
 }
 
 
-module.exports = { validateGetProducts };
+function validateGetProduct(data, currentUser){
+    // initialize errors object
+    let errors = {};
+
+    // for now no validations
+    let _id =  isEmpty(data._id)? "" : data._id;
+
+    //// perform required field validations
+    if(Validator.isEmpty(_id)){
+        errors.exception = "_id field is required for getting a product.";
+    }
+
+    return {
+        errors,
+        isValid: isEmpty(errors)
+    };
+}
+
+module.exports = { validateGetProducts, validateGetProduct };

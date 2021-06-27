@@ -4,8 +4,8 @@ const Schema = mongoose.Schema;
 //// create product schema
 const insuranceProductSchema = new Schema({
     _id: { 
-        type: mongoose.Schema.Types.ObjectId, 
-        default: new mongoose.Types.ObjectId() 
+        type: String, 
+        //default: new mongoose.Types.ObjectId() 
     },
     friendlyId: {
         type: Number,
@@ -33,6 +33,9 @@ const insuranceProductSchema = new Schema({
         type: String // individual / business
     },
     productType: {
+        type: String // health / term 
+    },
+    subType: {
         type: String // health / term / accident / workerCompensation / complexMedicalProcedure / smallBusinessHealth
     },
     minPrice: {

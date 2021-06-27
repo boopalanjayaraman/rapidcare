@@ -1,5 +1,5 @@
 import axios from "axios";
-import { GET_ERRORS, BROWSE_PRODUCTS } from "./types";
+import { GET_ERRORS, BROWSE_PRODUCTS, SET_CURRENT_PRODUCT } from "./types";
 
 
 
@@ -27,6 +27,32 @@ export const setBrowseProducts = (products) => {
         payload: products
     };
 }
+
+export const getProductAction = (prodId, callback) => dispatch => {
+
+    dispatch(publishError({ response : { data: {} }}));
+
+    axios
+    .get("/api/products/getproduct", { params:{ _id: prodId} })
+    .then(res => {
+        const product  = res.data;
+        dispatch(setCurrentProduct(product));
+        if(callback){
+            callback();
+        }
+    })
+    .catch(err => {
+        dispatch(publishError(err));
+    });
+};
+
+//// set current product object for view  
+export const setCurrentProduct = (product) => {
+    return {
+            type: SET_CURRENT_PRODUCT,
+            payload: product 
+        };
+};
 
 
 //// act on error

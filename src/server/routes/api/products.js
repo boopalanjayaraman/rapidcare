@@ -1,5 +1,6 @@
 const express = require("express");
 const router = express.Router();
+const passport = require("passport");
 const isEmpty = require("is-empty");
 
 //// import container
@@ -28,7 +29,7 @@ router.get("/getproducts", async (req, res) => {
     
 
     try {
-        //// call user service
+        //// call product service
         const { errors, result } = await productService.getProducts(data, currentUser);
         if(!isEmpty(errors)){
             return res.status(500).json(errors);
@@ -38,6 +39,34 @@ router.get("/getproducts", async (req, res) => {
         } 
     } catch (error) {
         const errorMsg = 'Error in getproducts operation.';
+        logService.error(errorMsg, error);
+        return res.status(500).json( {error: errorMsg} );
+    }
+});
+
+
+// @route GET api/products/getproduct
+// @desc gets the product by id
+// @access Public
+router.get("/getproduct", passport.authenticate('jwt', {session: false}), async (req, res) => {
+    
+    const data = req.query;
+    const currentUser = req.user;
+    
+    logService.info('getproduct operation is invoked by user.',  { currentUser: currentUser.email , userId: currentUser._id, info: data });
+     
+
+    try {
+        //// call product service
+        const { errors, result } = await productService.getProduct(data, currentUser);
+        if(!isEmpty(errors)){
+            return res.status(500).json(errors);
+        }
+        else{
+            return res.json(result);
+        } 
+    } catch (error) {
+        const errorMsg = 'Error in getproduct operation.';
         logService.error(errorMsg, error);
         return res.status(500).json( {error: errorMsg} );
     }

@@ -146,7 +146,7 @@ class Browse extends Component {
                                         <span style={{fontSize: titleFontSize }}>{ prod.nameTranslated[this.state.chosenLanguage] }</span>
                                         <div><label className="pink-text" style={{fontWeight:"bold"}}> {text.browse_startsAt} {prod.minPrice} {prod.currency} | { text.minDuration[prod.minDuration] } | {text.browse_for} {prod.sumAssured} {prod.currency} </label></div>
                                     </span>
-                                    <a class="btn-floating halfway-fab waves-effect waves-light blue" title="get this insurance" href="/buyinsurance"><i class="material-icons">add</i></a>
+                                    <a class="btn-floating halfway-fab waves-effect waves-light blue" title="get this insurance" href= {"/buyinsurance/"+ prod._id}><i class="material-icons">add</i></a>
                                 </div>
                                 <div class="card-content" style={{height: "150px", overflow:"auto"}}>
                                     <label className="black-text"> {prod.descriptionTranslated[this.state.chosenLanguage]} </label>

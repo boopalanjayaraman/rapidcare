@@ -16,7 +16,7 @@ const insuranceOrderSchema = new Schema({
         required: true
     },
     policyProduct : {
-        type:  mongoose.Schema.Types.ObjectId, //
+        type:  String, //
     },
     sumAssured : {
         type : Number,

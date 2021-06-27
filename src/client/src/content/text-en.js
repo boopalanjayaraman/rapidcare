@@ -68,10 +68,29 @@ const englishText = {
     browse_for : "For",
     //minDuration
     minDuration : {
-        daily : "daily",
-        weekly : "weekly",
-        monthly : "monthly"
-    }
+        daily : "Daily",
+        weekly : "Weekly",
+        monthly : "Monthly"
+    },
+    //buyinsurance
+    buyinsurance_Back : "Back to Browse Products",
+    buyinsurance_SumAssured : "Sum Assured",
+    buyinsurance_SumInsured : "Sum Insured",
+    buyinsurance_productType : "Product Type",
+    buyinsurance_insuredType : "Insured Type",
+    buyinsurance_FewSteps : "1. Just a few steps, and you are done! Let us know about the insured.",
+    buyinsurance_fullName: "Full Name (official)",
+    //productType
+    productType : {
+        health : "Health Insurance",
+        term : "Term Life Insurance"
+    },
+    //party
+    party : {
+        self : "Self",
+        other : "Others"
+    },
+
 };
 
 export default englishText;

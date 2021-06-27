@@ -5,7 +5,7 @@ const settings = require("../config/configuration").environmentalSettings;
 //// load model
 const InsuranceProductModel = require("../models/insuranceproduct");
 //// load validations
-const { validateGetProducts } = require("../validation/productValidation");
+const { validateGetProducts, validateGetProduct } = require("../validation/productValidation");
 
 const isEmpty = require("is-empty");
 const moment = require("moment");
@@ -93,6 +93,41 @@ class ProductService {
         }
         
         return query;
+    }
+
+     //// getProduct method
+     async getProduct(data, currentUser){
+
+        this.logService.info('ProductService - entered getProduct operation', { info: data });
+        
+        //// perform form validation
+        let { errors, isValid } = validateGetProduct(data, currentUser);
+        let response = {errors, result: null};
+        //// if validation failed, send back the errors to front end.
+        if(!isValid){
+            return response;
+        }
+
+        this.logService.info('primary validations are done.');
+
+        //// find returns a promise so returning it - this is an async method.
+        return InsuranceProductModel.findById(data._id)
+        .sort({ friendlyId : 'asc'})
+        .then(prod => {
+            if(!prod){
+                response.errors.exception = "Product information is not found.";
+                this.logService.info(response.errors.exception, { _id: currentUser._id });
+                return response;
+            }
+            response.result = prod;
+            this.logService.info('Products info is fetched.', { _id: prod._id });
+            return response;
+        })
+        .catch(err => {
+            response.errors.exception = "Runtime Error occurred. Could not get product info for unknown reasons.";
+            this.logService.error('Runtime Error occurred during get product op.', { ...err, currentUser: currentUser});
+            return response;
+        });
     }
 
 };

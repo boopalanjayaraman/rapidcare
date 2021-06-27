@@ -69,7 +69,7 @@ class App extends Component {
                     <PrivateRoute exact path="/myProfile" component={MyProfile} />
                     <PrivateRoute exact path="/viewProfile/:id/:action?" component={ViewProfile} />
                     <PrivateRoute exact path="/noaccessmessage" component={NoAccessMessage} />
-                    <PrivateRoute exact path="/buyinsurance" component={BuyInsurance} />
+                    <PrivateRoute exact path="/buyinsurance/:id" component={BuyInsurance} />
                   </Switch>
                     <Route exact path="/TermsAndConditions" component={TermsAndConditions} />
                     <Route exact path="/ConfirmEmail/:id/:tokenCode" component={ConfirmEmail} />

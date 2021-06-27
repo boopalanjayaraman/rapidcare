@@ -63,14 +63,32 @@ const tamilText = {
     browse_insuranceProducts : "நமது காப்பீட்டு திட்டங்கள்",
     browse_forIndividuals : "தனக்கானவை",
     browse_forBusinesses : "தொழிலுக்கானவை",
-    browse_startsAt : "குறைந்த பட்சம்",
+    browse_startsAt : "தொடக்க விலை",
     browse_for : "தொகை",
     //minDuration
     minDuration : {
         daily : "தினந்தோறும்",
         weekly : "வாரந்தோறும்",
         monthly : "மாதந்தோறும்"
-    }
+    },
+    //buyinsurance
+    buyinsurance_Back : "பின் செல்க",
+    buyinsurance_SumAssured : "உறுதித் தொகை",
+    buyinsurance_SumInsured : "காப்பீட்டுத் தொகை",
+    buyinsurance_productType : "காப்பீட்டு வகை",
+    buyinsurance_insuredType : "காப்பீடு பெறுபவர் வகை",
+    buyinsurance_FewSteps : "1. இன்னும் சில படிகள் மட்டுமே. காப்பீடு பெறும் நபரை பற்றி கூறுங்கள்.",
+    buyinsurance_fullName: "(அங்கீகரிக்கப்பட்ட) முழுப் பெயர்",
+    //productType
+    productType : {
+        health : "மருத்துவ காப்பீடு",
+        term : "கால ஆயுள் காப்பீடு"
+    },
+    //party
+    party : {
+        self : "தனக்கு",
+        other : "பிறருக்கு"
+    },
 };
 
 export default tamilText;
