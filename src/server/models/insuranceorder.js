@@ -13,10 +13,17 @@ const insuranceOrderSchema = new Schema({
     }, 
     ownerId: {
         type:  mongoose.Schema.Types.ObjectId,
+        ref: "users",
+        required: true
+    },
+    holderId: {
+        type:  mongoose.Schema.Types.ObjectId,
+        ref: "users",
         required: true
     },
     policyProduct : {
         type:  String, //
+        ref: "insuranceproducts",
     },
     sumAssured : {
         type : Number,
@@ -28,7 +35,8 @@ const insuranceOrderSchema = new Schema({
     },
     policyInfo: {
         type:  mongoose.Schema.Types.ObjectId,
-        required: true
+        ref: "policyinfos",
+        required: true,
     },
     premiumInterval: {
         type: String,
@@ -61,6 +69,14 @@ const insuranceOrderSchema = new Schema({
     },
     createdDateValue: {
         type: Number //// yyyymmdd
+    },
+    status : {
+        type: String,
+        required: true
+    },
+    paymentStatus : {
+        type: String,
+        required: true
     }
 });
 

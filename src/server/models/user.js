@@ -101,7 +101,8 @@ const userSchema = new Schema({
                 type: String
             },
             imageDocumentId: {
-                type: mongoose.Schema.Types.ObjectId 
+                type: mongoose.Schema.Types.ObjectId,
+                ref: "documents", 
             },
             type: {
                 type: String 
@@ -112,7 +113,8 @@ const userSchema = new Schema({
                 type: String
             },
             imageDocumentId: {
-                type: mongoose.Schema.Types.ObjectId 
+                type: mongoose.Schema.Types.ObjectId,
+                ref: "documents", 
             },
             type: {
                 type: String 
@@ -121,7 +123,20 @@ const userSchema = new Schema({
         businessInfo : { 
             businessId: {
                 type: mongoose.Schema.Types.ObjectId, 
+                ref: "businesses",
             }
+        },
+        nomineeInfo : {
+            userId : {
+                type: mongoose.Schema.Types.ObjectId,
+                ref: "users", 
+            },
+            socialSecurityNumber : {
+                type: mongoose.Schema.Types.ObjectId 
+            },
+            contactPhoneNumber : {
+                type: mongoose.Schema.Types.ObjectId 
+            } 
         }
     },
     pwdResetAttributes: {
@@ -176,6 +191,7 @@ const userSchema = new Schema({
     },
     paymentMethodInfo: {
         type: mongoose.Schema.Types.ObjectId, 
+        ref: "paymentmethods",
     }
 });
 

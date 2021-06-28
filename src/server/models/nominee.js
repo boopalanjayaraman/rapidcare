@@ -12,12 +12,7 @@ const nomineeSchema = new Schema({
     },
     socialSecurityNumber : {
         type: mongoose.Schema.Types.ObjectId 
-    },
-    policyIds: [{
-        id: {
-            type: mongoose.Schema.Types.ObjectId
-        }
-    }] 
+    } 
 });
 
 var Nominee = mongoose.model("nominees", nomineeSchema);

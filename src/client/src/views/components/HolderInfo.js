@@ -16,7 +16,6 @@ class HolderInfo extends Component{
             contactPhoneNumber : props.contactPhoneNumber ?? "",
             socialSecurityNumber : props.socialSecurityNumber ?? "",
             userId : props.userId ?? "",
-            occupation : props.occupation ?? "",
             readOnly : props.readOnly ?? false,
             forSelf : props.forSelf ?? false,
             errors : props.errors ?? {}
@@ -31,6 +30,15 @@ class HolderInfo extends Component{
         if(nextProps.errors){
             this.setState({
                 errors: nextProps.errors
+            });
+        }
+        if(nextProps){
+            this.setState({
+                contactPhoneNumber : nextProps.contactPhoneNumber ?? this.state.contactPhoneNumber,
+                socialSecurityNumber : nextProps.socialSecurityNumber ?? this.state.socialSecurityNumber,
+                userId : nextProps.userId ?? this.state.userId,
+                readOnly : nextProps.readOnly ?? this.state.readOnly,
+                forSelf : nextProps.forSelf ?? this.state.forSelf,
             });
         }
     }
@@ -57,28 +65,6 @@ class HolderInfo extends Component{
                             <span className="indigo-text"> <b>2. Identity Information</b> </span>
                         </div>
                     </div>
-                    {/* <div className="s12">
-                        <label> Age </label>
-                        <input
-                            value= { this.state.age }
-                            error={ errors.age}
-                            id="age"
-                            type="text"
-                            onChange = { this.onAgeChange }
-                            disabled = { this.state.readOnly }
-                        />
-                    </div>
-                    <div className="s12">
-                        <label> Contact Phone Number </label>
-                        <input
-                            value= { this.state.contactPhoneNumber }
-                            error={ errors.contactPhoneNumber}
-                            id="contactPhoneNumber"
-                            type="text"
-                            onChange = { this.onContactPhoneNumberChange }
-                            disabled = { this.state.readOnly }
-                        />
-                    </div> */}
                     <div className="s12">
                         <label className="pink-text"> RapydCare User Id (Necessary) </label>
                         <input
@@ -89,9 +75,15 @@ class HolderInfo extends Component{
                             onChange = { this.onUserIdChange }
                             disabled = { this.state.forSelf || this.state.readOnly }
                         />
+                        <button 
+                           type="button" 
+                           className="btn btn-medium waves-effect waves-light red hoverable accent-3"
+                            onClick = { this.onCheckUserClick }>
+                                Check &amp; Get
+                        </button>
                     </div>
                     <div className="s12">
-                        <label> Social Security Number / Aadhar Number </label>
+                        <label> Social Security Number / Aadhar Number </label> 
                         <input
                             value= { this.state.socialSecurityNumber }
                             error={ errors.socialSecurityNumber}

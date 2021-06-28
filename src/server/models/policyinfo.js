@@ -28,13 +28,18 @@ const policyInfoSchema = new Schema({
             type : String
         },
         userId: {
-            type: mongoose.Schema.Types.ObjectId
+            type: mongoose.Schema.Types.ObjectId,
+            ref: "users",
         },
         photo :{
             type: mongoose.Schema.Types.ObjectId, // document collection
+            ref: "documents",
         }
     },
     healthDeclarationInfo : {
+        rightAge : {
+            type: Boolean
+        },
         ped : {
             type: Boolean
         },
@@ -49,14 +54,9 @@ const policyInfoSchema = new Schema({
         },
         undergoneProcedure : {
             type: Boolean
-        },
-        complexMedicalProcedure : {
-            procedureName : {
-                type : String
-            }
         }
     },
-    nomineeInfo: {
+    nomineeInfo: { //// additional storage from my profile nominee
         name: {
             type: String
         },
@@ -67,7 +67,8 @@ const policyInfoSchema = new Schema({
             type : String
         },
         userId: {
-            type: mongoose.Schema.Types.ObjectId
+            type: mongoose.Schema.Types.ObjectId,
+            ref: "users",
         }
     }
 });

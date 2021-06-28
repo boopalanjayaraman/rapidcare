@@ -41,6 +41,7 @@ class BuyInsurance extends Component {
                 minAge : 18,
                 maxAge : 65
             },
+            fullName : "",
             policyInfo : {
                 health : {
 
@@ -95,6 +96,13 @@ class BuyInsurance extends Component {
         }) ; 
         window.scrollTo(0, 0);
     }
+
+    onFullNameChange = e => {
+        // var insuranceProduct = {...this.state.insuranceProduct}
+        // insuranceProduct.name = e.target.value;
+        // this.setState({insuranceProduct});
+        this.setState({ fullName : e.target.value });
+    }
      
 
     render() {
@@ -104,7 +112,7 @@ class BuyInsurance extends Component {
         const text = textProvider();
 
         let chosen_language = localStorage['chosen_language'] ?? 'en'; 
-        let fullName = this.state.insuranceProduct.party === 'self'? user.name : "";
+        let fullName = this.state.insuranceProduct.party === 'self'? user.name : this.state.fullName;
         let forSelf = this.state.insuranceProduct.party === 'self';
         let holderUserId = forSelf ? user.id : "";
         let sumAssuredText = this.state.insuranceProduct.productType === 'term' ? text.buyinsurance_SumAssured : text.buyinsurance_SumInsured;
@@ -165,26 +173,41 @@ class BuyInsurance extends Component {
                             id="fullName"
                             type="text"
                             disabled = { forSelf }
+                            onChange = { this.onFullNameChange }
                         />
                     </div>
                 </div>
+                
                 <div className="row">
                     <div className="col s12 m8">
                         <HolderInfo forSelf ={ forSelf } userId = {holderUserId}></HolderInfo>
                     </div>
+                </div>
+                <div className="row">
+                    <div className="col s12 m8">
+                        <label className="pink-text">Instruction #1: </label><label>Nominees for term life and accident insurances are automatically assigned from the insured person's RapydCare profile. </label>
+                        <p><label className="pink-text">Instruction #2: </label><label>The KYC documents from the insured person's profile will be automatically used towards this insurance purchase. </label></p>
+                        <label className="pink-text">Instruction #3: </label><label> For any claims disbursement, Insured person's Rapyd Wallet will be used as the first preference.</label>         
+                    </div>
+                </div>
+                <div className="row">
                     <div className="col s12 m8">
                         <HealthDeclarationInfo 
                             minAge = { this.state.insuranceProduct.minAge }
                             maxAge = { this.state.insuranceProduct.maxAge }></HealthDeclarationInfo>
                     </div>
+                    <div className="col s12 m8">
+                        <label className="pink-text">Instruction #4: </label><label>Health declarations are important and will decide the criteria of a successful claim processing. So it is very essential that we get these right. </label>       
+                    </div>
                 </div>
+                
                 <div className="row">
                     <div className="col s12 m8">
-                        {
-                            (this.state.insuranceProduct.productType != 'health') &&
-                                <NomineeInfo></NomineeInfo> 
-                        }
-                    </div>
+                            {
+                                (this.state.insuranceProduct.productType != 'health') &&
+                                    <NomineeInfo></NomineeInfo> 
+                            }
+                        </div>
                 </div>
                 <div className="row">
                     <div className="col s12 m8">
