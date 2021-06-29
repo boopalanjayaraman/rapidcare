@@ -79,7 +79,7 @@ class HolderInfo extends Component{
                            type="button" 
                            className="btn btn-medium waves-effect waves-light red hoverable accent-3"
                             onClick = { this.onCheckUserClick }>
-                                Check &amp; Get
+                                Check &amp; Fetch Info
                         </button>
                     </div>
                     <div className="s12">

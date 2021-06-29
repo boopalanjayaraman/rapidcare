@@ -17,6 +17,9 @@ const EmailService = require("./emailService");
 const LogService = require("./logService");
 const IdCounterService = require("./idCounterService");
 
+const CryptoJS = require("crypto-js");
+const crypto = require("crypto");
+const axios = require("axios");
 
 class InsuranceService {
 
@@ -25,7 +28,7 @@ class InsuranceService {
         this.emailService = container.get(EmailService);
         this.logService = container.get(LogService);
         this.idCounterService = container.get(IdCounterService);
-
+        
     }
 
 
@@ -251,8 +254,75 @@ class InsuranceService {
 
     //// getCheckoutUrl method
     async getCheckoutUrl(data, currentUser) {
-        //TODO: implement this method
-        return "";
+
+        let response = {errors: {}, result: null};
+
+        var http_method = constants.rapydConstants.http_post_method;               
+        var checkout_url_path = constants.rapydConstants.http_checkout_url;
+        var full_post_url = configuration.rapydConfig.sandbox_base_url + checkout_url_path;
+
+        var salt =  crypto.randomBytes(12).toString("hex");   
+        var timestamp = (Math.floor(new Date().getTime() / 1000) - 10).toString();
+
+        var access_key = configuration.rapydConfig.access_key;     
+        var secret_key = configuration.rapydConfig.secret_key;  
+        var body = '';   
+        var transactionCompletionUniqueId = crypto.randomBytes(16).toString("hex");
+        var transactionErrorUniqueId = crypto.randomBytes(16).toString("hex");
+        var transactionCompletionPage = data.insuranceOrderId + "_" + transactionCompletionUniqueId;
+        var transactionCompletionUrl = configuration.rapydConfig.completionPage_base_url + "/" + transactionCompletionPage;
+        var transactionErrorPage =  data.insuranceOrderId + "_" + transactionErrorUniqueId;
+        var errorPage_Url = configuration.rapydConfig.errorPage_base_url + "/" + transactionErrorPage;
+
+        var request_data = {
+            amount : data.amount,
+            complete_payment_url : transactionCompletionUrl,
+            country :  data.country ? data.country.toUpperCase() : "US", 
+            currency : data.currency ? data.currency.toUpperCase() : "USD",
+            error_payment_url : errorPage_Url,
+            merchant_reference_id : data.referenceId,
+            cardholder_preferred_currency: true,
+            language: "en",  
+            metadata: {
+                merchant_defined: true
+            },
+             
+            payment_method_type_categories : data.country ? 
+                                            constants.rapydConstants.paymentTypeCategories[data.country.toLowerCase()] : 
+                                            constants.rapydConstants.paymentTypeCategories['us'],
+            payment_method_types_exclude: []
+        };
+
+        this.logService.info('getCheckoutUrl -  request_data.', {request_data: request_data});
+
+        body = JSON.stringify(request_data);
+        var to_sign = http_method + checkout_url_path + salt + timestamp + access_key + secret_key + body;
+
+        var signature = CryptoJS.enc.Hex.stringify(CryptoJS.HmacSHA256(to_sign, secret_key));
+        signature = CryptoJS.enc.Base64.stringify(CryptoJS.enc.Utf8.parse(signature));
+
+        const headers = {
+            'content-Type': 'application/json',
+            'access_key' : access_key,
+            'salt' : salt,
+            'timestamp' : timestamp,
+            'signature' : signature
+        };
+
+        this.logService.info('getCheckoutUrl -  headers.', {headers: headers});
+
+        return  axios.post(full_post_url, request_data, {headers : headers})
+            .then((resp) => {
+                response.result = { checkout_url : resp.data.data.redirect_url };
+
+                this.logService.info('getCheckoutUrl is created.', response.result);
+                return response;
+            })
+            .catch((err) => {
+                this.logService.error('Error occurred in getCheckoutUrl operation.', err);
+                response.errors.exception = "Error occurred in getCheckoutUrl operation.";
+                return response;
+            });
     }
 
 };

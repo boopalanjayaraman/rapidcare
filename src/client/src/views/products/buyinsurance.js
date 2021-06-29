@@ -187,7 +187,7 @@ class BuyInsurance extends Component {
                     <div className="col s12 m8">
                         <label className="pink-text">Instruction #1: </label><label>Nominees for term life and accident insurances are automatically assigned from the insured person's RapydCare profile. </label>
                         <p><label className="pink-text">Instruction #2: </label><label>The KYC documents from the insured person's profile will be automatically used towards this insurance purchase. </label></p>
-                        <label className="pink-text">Instruction #3: </label><label> For any claims disbursement, Insured person's Rapyd Wallet will be used as the first preference.</label>         
+                        <label className="pink-text">Instruction #3: </label><label> For any claims disbursement, Bank / Card information from the Insured person's profile will be used.</label>         
                     </div>
                 </div>
                 <div className="row">
@@ -201,14 +201,14 @@ class BuyInsurance extends Component {
                     </div>
                 </div>
                 
-                <div className="row">
+                {/* <div className="row">
                     <div className="col s12 m8">
                             {
                                 (this.state.insuranceProduct.productType != 'health') &&
                                     <NomineeInfo></NomineeInfo> 
                             }
                         </div>
-                </div>
+                </div> */}
                 <div className="row">
                     <div className="col s12 m8">
                         <button type="button" 
