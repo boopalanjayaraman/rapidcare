@@ -125,19 +125,22 @@ const userSchema = new Schema({
                 type: mongoose.Schema.Types.ObjectId, 
                 ref: "businesses",
             }
-        },
-        nomineeInfo : {
-            userId : {
-                type: mongoose.Schema.Types.ObjectId,
-                ref: "users", 
-            },
-            socialSecurityNumber : {
-                type: mongoose.Schema.Types.ObjectId 
-            },
-            contactPhoneNumber : {
-                type: mongoose.Schema.Types.ObjectId 
-            } 
         }
+    },
+    nomineeInfo : {
+        name: {
+            type: String
+        },
+        userId : {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: "users", 
+        },
+        socialSecurityNumber : {
+            type: String
+        },
+        contactPhoneNumber : {
+            type: String 
+        } 
     },
     pwdResetAttributes: {
         token: {

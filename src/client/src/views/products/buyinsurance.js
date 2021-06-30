@@ -8,6 +8,7 @@ import { Link } from "react-router-dom";
 import HealthDeclarationInfo from "../components/HealthDeclarationInfo";
 import HolderInfo from "../components/HolderInfo";
 import NomineeInfo from "../components/NomineeInfo";
+import { getUserInfoToViewAction } from '../../actions/userActions';
 
 
 class BuyInsurance extends Component {
@@ -35,7 +36,7 @@ class BuyInsurance extends Component {
                 minPrice : 0,
                 currency : "INR",
                 minDuration : "weekly",
-                party : "self",
+                party : "",
                 country : "in",
                 sumAssured : 0,
                 minAge : 18,
@@ -59,15 +60,26 @@ class BuyInsurance extends Component {
 
                 }
             },
-            nomineeInfo : {
-
+            holderInfo : {
+                _id: "",
+                name : "-",
+                mobilePhoneContact : {
+                    number : ""},
+                socialSecurityNumber :   "",
+                nomineeInfo : {
+                    name : "-",
+                    contactPhoneNumber : "-"
+                }
             },
-            errors: {}
+            errors: {},
+            updatedPrice : 0
         };
 
         this.actionParam = '';
 
         this.onGetProduct = this.onGetProduct.bind(this);
+        this.onGetUserInfo = this.onGetUserInfo.bind(this);
+        this.getUserInfo = this.getUserInfo.bind(this);
     }
 
     componentDidMount(){
@@ -94,7 +106,24 @@ class BuyInsurance extends Component {
         this.setState({
             insuranceProduct: product
         }) ; 
+        //// load user (holder info)
+        if(this.state.insuranceProduct.party === 'self'){
+            this.getUserInfo(this.props.auth.user.id); 
+        }
         window.scrollTo(0, 0);
+    }
+
+    onGetUserInfo() {
+        var holderUser = this.props.userReducer.setProfileUser;
+        this.setState({
+            holderInfo  : holderUser
+        });
+    }
+
+    getUserInfo(userId) {
+        if(userId){
+            this.props.getUserInfoToViewAction(userId, this.onGetUserInfo);
+        }
     }
 
     onFullNameChange = e => {
@@ -114,8 +143,9 @@ class BuyInsurance extends Component {
         let chosen_language = localStorage['chosen_language'] ?? 'en'; 
         let fullName = this.state.insuranceProduct.party === 'self'? user.name : this.state.fullName;
         let forSelf = this.state.insuranceProduct.party === 'self';
-        let holderUserId = forSelf ? user.id : "";
+        let holderUserId = forSelf ? user.id : null;
         let sumAssuredText = this.state.insuranceProduct.productType === 'term' ? text.buyinsurance_SumAssured : text.buyinsurance_SumInsured;
+        let price = this.state.updatedPrice == 0 ? this.state.insuranceProduct.minPrice : this.state.updatedPrice;
 
         return(
             <div className="container">
@@ -180,7 +210,10 @@ class BuyInsurance extends Component {
                 
                 <div className="row">
                     <div className="col s12 m8">
-                        <HolderInfo forSelf ={ forSelf } userId = {holderUserId}></HolderInfo>
+                        <HolderInfo forSelf ={ forSelf } 
+                                userId = {holderUserId} 
+                                holderInfo = {this.state.holderInfo} 
+                                onHolderChange = { this.getUserInfo }></HolderInfo>
                     </div>
                 </div>
                 <div className="row">
@@ -200,20 +233,17 @@ class BuyInsurance extends Component {
                         <label className="pink-text">Instruction #4: </label><label>Health declarations are important and will decide the criteria of a successful claim processing. So it is very essential that we get these right. </label>       
                     </div>
                 </div>
-                
-                {/* <div className="row">
+                <div className="row">
                     <div className="col s12 m8">
-                            {
-                                (this.state.insuranceProduct.productType != 'health') &&
-                                    <NomineeInfo></NomineeInfo> 
-                            }
-                        </div>
-                </div> */}
+                        <span className="pink-text" style={{fontWeight: "bold"}}> Calculated Premium / Price : </span>
+                        <span className="black-text" style={{fontWeight: "bold"}}>{ price } { this.state.insuranceProduct.currency } </span>
+                    </div>
+                </div>
                 <div className="row">
                     <div className="col s12 m8">
                         <button type="button" 
                             className="btn btn-large waves-effect waves-light hoverable red accent-3">
-                                Proceed to buy
+                                Proceed
                         </button>
                     </div>
                 </div>
@@ -226,15 +256,17 @@ class BuyInsurance extends Component {
 BuyInsurance.propTypes = {
     auth: PropTypes.object.isRequired,
     getProductAction: PropTypes.func.isRequired,
+    getUserInfoToViewAction : PropTypes.func.isRequired,
     errors: PropTypes.object.isRequired
 };
 
 const mapStateToProps = state => ({  //state --> denotes redux state
   auth: state.auth,
   errors: state.errors,
-  productReducer: state.productReducer
+  productReducer: state.productReducer,
+  userReducer : state.userReducer
 });
 
 export default connect(
     mapStateToProps,
-    { getProductAction })(withRouter(BuyInsurance));
+    { getProductAction, getUserInfoToViewAction })(withRouter(BuyInsurance));

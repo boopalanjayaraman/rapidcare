@@ -13,12 +13,21 @@ class HolderInfo extends Component{
         this.state = {
             age : props.age ?? "",
             photo : "",
-            contactPhoneNumber : props.contactPhoneNumber ?? "",
-            socialSecurityNumber : props.socialSecurityNumber ?? "",
             userId : props.userId ?? "",
             readOnly : props.readOnly ?? false,
             forSelf : props.forSelf ?? false,
-            errors : props.errors ?? {}
+            errors : props.errors ?? {},
+            onHolderChange : props.onHolderChange ?? null,
+            holderInfo : props.holderInfo ?? {
+                name : "-",
+                mobilePhoneContact : {
+                    number : ""},
+                socialSecurityNumber :   "",
+                nomineeInfo : {
+                    name : "-",
+                    contactPhoneNumber : "-"
+                }
+            }
         };
     }
 
@@ -34,11 +43,11 @@ class HolderInfo extends Component{
         }
         if(nextProps){
             this.setState({
-                contactPhoneNumber : nextProps.contactPhoneNumber ?? this.state.contactPhoneNumber,
-                socialSecurityNumber : nextProps.socialSecurityNumber ?? this.state.socialSecurityNumber,
                 userId : nextProps.userId ?? this.state.userId,
                 readOnly : nextProps.readOnly ?? this.state.readOnly,
                 forSelf : nextProps.forSelf ?? this.state.forSelf,
+                onHolderChange: nextProps.onHolderChange ?? this.state.onHolderChange,
+                holderInfo: nextProps.holderInfo ?? this.state.holderInfo,
             });
         }
     }
@@ -46,18 +55,21 @@ class HolderInfo extends Component{
     componentDidMount(){
     }
 
-    onAgeChange = e => {
-        this.setState({age: e.target.value});
-    }
-
     onUserIdChange= e => {
         this.setState({userId: e.target.value});
+    }
+
+    onUserIdEntered = e => {
+        this.setState({userId: e.target.value});
+        if(this.state.onHolderChange){
+            this.state.onHolderChange(e.target.value);
+        }
     }
 
 
     render(){
         const { errors } = this.state;
-
+        let holderInfo = this.state.holderInfo;
         return(
                 <div>
                     <div className="s12">
@@ -73,25 +85,39 @@ class HolderInfo extends Component{
                             id="userId"
                             type="text"
                             onChange = { this.onUserIdChange }
+                            onBlur = { this.onUserIdEntered }
                             disabled = { this.state.forSelf || this.state.readOnly }
                         />
-                        <button 
+                        {/* <button 
                            type="button" 
                            className="btn btn-medium waves-effect waves-light red hoverable accent-3"
                             onClick = { this.onCheckUserClick }>
                                 Check &amp; Fetch Info
-                        </button>
+                        </button> */}
                     </div>
                     <div className="s12">
                         <label> Social Security Number / Aadhar Number </label> 
                         <input
-                            value= { this.state.socialSecurityNumber }
+                            value= { holderInfo.socialSecurityNumber }
                             error={ errors.socialSecurityNumber}
                             id="socialSecurityNumber"
                             type="text"
-                            onChange = { this.onSocialSecurityNumberChange }
-                            disabled = { this.state.readOnly }
+                            disabled = { true }
                         />
+                    </div>
+                    <div className="s12">
+                        <label> Name (as per our records) </label> 
+                        <label className="black-text"> 
+                            { holderInfo.name } </label>
+                        <label> | </label> 
+                        <label> Nominee </label> 
+                        <label> Name </label>
+                        <label className="black-text"> 
+                            { holderInfo.nomineeInfo.name } </label>
+                        <label> | </label> 
+                        <label> Contact Phone Number </label> 
+                        <label className="black-text"> { holderInfo.nomineeInfo.contactPhoneNumber } </label> 
+                         
                     </div>
                     
                 </div>

@@ -370,10 +370,12 @@ class UserService {
             isActive : 1,
             userType : 1,
             profileInfo : 1,
-            mobilePhoneContact,
+            socialSecurityNumber: 1,
+            mobilePhoneContact : 1,
             preferences : 1,
             isLocked: 1,
-            mailconfirmationAttributes: 1
+            mailconfirmationAttributes: 1,
+            nomineeInfo : 1
         };
     }
 
