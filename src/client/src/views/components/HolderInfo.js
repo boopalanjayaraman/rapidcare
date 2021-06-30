@@ -114,9 +114,9 @@ class HolderInfo extends Component{
                         <label> Name </label>
                         <label className="black-text"> 
                             { holderInfo.nomineeInfo.name } </label>
-                        <label> | </label> 
-                        <label> Contact Phone Number </label> 
-                        <label className="black-text"> { holderInfo.nomineeInfo.contactPhoneNumber } </label> 
+                        {/* <label> | </label>  */}
+                        {/* <label> Contact Phone Number </label> 
+                        <label className="black-text"> { holderInfo.nomineeInfo.contactPhoneNumber } </label>  */}
                          
                     </div>
                     

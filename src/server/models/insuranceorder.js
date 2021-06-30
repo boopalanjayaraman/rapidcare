@@ -76,7 +76,12 @@ const insuranceOrderSchema = new Schema({
     },
     paymentStatus : {
         type: String,
-        required: true
+    },
+    paymentCompleteToken : {
+        type: String,
+    },
+    paymentErrorToken : {
+        type: String,
     }
 });
 

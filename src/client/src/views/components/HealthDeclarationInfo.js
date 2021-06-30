@@ -23,6 +23,7 @@ class HealthDeclarationInfo extends Component{
             maxAge : props.maxAge ?? 70,
             rightAge : props.rightAge ?? null,
             ped : props.ped ?? null,
+            ped2 : props.ped2 ?? null,
             smoking : props.smoking ?? null,
             drinking : props.drinking ?? null,
             previouslyInsured : props.previouslyInsured ?? null,
@@ -51,6 +52,10 @@ class HealthDeclarationInfo extends Component{
         this.setState({ ped: e.target.value =='1' });
     }
 
+    onPed2Change = e => {
+        this.setState({ ped2: e.target.value =='1' });
+    }
+
     onRightAgeChange = e => {
         this.setState({ rightAge: e.target.value =='1' });
     }
@@ -74,6 +79,7 @@ class HealthDeclarationInfo extends Component{
 
         let rightAge_value = this.state.rightAge != null ? Boolean(this.state.rightAge) : '';
         let ped_value = this.state.ped != null ? Boolean(this.state.ped) : '';
+        let ped2_value = this.state.ped2 != null ? Boolean(this.state.ped2) : '';
         let smoking_value = this.state.smoking  != null ? Boolean(this.state.smoking) : '';
         let drinking_value = this.state.drinking != null ? Boolean(this.state.drinking) : '';
         let undergoneProcedure_value = this.state.undergoneProcedure != null ? Boolean(this.state.undergoneProcedure) : '';
@@ -107,7 +113,7 @@ class HealthDeclarationInfo extends Component{
                     </div>
                     <div className="s12">
                         <FormControl>
-                        <label>Has the insured been treated in the last 10 years for any conditions like - heart disease, diabetes, liver problems, HIV, cancer, or schizophrenia? </label>
+                        <label>Has the insured been diagnosed for any conditions like - heart disease, liver problems, HIV, cancer, Alzheimer or schizophrenia? </label>
                             <RadioGroup row aria-label= 'ped' value={ ped_value } onChange={ this.onPedChange }>
                                 <FormControlLabel
                                     control={<Radio checked={ped_value == '1'}/>  }
@@ -120,6 +126,25 @@ class HealthDeclarationInfo extends Component{
                                     value = "0" 
                                     label= "no"
                                     key = {'ped_option_no'}
+                                    />
+                            </RadioGroup>
+                        </FormControl>
+                    </div>
+                    <div className="s12">
+                        <FormControl>
+                        <label>Has the insured been treated in the last 10 years for any conditions like - diabetes and hypertension? </label>
+                            <RadioGroup row aria-label= 'ped2' value={ ped2_value } onChange={ this.onPed2Change }>
+                                <FormControlLabel
+                                    control={<Radio checked={ped2_value == '1'}/>  }
+                                    value = "1" 
+                                    label= "yes"
+                                    key = {'ped2_option_yes'}
+                                    />
+                                <FormControlLabel
+                                    control={<Radio checked={ped2_value == '0'}/>  }
+                                    value = "0" 
+                                    label= "no"
+                                    key = {'ped2_option_no'}
                                     />
                             </RadioGroup>
                         </FormControl>

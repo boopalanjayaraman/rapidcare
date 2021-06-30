@@ -246,10 +246,52 @@ class InsuranceService {
         
     }
 
+    //// getInsurancePrice method
+    async getInsurancePrice(data, currentUser) {
+        return 0;
+    }
+
     //// updatePaymentStatus method
     async updatePaymentStatus(data, currentUser) {
-        //TODO: implement this method
-        return "";
+        this.logService.info('entered updatePaymentStatus in insuranceService.', {input: data});
+        let response = {errors: {}, result: null};
+
+        //// get insurance info 
+        const insuranceOrderResponse = await this.getInsuranceInfo({_id: data._id}, currentUser);
+        if(isEmpty(insuranceOrderResponse.result) || !isEmpty(insuranceOrderResponse.errors)){
+            this.logService.info('Given insurance order does not exist.');
+            response.errors.insuranceOrderId = 'Given insurance order does not exist.';
+            return response;
+        }
+        let fetchedInsuranceOrder = insuranceOrderResponse.result;
+
+        let updateInfo = {};
+        
+        if(data.paymentCompleteToken && (data.paymentCompleteToken === fetchedInsuranceOrder.paymentCompleteToken))
+        {
+            updateInfo['$set'] = { paymentStatus : 'success'};
+        }
+        else if(data.paymentErrorToken && (data.paymentErrorToken === fetchedInsuranceOrder.paymentErrorToken))
+        {
+            updateInfo['$set'] = { paymentStatus : 'failure'};
+        }
+        else{
+            response.errors.exception = 'The tokens do not match with the insurance order';
+            return response;
+        }
+        
+        return InsuranceOrderModel.updateOne({_id: data._id}, updateInfo)
+        .then(order => {
+            response.result = { _id: order._id, action: "updated" }; 
+            this.logService.info('the insurance order is updated with payment status.', response.result);
+            //// return result
+            return response;
+        })
+        .catch(err => {
+            this.logService.error('Error occurred.', err);
+            response.errors.exception = "Error occurred. Could not update payment status for unknown reasons.";
+            return response;
+        });
     }
 
     //// getCheckoutUrl method
@@ -257,6 +299,8 @@ class InsuranceService {
 
         let response = {errors: {}, result: null};
 
+
+        //// get the basic configurations
         var http_method = constants.rapydConstants.http_post_method;               
         var checkout_url_path = constants.rapydConstants.http_checkout_url;
         var full_post_url = configuration.rapydConfig.sandbox_base_url + checkout_url_path;
@@ -267,13 +311,30 @@ class InsuranceService {
         var access_key = configuration.rapydConfig.access_key;     
         var secret_key = configuration.rapydConfig.secret_key;  
         var body = '';   
+
+        //// generate unique urls
         var transactionCompletionUniqueId = crypto.randomBytes(16).toString("hex");
         var transactionErrorUniqueId = crypto.randomBytes(16).toString("hex");
-        var transactionCompletionPage = data.insuranceOrderId + "_" + transactionCompletionUniqueId;
+        var transactionCompletionPage = data.insuranceOrderId + "/" + transactionCompletionUniqueId;
         var transactionCompletionUrl = configuration.rapydConfig.completionPage_base_url + "/" + transactionCompletionPage;
-        var transactionErrorPage =  data.insuranceOrderId + "_" + transactionErrorUniqueId;
+        var transactionErrorPage =  data.insuranceOrderId + "/" + transactionErrorUniqueId;
         var errorPage_Url = configuration.rapydConfig.errorPage_base_url + "/" + transactionErrorPage;
 
+        //// update the order with payment tokens for verifying.
+        let updateInfo = {
+            insuranceOrderId: data.insuranceOrderId,
+            transactionCompletionUniqueId: transactionCompletionUniqueId,
+            transactionErrorUniqueId: transactionErrorUniqueId
+        };
+        try{
+            this.updateInsuranceOrderForPaymentTokens(updateInfo);
+        }
+        catch(error){
+            this.logService.error('Error occurred in updating insurance order for payment url tokens.', err);
+        }
+        
+
+        //// form the request body
         var request_data = {
             amount : data.amount,
             complete_payment_url : transactionCompletionUrl,
@@ -295,6 +356,7 @@ class InsuranceService {
 
         this.logService.info('getCheckoutUrl -  request_data.', {request_data: request_data});
 
+        //// generate signature
         body = JSON.stringify(request_data);
         var to_sign = http_method + checkout_url_path + salt + timestamp + access_key + secret_key + body;
 
@@ -311,6 +373,7 @@ class InsuranceService {
 
         this.logService.info('getCheckoutUrl -  headers.', {headers: headers});
 
+        //// post it to rapyd
         return  axios.post(full_post_url, request_data, {headers : headers})
             .then((resp) => {
                 response.result = { checkout_url : resp.data.data.redirect_url };
@@ -323,6 +386,30 @@ class InsuranceService {
                 response.errors.exception = "Error occurred in getCheckoutUrl operation.";
                 return response;
             });
+    }
+
+    //// this is internal method and should not be exposed publicly
+    async updateInsuranceOrderForPaymentTokens(data){
+        this.logService.info('entered updateInsuranceOrderForPaymentTokens in InsuranceService.', {input: data});
+
+        let response = {errors: {}, result: null};
+
+        let updateInfo = {};
+        updateInfo['$set'] = { paymentCompleteToken : data.transactionCompletionUniqueId, 
+                                    paymentErrorToken: data.transactionErrorUniqueId };
+
+        return InsuranceOrderModel.updateOne({_id: data.insuranceOrderId}, updateInfo)
+        .then(order => {
+            response.result = { _id: order._id, action: "updated" }; 
+            this.logService.info('the insurance order is updated with payment tokens.', response.result);
+            //// return result
+            return response;
+        })
+        .catch(err => {
+            this.logService.error('Error occurred.', err);
+            response.errors.exception = "Error occurred. Could not update for unknown reasons.";
+            return response;
+        });
     }
 
 };
