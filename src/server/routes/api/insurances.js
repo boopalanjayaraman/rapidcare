@@ -148,5 +148,33 @@ router.post("/getcheckouturl", passport.authenticate('jwt', {session: false}), a
 });
 
 
+// @route GET api/insurances/getinsuranceprice
+// @desc gets the insurance price based on input factors by invoking a machine learning model and calculating underwriting risk factor
+// @access Public
+router.get("/getinsuranceprice", passport.authenticate('jwt', {session: false}), async (req, res) => {
+    
+    const data = req.body;
+    const currentUser = req.user;
+    
+    logService.info('getinsuranceprice operation is invoked by user.',  { currentUser: currentUser.email , userId: currentUser._id, info: data });
+     
+
+    try {
+        //// call product service
+        const { errors, result } = await insuranceService.getInsurancePrice(data, currentUser);
+        if(!isEmpty(errors)){
+            return res.status(500).json(errors);
+        }
+        else{
+            return res.json(result);
+        } 
+    } catch (error) {
+        const errorMsg = 'Error in getinsuranceprice operation.';
+        logService.error(errorMsg, error);
+        return res.status(500).json( {error: errorMsg} );
+    }
+});
+
+
  
 module.exports = router;

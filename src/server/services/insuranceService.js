@@ -190,11 +190,11 @@ class InsuranceService {
                 userId : data.holderInfo.userId
             },
             healthDeclarationInfo : {
-                rightAge: data.healthDeclarationInfo.rightAge,
+                overweight: data.healthDeclarationInfo.overweight,
                 ped :  data.healthDeclarationInfo.ped,
+                ped2 :  data.healthDeclarationInfo.ped2,
                 smoking :  data.healthDeclarationInfo.smoking,
-                drinking :  data.healthDeclarationInfo.drinking,
-                previouslyInsured :  data.healthDeclarationInfo.previouslyInsured,
+                alcoholic :  data.healthDeclarationInfo.alcoholic,
                 undergoneProcedure :  data.healthDeclarationInfo.undergoneProcedure
             }
         });
@@ -248,7 +248,42 @@ class InsuranceService {
 
     //// getInsurancePrice method
     async getInsurancePrice(data, currentUser) {
-        return 0;
+        
+        this.logService.info('entered getInsurancePrice in insuranceService.', {input: data});
+        let response = {errors: {}, result: null};
+
+        let param = {};
+        param['age'] = data.age ? data.age : 41; //median
+        param['is_overweight'] = data.no_overweight ? (data.no_overweight ==1? 0: 1) : 0;
+        param['has_ped'] = data.ped ? data.ped : 0;
+        param['has_ped2'] = data.ped2 ? data.ped2 : 0;
+        param['is_smoking'] = data.smoking ? data.smoking : 0;
+        param['is_alcoholic'] = data.alcoholic ? data.alcoholic : 0;
+        param['has_undergone_procedure'] = data.undergoneProcedure ? data.undergoneProcedure : 0;
+
+        let basePrice = data.basePrice ? data.basePrice : 0;
+        
+        //// post it to rapyd
+        return  axios.get(configuration.UnderwritingAiUrl, {params: param} )
+            .then((resp) => {
+
+                this.logService.info('risk factor is fetched.', resp.data);
+
+                let risk_factor_resp = JSON.parse(JSON.stringify(resp.data)); //// this is necessary to get it right.
+                response.result = {
+                        risk_factor : risk_factor_resp.risk_factor,
+                        price: basePrice + (basePrice * risk_factor_resp.risk_factor)
+                    };
+
+                this.logService.info('risk factor is fetched and insurance price is calculated.', response.result);
+                return response;
+            })
+            .catch((err) => {
+                this.logService.error('Error occurred in getInsurancePrice operation.', err);
+                response.errors.exception = "Error occurred in getInsurancePrice operation.";
+                return response;
+            });
+
     }
 
     //// updatePaymentStatus method

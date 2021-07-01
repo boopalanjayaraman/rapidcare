@@ -21,11 +21,11 @@ class HealthDeclarationInfo extends Component{
         this.state = {
             minAge : props.minAge ?? 0,
             maxAge : props.maxAge ?? 70,
-            rightAge : props.rightAge ?? null,
+            no_overweight : props.no_overweight ?? null,
             ped : props.ped ?? null,
             ped2 : props.ped2 ?? null,
             smoking : props.smoking ?? null,
-            drinking : props.drinking ?? null,
+            alcoholic : props.alcoholic ?? null,
             previouslyInsured : props.previouslyInsured ?? null,
             undergoneProcedure : props.undergoneProcedure ?? null,
             readOnly : props.readOnly ?? false,
@@ -56,15 +56,15 @@ class HealthDeclarationInfo extends Component{
         this.setState({ ped2: e.target.value =='1' });
     }
 
-    onRightAgeChange = e => {
-        this.setState({ rightAge: e.target.value =='1' });
+    onNoOverweightChange = e => {
+        this.setState({ no_overweight: e.target.value =='1' });
     }
 
     onSmokingChange = e => {
         this.setState({ smoking: e.target.value =='1' });
     }
-    onDrinkingChange = e => {
-        this.setState({ drinking: e.target.value =='1' });
+    onAlcoholicChange = e => {
+        this.setState({ alcoholic: e.target.value =='1' });
     }
     onUndergoneProcedureChange = e => {
         this.setState({ undergoneProcedure: e.target.value =='1' });
@@ -77,11 +77,11 @@ class HealthDeclarationInfo extends Component{
     render(){
         const { errors } = this.state;
 
-        let rightAge_value = this.state.rightAge != null ? Boolean(this.state.rightAge) : '';
+        let no_overweight_value = this.state.no_overweight != null ? Boolean(this.state.no_overweight) : '';
         let ped_value = this.state.ped != null ? Boolean(this.state.ped) : '';
         let ped2_value = this.state.ped2 != null ? Boolean(this.state.ped2) : '';
         let smoking_value = this.state.smoking  != null ? Boolean(this.state.smoking) : '';
-        let drinking_value = this.state.drinking != null ? Boolean(this.state.drinking) : '';
+        let alcoholic_value = this.state.alcoholic != null ? Boolean(this.state.alcoholic) : '';
         let undergoneProcedure_value = this.state.undergoneProcedure != null ? Boolean(this.state.undergoneProcedure) : '';
         let previouslyInsured_value = this.state.previouslyInsured != null ? Boolean(this.state.previouslyInsured) : '';
 
@@ -95,18 +95,18 @@ class HealthDeclarationInfo extends Component{
                     <div className="s12">
                         <FormControl>
                             <label>Is the insured between the ages of {this.state.minAge} and {this.state.maxAge}, with no serious weight issues? </label>
-                            <RadioGroup row  aria-label= 'rightAge' value={ rightAge_value }  onChange={ this.onRightAgeChange } >
+                            <RadioGroup row  aria-label= 'overweight' value={ no_overweight_value }  onChange={ this.onNoOverweightChange } >
                                 <FormControlLabel
-                                    control={<Radio checked={rightAge_value == '1'}/>  }
+                                    control={<Radio checked={no_overweight_value == '1'}/>  }
                                     value = "1" 
                                     label= "yes"
-                                    key = {'rightAge_option_yes'}
+                                    key = {'no_overweight_option_yes'}
                                     />
                                 <FormControlLabel
-                                    control={<Radio checked={rightAge_value == '0'}/>  }
+                                    control={<Radio checked={no_overweight_value == '0'}/>  }
                                     value = "0" 
                                     label= "no"
-                                    key = {'rightAge_option_no'}
+                                    key = {'no_overweight_option_no'}
                                     />
                             </RadioGroup>
                         </FormControl>
@@ -171,18 +171,18 @@ class HealthDeclarationInfo extends Component{
                     <div className="s12">
                         <FormControl>
                         <label>Has the insured been treated for being alcoholic? </label>
-                            <RadioGroup row aria-label= 'drinking' value={ drinking_value } onChange={ this.onDrinkingChange }>
+                            <RadioGroup row aria-label= 'alcoholic' value={ alcoholic_value } onChange={ this.onAlcoholicChange }>
                                 <FormControlLabel
-                                    control={<Radio checked={drinking_value == '1'}/>  }
+                                    control={<Radio checked={alcoholic_value == '1'}/>  }
                                     value = "1" 
                                     label= "yes"
-                                    key = {'drinking_option_yes'}
+                                    key = {'alcoholic_option_yes'}
                                     />
                                 <FormControlLabel
-                                    control={<Radio checked={drinking_value == '0'}/>  }
+                                    control={<Radio checked={alcoholic_value == '0'}/>  }
                                     value = "0" 
                                     label= "no"
-                                    key = {'drinking_option_no'}
+                                    key = {'alcoholic_option_no'}
                                     />
                             </RadioGroup>
                         </FormControl>

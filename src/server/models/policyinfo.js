@@ -37,19 +37,22 @@ const policyInfoSchema = new Schema({
         }
     },
     healthDeclarationInfo : {
-        rightAge : {
+        age : {
+            type: Number
+        },
+        overweight : {
             type: Boolean
         },
         ped : {
             type: Boolean
         },
+        ped2 : {
+            type: Boolean
+        },
         smoking : {
             type: Boolean
         },
-        drinking : {
-            type: Boolean
-        },
-        previouslyInsured : {
+        alcoholic : {
             type: Boolean
         },
         undergoneProcedure : {
