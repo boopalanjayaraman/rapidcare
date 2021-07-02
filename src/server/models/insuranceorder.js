@@ -29,9 +29,12 @@ const insuranceOrderSchema = new Schema({
         type : Number,
         required: true
     },
-    policyCost: {
+    policyPrice: {
         type: Number,
         required: true
+    },
+    riskFactor: {
+        type: Number,
     },
     policyInfo: {
         type:  mongoose.Schema.Types.ObjectId,
@@ -43,15 +46,17 @@ const insuranceOrderSchema = new Schema({
         required: true
     },
     currentStartDate: {
-        type: Date,
-        default: Date.now,
+        type: Date
     },
     currentEndDate : {
-        type: Date,
-        default: Date.now,
+        type: Date
     },
     isRenewed : {
         type : Boolean
+    },
+    autoRenew : {
+        type : Boolean,
+        default: false,
     },
     periodDates : [
         {

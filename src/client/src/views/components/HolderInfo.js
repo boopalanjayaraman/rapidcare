@@ -19,9 +19,9 @@ class HolderInfo extends Component{
             errors : props.errors ?? {},
             onHolderChange : props.onHolderChange ?? null,
             holderInfo : props.holderInfo ?? {
+                _id : "",
                 name : "-",
-                mobilePhoneContact : {
-                    number : ""},
+                dateOfBirth : Date.now(),
                 socialSecurityNumber :   "",
                 nomineeInfo : {
                     name : "-",
@@ -70,6 +70,9 @@ class HolderInfo extends Component{
     render(){
         const { errors } = this.state;
         let holderInfo = this.state.holderInfo;
+
+        let dobText = this.state.holderInfo._id === "" ? "" : dateFormat(this.state.holderInfo.dateOfBirth, constants.dateDisplayFormat);
+
         return(
                 <div>
                     <div className="s12">
@@ -110,13 +113,14 @@ class HolderInfo extends Component{
                         <label className="black-text"> 
                             { holderInfo.name } </label>
                         <label> | </label> 
+                        <label> Date of Birth </label> 
+                        <label className="black-text"> { dobText } </label> 
+                        <label> | </label> 
                         <label> Nominee </label> 
                         <label> Name </label>
                         <label className="black-text"> 
                             { holderInfo.nomineeInfo.name } </label>
-                        {/* <label> | </label>  */}
-                        {/* <label> Contact Phone Number </label> 
-                        <label className="black-text"> { holderInfo.nomineeInfo.contactPhoneNumber } </label>  */}
+                        
                          
                     </div>
                     

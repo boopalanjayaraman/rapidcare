@@ -37,6 +37,12 @@ const userSchema = new Schema({
     socialSecurityNumber : {
         type: String
     },
+    dateOfBirth : {
+        type : Date
+    },
+    dateOfBirthNumber : {
+        type : Number ////yyyymmdd
+    },
     accountName: {
         type: String,
         default: ''

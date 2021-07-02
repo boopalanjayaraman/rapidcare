@@ -68,9 +68,9 @@ const englishText = {
     browse_for : "For",
     //minDuration
     minDuration : {
-        daily : "Daily",
-        weekly : "Weekly",
-        monthly : "Monthly"
+        daily : "Per Day",
+        weekly : "Per Week",
+        monthly : "Per Month"
     },
     //buyinsurance
     buyinsurance_Back : "Back to Browse Products",

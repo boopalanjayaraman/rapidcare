@@ -153,7 +153,7 @@ router.post("/getcheckouturl", passport.authenticate('jwt', {session: false}), a
 // @access Public
 router.get("/getinsuranceprice", passport.authenticate('jwt', {session: false}), async (req, res) => {
     
-    const data = req.body;
+    const data = req.query;
     const currentUser = req.user;
     
     logService.info('getinsuranceprice operation is invoked by user.',  { currentUser: currentUser.email , userId: currentUser._id, info: data });

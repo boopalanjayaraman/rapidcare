@@ -184,10 +184,9 @@ class InsuranceService {
             friendlyId: friendlyIdPolicyInfo,
             holderInfo : {
                 name : data.holderInfo.name,
-                age: data.holderInfo.age,
+                dateOfBirth : data.holderInfo.dateOfBirth,
                 socialSecurityNumber : data.holderInfo.socialSecurityNumber,
-                contactPhoneNumber: data.holderInfo.contactPhoneNumber,
-                userId : data.holderInfo.userId
+                userId : data.holderInfo._id
             },
             healthDeclarationInfo : {
                 overweight: data.healthDeclarationInfo.overweight,
@@ -211,11 +210,13 @@ class InsuranceService {
                     holderId : data.holderId,
                     policyProduct: data.policyProduct,
                     sumAssured : data.sumAssured,
-                    policyCost: data.policyCost,
+                    policyPrice: data.policyPrice,
+                    riskFactor : data.riskFactor,
                     premiumInterval: data.premiumInterval,
                     currentStartDate: data.currentStartDate,
                     currentEndDate: data.currentEndDate,
                     isRenewed: data.isRenewed,
+                    autoRenew: data.autoRenew,
                     status: "new",
                     paymentStatus: "pending",
                     policyInfo: policyInfo._id // generated id.
@@ -253,15 +254,15 @@ class InsuranceService {
         let response = {errors: {}, result: null};
 
         let param = {};
-        param['age'] = data.age ? data.age : 41; //median
-        param['is_overweight'] = data.no_overweight ? (data.no_overweight ==1? 0: 1) : 0;
-        param['has_ped'] = data.ped ? data.ped : 0;
-        param['has_ped2'] = data.ped2 ? data.ped2 : 0;
-        param['is_smoking'] = data.smoking ? data.smoking : 0;
-        param['is_alcoholic'] = data.alcoholic ? data.alcoholic : 0;
-        param['has_undergone_procedure'] = data.undergoneProcedure ? data.undergoneProcedure : 0;
+        param['age'] = data.age ?  Number(data.age) : 41; //median
+        param['is_overweight'] = data.no_overweight ? (Number(data.no_overweight) ==1? 0: 1) : 0;
+        param['has_ped'] = data.ped ? Number(data.ped) : 0;
+        param['has_ped2'] = data.ped2 ? Number(data.ped2) : 0;
+        param['is_smoking'] = data.smoking ? Number(data.smoking) : 0;
+        param['is_alcoholic'] = data.alcoholic ? Number(data.alcoholic) : 0;
+        param['has_undergone_procedure'] = data.undergoneProcedure ? Number(data.undergoneProcedure) : 0;
 
-        let basePrice = data.basePrice ? data.basePrice : 0;
+        let basePrice = data.basePrice ? Number(data.basePrice) : 0;
         
         //// post it to rapyd
         return  axios.get(configuration.UnderwritingAiUrl, {params: param} )

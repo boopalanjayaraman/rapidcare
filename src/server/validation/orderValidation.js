@@ -48,22 +48,23 @@ function validateBuyInsurance(data, currentUser){
 
     // for now no validations
     let sumAssured = isEmpty(data.sumAssured)? "" : data.sumAssured;
-    let policyCost = isEmpty(data.policyCost)? "" : data.policyCost;
+    let policyPrice = isEmpty(data.policyPrice)? "" : data.policyPrice;
     let premiumInterval = isEmpty(data.premiumInterval)? "" : data.premiumInterval;
     let currentStartDate = isEmpty(data.currentStartDate)? "" : data.currentStartDate;
     let currentEndDate = isEmpty(data.currentEndDate)? "" : data.currentEndDate;
     let holderInfo = isEmpty(data.holderInfo)? "" : data.holderInfo;
     let healthDeclarationInfo = isEmpty(data.healthDeclarationInfo)? "" : data.healthDeclarationInfo;
-    let socialSecurityNumber = isEmpty(data.holder.socialSecurityNumber)? "" : data.holder.socialSecurityNumber;
-    let holderId = isEmpty(data.holder.userId)? "" : data.holder.userId;
+    let socialSecurityNumber = isEmpty(data.holderInfo.socialSecurityNumber)? "" : data.holderInfo.socialSecurityNumber;
+    let holderId = isEmpty(data.holderInfo._id)? "" : data.holderInfo._id;
+    let fullName = isEmpty(data.holderInfo.name)? "" : data.holderInfo.name;
 
     //// perform required field validations
     if(Validator.isEmpty(sumAssured)){
         errors.exception = "sumAssured field is required for buying an insurance.";
     }
 
-    if(Validator.isEmpty(policyCost)){
-        errors.exception = "policyCost field is required for buying an insurance.";
+    if(Validator.isEmpty(policyPrice)){
+        errors.exception = "policyPrice is required for buying an insurance.";
     }
 
     if(Validator.isEmpty(premiumInterval)){
@@ -93,6 +94,20 @@ function validateBuyInsurance(data, currentUser){
 
     if(Validator.isEmpty(holderId)){
         errors.exception = "holderId field is required for buying an insurance.";
+    }
+
+    if(Validator.isEmpty(fullName)){
+        errors.fullName = "Name field is required.";
+    }
+
+    if(data.healthDeclarationInfo.overweight == null
+        || data.healthDeclarationInfo.ped == null
+        || data.healthDeclarationInfo.ped2 == null
+        || data.healthDeclarationInfo.smoking == null
+        || data.healthDeclarationInfo.alcoholic == null
+        || data.healthDeclarationInfo.undergoneProcedure == null)
+    {
+        errors.healthDeclaration = "Health Declarations are required.";
     }
 
     return {

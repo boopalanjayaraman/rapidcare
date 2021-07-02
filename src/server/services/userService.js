@@ -25,6 +25,7 @@ const moment = require("moment");
 const EmailService = require("./emailService");
 const LogService = require("./logService");
 const IdCounterService = require("./idCounterService");
+const { SSL_OP_NO_TLSv1_1 } = require("constants");
 
 const Password_Allowed_Attempts = 6;
 
@@ -375,7 +376,9 @@ class UserService {
             preferences : 1,
             isLocked: 1,
             mailconfirmationAttributes: 1,
-            nomineeInfo : 1
+            nomineeInfo : 1,
+            dateOfBirth : 1,
+            dateOfBirthNumber : 1
         };
     }
 
