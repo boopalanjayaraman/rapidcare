@@ -36,6 +36,12 @@ const insuranceOrderSchema = new Schema({
     riskFactor: {
         type: Number,
     },
+    country: { //// for quick access, this can be accessed by policy product too.
+        type: String,
+    },
+    currency: { //// for quick access, this can be accessed by policy product too.
+        type: String,
+    },
     policyInfo: {
         type:  mongoose.Schema.Types.ObjectId,
         ref: "policyinfos",

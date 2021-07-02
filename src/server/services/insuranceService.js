@@ -207,7 +207,7 @@ class InsuranceService {
                     ownerId: currentUser.id.toString(),
                     friendlyId: friendlyId,
                     createdDate: Date.now(),
-                    holderId : data.holderId,
+                    holderId : data.holderInfo._id,
                     policyProduct: data.policyProduct,
                     sumAssured : data.sumAssured,
                     policyPrice: data.policyPrice,
@@ -217,6 +217,8 @@ class InsuranceService {
                     currentEndDate: data.currentEndDate,
                     isRenewed: data.isRenewed,
                     autoRenew: data.autoRenew,
+                    country: data.country,
+                    currency: data.currency,
                     status: "new",
                     paymentStatus: "pending",
                     policyInfo: policyInfo._id // generated id.
@@ -225,7 +227,10 @@ class InsuranceService {
                 //// save the newInsuranceOrder details to db
                 return newInsuranceOrder.save()
                 .then(insurance => {
-                    response.result = { _id: insurance._id, action: "created" };
+                    response.result = { _id: insurance._id, action: "created", 
+                                        insuranceData : insurance,
+                                        policyInfoData : policyInfo
+                                     };
 
                     //// async - TODO: mail the owner confirmation.
                     this.logService.info('new insurance order is created.', response.result);

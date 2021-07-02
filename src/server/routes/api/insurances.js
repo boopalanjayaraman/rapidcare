@@ -16,7 +16,7 @@ let logService = Container.get(LogService);
 // @route GET api/insurances/buyinsurance
 // @desc buys the insurance (subject to payment) - puts in pending status.
 // @access Public
-router.get("/buyinsurance",passport.authenticate('jwt', {session: false}), async (req, res) => {
+router.post("/buyinsurance",passport.authenticate('jwt', {session: false}), async (req, res) => {
     
     const data = req.body;
     const currentUser = req.user;
@@ -98,7 +98,7 @@ router.get("/getinsurances", passport.authenticate('jwt', {session: false}), asy
 // @access Public
 router.post("/updatepaymentstatus", passport.authenticate('jwt', {session: false}), async (req, res) => {
     
-    const data = req.query;
+    const data = req.body;
     const currentUser = req.user;
     
     logService.info('updatepaymentstatus operation is invoked by user.',  { currentUser: currentUser.email , userId: currentUser._id, info: data });

@@ -47,13 +47,13 @@ function validateBuyInsurance(data, currentUser){
     let errors = {};
 
     // for now no validations
-    let sumAssured = isEmpty(data.sumAssured)? "" : data.sumAssured;
-    let policyPrice = isEmpty(data.policyPrice)? "" : data.policyPrice;
+    let sumAssured = isEmpty(data.sumAssured)? "" : String(data.sumAssured);
+    let policyPrice = isEmpty(data.policyPrice)? "" : String(data.policyPrice);
     let premiumInterval = isEmpty(data.premiumInterval)? "" : data.premiumInterval;
     let currentStartDate = isEmpty(data.currentStartDate)? "" : data.currentStartDate;
     let currentEndDate = isEmpty(data.currentEndDate)? "" : data.currentEndDate;
-    let holderInfo = isEmpty(data.holderInfo)? "" : data.holderInfo;
-    let healthDeclarationInfo = isEmpty(data.healthDeclarationInfo)? "" : data.healthDeclarationInfo;
+    //let holderInfo = isEmpty(data.holderInfo)? "" : data.holderInfo;
+    //let healthDeclarationInfo = isEmpty(data.healthDeclarationInfo)? "" : data.healthDeclarationInfo;
     let socialSecurityNumber = isEmpty(data.holderInfo.socialSecurityNumber)? "" : data.holderInfo.socialSecurityNumber;
     let holderId = isEmpty(data.holderInfo._id)? "" : data.holderInfo._id;
     let fullName = isEmpty(data.holderInfo.name)? "" : data.holderInfo.name;
@@ -80,11 +80,11 @@ function validateBuyInsurance(data, currentUser){
     }
 
     
-    if(Validator.isEmpty(holderInfo)){
+    if(isEmpty(data.holderInfo)){
         errors.exception = "holderInfo field is required for buying an insurance.";
     }
 
-    if(Validator.isEmpty(healthDeclarationInfo)){
+    if(isEmpty(data.healthDeclarationInfo)){
         errors.exception = "healthDeclarationInfo field is required for buying an insurance.";
     }
 

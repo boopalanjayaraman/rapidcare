@@ -1,5 +1,5 @@
 import axios from "axios";
-import { GET_ERRORS, SET_INSURANCES, SET_INSURANCE_INFO, SET_INSURANCE_PRICE, SET_CHECKOUT_URL } from "./types";
+import { GET_ERRORS, SET_INSURANCES, SET_INSURANCE_INFO, SET_INSURANCE_PRICE, SET_CHECKOUT_URL, SET_BOUGHT_INSURANCE } from "./types";
 
 
 
@@ -109,9 +109,11 @@ export const setInsuranceCheckoutUrl = (insuranceCheckout) => {
 export const buyInsuranceAction = (data, callback) => dispatch => {
 
     axios
-    .post("/api/insurances/buyInsurance", data)
+    .post("/api/insurances/buyinsurance", data)
     .then(res => {
         const insuranceRes  = res.data;
+        dispatch(setBoughtInsurance(insuranceRes)); 
+        //// insuranceData, policyInfoData are in two different properties in this response
         if(callback){
             callback();
         }
@@ -120,6 +122,32 @@ export const buyInsuranceAction = (data, callback) => dispatch => {
         dispatch(publishError(err));
     });
 };
+
+//// set currently bought insurance object for view  
+export const setBoughtInsurance = (insuranceRes) => {
+    return {
+            type: SET_BOUGHT_INSURANCE,
+            payload: insuranceRes 
+        };
+};
+
+
+export const updatePaymentStatusAction = (data, callback) => dispatch => {
+
+    axios
+    .post("/api/insurances/updatepaymentstatus", data)
+    .then(res => {
+        const statusRes  = res.data;
+        if(callback){
+            callback(statusRes);
+        }
+    })
+    .catch(err => {
+        dispatch(publishError(err));
+    });
+};
+ 
+
 
 //// act on error
 export const publishError = (err) => {

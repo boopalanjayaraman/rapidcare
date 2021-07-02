@@ -76,6 +76,8 @@ class BuyInsurance extends Component {
         this.onGetUserInfo = this.onGetUserInfo.bind(this);
         this.getUserInfo = this.getUserInfo.bind(this);
         this.onGetInsurancePrice = this.onGetInsurancePrice.bind(this);
+        this.onInsuranceOrderCompleted = this.onInsuranceOrderCompleted.bind(this);
+        this.onCheckoutUrlReceived = this.onCheckoutUrlReceived.bind(this);
     }
 
     componentDidMount(){
@@ -142,7 +144,8 @@ class BuyInsurance extends Component {
         this.setState({ autoRenew : e.target.checked });
     }
 
-    onProceedClick = async e=> {
+    onProceedClick = e=> {
+        //// create the insurance order
         let data = {
             holderInfo : this.state.holderInfo,
             healthDeclarationInfo : this.state.healthDeclarationInfo,
@@ -152,9 +155,40 @@ class BuyInsurance extends Component {
             premiumInterval : this.state.insuranceProduct.minDuration,
             currentStartDate : this.state.currentStartDate,
             currentEndDate : this.state.currentEndDate,
-            autoRenew : this.state.autoRenew
+            autoRenew : this.state.autoRenew,
+            currency : this.state.insuranceProduct.currency,
+            country : localStorage['chosen_country']
         };
-        await this.props.buyInsuranceAction(data);
+        this.props.buyInsuranceAction(data, this.onInsuranceOrderCompleted);
+    }
+
+    onInsuranceOrderCompleted(){
+        try{
+            //// get the insurance order
+            let bought_insurance = this.props.insuranceReducer.setBoughtInsurance;
+            //// get the checkout_url
+            let checkout_data = {
+                insuranceOrderId : bought_insurance._id,
+                amount : Number(this.state.updatedPrice),
+                country : bought_insurance.insuranceData.country.toUpperCase(),
+                currency : bought_insurance.insuranceData.currency.toUpperCase(),
+                referenceId: bought_insurance.friendlyId,
+            };
+            this.props.getInsuranceCheckoutUrlAction(checkout_data, this.onCheckoutUrlReceived);
+        }catch(err){
+            this.setState({ errors: { exception : "Error in onInsuranceOrderCompleted." + err } });
+        }
+    }
+
+    onCheckoutUrlReceived(){
+        try{
+            //// redirect to the checkout url
+            let checkout_url_data = this.props.insuranceReducer.setCheckoutUrl;
+            //// redirect
+            window.location.href = checkout_url_data.checkout_url;
+        }catch(err){
+            this.setState({ errors: { exception : "Error in onCheckoutUrlReceived." + err } });
+        }
     }
 
     onHealthDeclarationCompleted = e => {

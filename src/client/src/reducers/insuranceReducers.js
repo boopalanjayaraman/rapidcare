@@ -1,10 +1,11 @@
-import { SET_INSURANCES, SET_INSURANCE_INFO, SET_INSURANCE_PRICE, SET_CHECKOUT_URL } from '../actions/types';
+import { SET_INSURANCES, SET_INSURANCE_INFO, SET_INSURANCE_PRICE, SET_CHECKOUT_URL, SET_BOUGHT_INSURANCE } from '../actions/types';
 
 const initialState = {
     setInsurances: [],
     setInsuranceInfo: {},
     setInsurancePrice: {},
     setCheckoutUrl: {},
+    setBoughtInsurance : {},
 };
 
 function insuranceReducers(state = initialState, action) {
@@ -28,6 +29,11 @@ function insuranceReducers(state = initialState, action) {
             return {
                 ...state,
                 setCheckoutUrl: action.payload,
+            };
+        case SET_BOUGHT_INSURANCE:
+            return {
+                ...state,
+                setBoughtInsurance: action.payload,
             };
         default:
             return state;
