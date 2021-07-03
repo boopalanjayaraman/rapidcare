@@ -310,7 +310,16 @@ class InsuranceService {
         
         if(data.paymentCompleteToken && (data.paymentCompleteToken === fetchedInsuranceOrder.paymentCompleteToken))
         {
-            updateInfo['$set'] = { paymentStatus : 'success'};
+            //// success flow.
+            //// Primary account is for claim pool and other things mainly. The flat Service fee of the business is being collected into a separate wallet
+            await this.collectInsuranceServiceFee(insuranceOrderResponse.result, currentUser);
+
+            //// collect fee into company service fee wallet.
+            updateInfo['$set'] = { paymentStatus : 'success', 
+                                    status : 'active', 
+                                    sumClaimed : 0.0, 
+                                    feeCollected : true
+                                };
         }
         else if(data.paymentErrorToken && (data.paymentErrorToken === fetchedInsuranceOrder.paymentErrorToken))
         {
@@ -333,6 +342,141 @@ class InsuranceService {
             response.errors.exception = "Error occurred. Could not update payment status for unknown reasons.";
             return response;
         });
+    }
+
+    //// this is internal method and should not be exposed publicly
+    async collectInsuranceServiceFee(data, currentUser) {
+
+        this.logService.info('entered collectInsuranceServiceFee in insuranceService.', {input: data});
+
+        let response = {errors: {}, result: null};
+
+        if(data.feeCollected !== true){
+
+            //// get the basic configurations
+            var http_method = constants.rapydConstants.http_post_method;               
+            var account_transfer_url_path = constants.rapydConstants.http_account_transfer_url;
+            var full_post_url = configuration.rapydConfig.sandbox_base_url + account_transfer_url_path;
+
+            var salt =  crypto.randomBytes(12).toString("hex");   
+            var timestamp = (Math.floor(new Date().getTime() / 1000) - 10).toString();
+
+            var access_key = configuration.rapydConfig.access_key;     
+            var secret_key = configuration.rapydConfig.secret_key;  
+            var body = '';  
+
+            let service_fee = (data.policyPrice * constants.rapydConstants.service_fee).toFixed(2);
+
+            //// form the request body
+            var request_data = {
+                amount : service_fee,
+                currency : data.currency ? data.currency.toUpperCase() : "USD",
+                source_ewallet : configuration.rapydConfig.primary_account_wallet,
+                destination_ewallet : configuration.rapydConfig.service_fee_wallet
+            };
+
+            this.logService.info('account transfer -  request_data.', {request_data: request_data});
+
+            //// generate signature
+            body = JSON.stringify(request_data);
+            var to_sign = http_method + account_transfer_url_path + salt + timestamp + access_key + secret_key + body;
+
+            var signature = CryptoJS.enc.Hex.stringify(CryptoJS.HmacSHA256(to_sign, secret_key));
+            signature = CryptoJS.enc.Base64.stringify(CryptoJS.enc.Utf8.parse(signature));
+
+            const headers = {
+                'content-Type': 'application/json',
+                'access_key' : access_key,
+                'salt' : salt,
+                'timestamp' : timestamp,
+                'signature' : signature,
+                'idempotency' : 'ser_fee_' + data._id
+            };
+
+            this.logService.info('account transfer -  headers.', {headers: headers});
+
+            //// post it to rapyd
+            return  axios.post(full_post_url, request_data, {headers : headers})
+                .then(async (resp) => {
+                    response.result = { transaction_id : resp.data.data.id };
+
+                    this.logService.info('account transfer -  response.', {resp: resp.data});
+                    this.logService.info('initiating account transer accept response.');
+
+                    //// accept the transfer with the id.
+                    await this.acceptInternalTransfer(response.result, currentUser);
+
+                    this.logService.info('account transfer is done.', response.result);
+                    return response;
+                })
+                .catch((err) => {
+                    this.logService.error('Error occurred in collectInsuranceServiceFee operation.', err);
+                    response.errors.exception = "Error occurred in collectInsuranceServiceFee operation.";
+                    return response;
+                });
+        }
+        else{
+            this.logService.info('Service fee has been already collected. And hence skipping this transaction.');
+        }
+    }
+
+    async acceptInternalTransfer(data, currentUser) {
+
+        this.logService.info('entered acceptInternalTransfer in insuranceService.', {input: data});
+
+        let response = {errors: {}, result: null};
+
+        //// get the basic configurations
+        var http_method = constants.rapydConstants.http_post_method;               
+        var account_transfer_response_url_path = constants.rapydConstants.http_account_transfer_response_url;
+        var full_post_url = configuration.rapydConfig.sandbox_base_url + account_transfer_response_url_path;
+
+        var salt =  crypto.randomBytes(12).toString("hex");   
+        var timestamp = (Math.floor(new Date().getTime() / 1000) - 10).toString();
+
+        var access_key = configuration.rapydConfig.access_key;     
+        var secret_key = configuration.rapydConfig.secret_key;  
+        var body = '';  
+
+        //// form the request body
+        var request_data = {
+            id : data.transaction_id,
+            status : "accept"
+        };
+
+        this.logService.info('account transfer - accept response -  request_data.', {request_data: request_data});
+
+        //// generate signature
+        body = JSON.stringify(request_data);
+        var to_sign = http_method + account_transfer_response_url_path + salt + timestamp + access_key + secret_key + body;
+
+        var signature = CryptoJS.enc.Hex.stringify(CryptoJS.HmacSHA256(to_sign, secret_key));
+        signature = CryptoJS.enc.Base64.stringify(CryptoJS.enc.Utf8.parse(signature));
+
+        const headers = {
+            'content-Type': 'application/json',
+            'access_key' : access_key,
+            'salt' : salt,
+            'timestamp' : timestamp,
+            'signature' : signature
+        };
+
+        this.logService.info('account transfer accept response -  headers.', {headers: headers});
+
+        //// post it to rapyd
+        return  axios.post(full_post_url, request_data, {headers : headers})
+            .then((resp) => {
+                response.result = { status: resp.status, transaction_data : resp.data.data };
+
+                this.logService.info('account transfer accepting response is done.', response.result);
+                return response;
+            })
+            .catch((err) => {
+                this.logService.error('Error occurred in acceptInternalTransfer operation.', err);
+                response.errors.exception = "Error occurred in acceptInternalTransfer operation.";
+                return response;
+            });
+        
     }
 
     //// getCheckoutUrl method

@@ -29,9 +29,15 @@ const insuranceOrderSchema = new Schema({
         type : Number,
         required: true
     },
+    sumClaimed : {
+        type : Number
+    },
     policyPrice: {
         type: Number,
         required: true
+    },
+    feeCollected : {
+        type : Boolean
     },
     riskFactor: {
         type: Number,

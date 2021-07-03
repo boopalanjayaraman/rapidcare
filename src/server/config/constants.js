@@ -18,6 +18,9 @@ module.exports = {
         http_get_method : 'get',
         http_post_method : 'post',
         http_checkout_url : '/v1/checkout',
+        http_account_transfer_url : '/v1/account/transfer',
+        http_account_transfer_response_url : '/v1/account/transfer/response',
+        service_fee : 0.25,
         paymentTypeCategories : {
             us : [
                 "card", "bank_transfer",
