@@ -157,7 +157,7 @@ class InsuranceService {
     //// buyInsurance method
     async buyInsurance(data, currentUser) {
 
-        this.logService.info('entered buyInsurance in InsuranceService.', {title: data.title});
+        this.logService.info('entered buyInsurance in InsuranceService.', {data: data});
         //// perform form validation
         let { errors, isValid } = validateBuyInsurance(data);
         let response = {errors, result: null};
@@ -167,7 +167,7 @@ class InsuranceService {
         }
 
         this.logService.info('primary validations are done.');
-        //// check opportunity type and perform validations & create accordingly
+        //// check and perform validations & create accordingly
 
         let friendlyId = await this.idCounterService.getNewId(constants.idCounter_insuranceorders);
         if(friendlyId == -1){

@@ -15,8 +15,7 @@ const { validateUpdateUserInput,
         validateGetUsers, 
         validateGetUsersPermissions,  
         validateChangePassword, 
-        validateForgotPassword,
-        validateCreateBeneficiary } = require("../validation/userValidation");
+        validateForgotPassword } = require("../validation/userValidation");
 
 const isEmpty = require("is-empty");
 const crypto = require("crypto");
@@ -26,7 +25,7 @@ const moment = require("moment");
 const EmailService = require("./emailService");
 const LogService = require("./logService");
 const IdCounterService = require("./idCounterService");
-const { SSL_OP_NO_TLSv1_1 } = require("constants");
+const PaymentMethodService = require("./paymentMethodService");
 
 
 const CryptoJS = require("crypto-js");
@@ -41,6 +40,7 @@ class UserService {
         this.emailService = container.get(EmailService);
         this.logService = container.get(LogService);
         this.idCounterService = container.get(IdCounterService);
+        this.paymentMethodService = container.get(PaymentMethodService);
 
         this.notifyUserLocked = this.notifyUserLocked.bind(this);
         this.notifyUserUnLocked = this.notifyUserUnLocked.bind(this);
@@ -786,13 +786,21 @@ class UserService {
         if(userData.profileInfo.zipcode !== undefined){
             updateInfo['profileInfo.zipcode'] = userData.profileInfo.zipcode;
         }
-        if(userData.profileInfo.licenseInfo !== undefined){
-            updateInfo['profileInfo.licenseInfo.id'] = userData.profileInfo.licenseInfo.id;
-        }
         if(userData.profileInfo.photoIdentityInfo !== undefined){
             updateInfo['profileInfo.photoIdentityInfo.id'] = userData.profileInfo.photoIdentityInfo.id;
             updateInfo['profileInfo.photoIdentityInfo.imageDocumentId'] = userData.profileInfo.photoIdentityInfo.imageDocumentId;
             updateInfo['profileInfo.photoIdentityInfo.type'] = userData.profileInfo.photoIdentityInfo.type;
+        }
+        if(userData.profileInfo.medicalLicenseInfo !== undefined){
+            updateInfo['profileInfo.medicalLicenseInfo.id'] = userData.profileInfo.medicalLicenseInfo.id;
+            updateInfo['profileInfo.medicalLicenseInfo.imageDocumentId'] = userData.profileInfo.medicalLicenseInfo.imageDocumentId;
+            updateInfo['profileInfo.medicalLicenseInfo.type'] = userData.profileInfo.medicalLicenseInfo.type;
+        }
+        if(userData.profileInfo.businessInfo !== undefined){
+            updateInfo['profileInfo.businessInfo'] = userData.profileInfo.businessInfo;
+        }
+        if(userData.paymentMethodInfo !== undefined){
+            updateInfo['paymentMethodInfo'] = userData.paymentMethodInfo.id;
         }
         return updateInfo;
     }
@@ -930,84 +938,109 @@ class UserService {
             });
     }
 
-    //// create rapyd beneficiary method
-    async createBeneficiary(data, currentUser){
-        this.logService.info('entered createBeneficiary in userService.', {input: data});
+    //// getmypaymentinfo method
+    async getMyPaymentInfo(userInfo, currentUser){
 
-        let { errors, isValid } = validateCreateBeneficiary(data);
-        let response = {errors, result: null};
-        //// if validation failed, send back the errors to front end.
-        if(!isValid){
+        this.logService.info('UserService - entered getMyPaymentInfo operation', { data: userInfo, currentUserId : currentUser._id });
+
+        let response = { errors : {}, result : null};
+        if(userInfo._id !== currentUser._id){
+            response.errors.exception = "Permission denied. User Id is not matching with the current user.";
+            this.logService.error('Permission denied. User Id is not matching with the current user.');
             return response;
         }
-
-        //// get the basic configurations
-        let http_method = constants.rapydConstants.http_post_method;               
-        let create_beneficiary_url_path = constants.rapydConstants.http_create_beneficiary_url;
-        let full_post_url = configuration.rapydConfig.sandbox_base_url + create_beneficiary_url_path;
-
-        let salt =  crypto.randomBytes(12).toString("hex");   
-        let timestamp = (Math.floor(new Date().getTime() / 1000) - 10).toString();
-
-        let access_key = configuration.rapydConfig.access_key;     
-        let secret_key = configuration.rapydConfig.secret_key;  
-        let body = '';  
-
-        //// form the request body
-        let request_data = {
-                category : data.category,
-                country : data.country ? data.country.toUpperCase() : "US",
-                currency : data.currency ? data.currency.toUpperCase() : "USD", 
-                entity_type : data.entityType ? data.entityType : "individual",
-                first_name : data.firstName,
-                last_name : data.lastName,
-                payout_method_type : data.payoutMethodType,
-            };
-
-        if(data.beneficiaryCategory === constants.rapydConstants.beneficiary_category_card){
-            request_data['card_number'] = data.cardNumber;
-            request_data['card_expiration_month'] = data.cardExpirationMonth;
-            request_data['card_expiration_year'] = data.cardExpirationYear;
-            //request_data['card_cvv'] = data.cardCvv;
-        }
-        else if(data.beneficiaryCategory === constants.rapydConstants.beneficiary_category_bank){
-            request_data['account_number'] = data.accountNumber;
-        }
-
-        this.logService.info('create beneficiary -  request_data.', {request_data: request_data});
-
-        //// generate signature
-        body = JSON.stringify(request_data);
-        let to_sign = http_method + create_beneficiary_url_path + salt + timestamp + access_key + secret_key + body;
-
-        let signature = CryptoJS.enc.Hex.stringify(CryptoJS.HmacSHA256(to_sign, secret_key));
-        signature = CryptoJS.enc.Base64.stringify(CryptoJS.enc.Utf8.parse(signature));
-
-        const headers = {
-            'content-Type': 'application/json',
-            'access_key' : access_key,
-            'salt' : salt,
-            'timestamp' : timestamp,
-            'signature' : signature
-        };
-
-        this.logService.info('create beneficiary -  headers.', {headers: headers});
-
-        //// post it to rapyd
-        return  axios.post(full_post_url, request_data, {headers : headers})
-            .then((resp) => {
-                response.result = { status: resp.status, beneficiary_data : resp.data.data };
-
-                this.logService.info('create beneficiary is done.', response.result);
+        
+        //// findOne returns a promise so returning it - this is an async method.
+        return UserModel.findById(userInfo._id, this.getUserPaymentProjection())
+        .populate('paymentMethodInfo')
+        .then(user => {
+            if(!user){
+                response.errors.exception = "User not found.";
+                this.logService.info(response.errors.exception, { _id: currentUser._id });
                 return response;
-            })
-            .catch((err) => {
-                this.logService.error('Error occurred in createBeneficiary operation.', err);
-                response.errors.exception = "Error occurred in createBeneficiary operation.";
-                return response;
-            });
+            }
+            this.logService.info('User info is fetched.', user);
+            response.result = user;
+            return response;
+        })
+        .catch(err => {
+            response.errors.exception = "Runtime Error occurred. Could not get user's payment info for unknown reasons.";
+            this.logService.error('Runtime Error occurred during getMyPaymentInfo op.', { ...err, currentUser: currentUser});
+            return response;
+        });
     }
+ 
+    getUserPaymentProjection(){
+        return {   
+            friendlyId : 1, 
+            name: 1, 
+            email : 1, 
+            createdDate :1,
+            createdDateValue : 1,
+            mailVerified : 1, 
+            roleInfo : 1,
+            identityVerified : 1,
+            isActive : 1,
+            userType : 1,
+            profileInfo : 1,
+            socialSecurityNumber: 1,
+            mobilePhoneContact : 1,
+            preferences : 1,
+            isLocked: 1,
+            mailconfirmationAttributes: 1,
+            nomineeInfo : 1,
+            dateOfBirth : 1,
+            dateOfBirthNumber : 1,
+            paymentMethodInfo: 1
+        };
+    }
+ 
+    //// add a user account payment information
+    async addPaymentInfo(userData, currentUser){
+        this.logService.info('entered addPaymentInfo in UserService.', userData);
 
+        let response = {errors:{}, result: null};
+
+
+        //// get user info 
+        const userResponse = await this.getMyPaymentInfo({_id: currentUser._id}, currentUser);
+        if(isEmpty(userResponse.result) || !isEmpty(userResponse.errors)){
+            this.logService.info('Given user does not exist.');
+            response.errors.userId = 'Given user order does not exist.';
+            return response;
+        }
+        let fetchedUser = userResponse.result;
+
+        if(fetchedUser.paymentMethodInfo === null
+            || fetchedUser.paymentMethodInfo === undefined
+            || userData.overrideIfExists){
+                //// create payment method record flow / need to update that in user
+                const { errors, result } = await this.paymentMethodService.createPaymentMethod({}, currentUser);
+                let paymentMethodId = result._id;
+
+                //// adding updateInfo for user object - this will be used in $set 
+                let updateInfo = { paymentMethodInfo : paymentMethodId};
+
+                //// returns a promise
+                return UserModel.updateOne({_id: currentUser._id}, { "$set": updateInfo })
+                    .then(updated => {
+                        response.result = { _id: userData._id, action: "updated" };
+                        this.logService.info('the user is updated with PaymentInfo.', response.result);
+                        //// return result
+                        return response;
+                    })
+                    .catch(err => {
+                        this.logService.error('Error occurred in addPaymentInfo.', err);
+                        response.errors.exception = "Error occurred. Could not update user payment info for unknown reasons.";
+                        return response;
+                    });
+        }
+        else {
+            response.result = { _id: fetchedUser._id, action: "none" };
+            this.logService.info('the user already has a paymentInfo.', response.result);
+            return response;
+        }
+    }
 };
 
 module.exports = UserService;

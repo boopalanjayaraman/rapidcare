@@ -359,17 +359,18 @@ router.post("/createcustomer", passport.authenticate('jwt', {session: false}), a
     }
 });
 
-// @route POST api/users/createbeneficiary
-// @desc this is to create a beneficiary in rapyd
-router.post("/createbeneficiary", passport.authenticate('jwt', {session: false}), async (req, res) => {
-    
-    const data = req.body;
-    const currentUser = req.user;
-    logService.info('createbeneficiary operation is invoked by user.',  {currentUser: currentUser.email, userId: currentUser._id});
+
+// @route GET api/users/getmyinfowithpayment
+// @desc gets the current authenticated user's info
+// @access Public
+router.get("/getmyinfowithpayment", passport.authenticate('jwt', {session: false}), async (req, res) => {
+
+    const currentUser = req.query;
+    logService.info('getmyinfowithpayment operation is invoked.',  {currentUser: currentUser.email, userId: currentUser._id});
 
     try {
         //// call user service
-        const { errors, result } = await userService.createBeneficiary(data, currentUser);
+        const { errors, result } = await userService.getMyPaymentInfo(currentUser, currentUser);
         if(!isEmpty(errors)){
             return res.status(500).json(errors);
         }
@@ -377,7 +378,7 @@ router.post("/createbeneficiary", passport.authenticate('jwt', {session: false})
             return res.json(result);
         } 
     } catch (error) {
-        const errorMsg = 'Error in createbeneficiary operation.';
+        const errorMsg = 'Error in getmyinfowithpayment operation.';
         logService.error(errorMsg, error);
         return res.status(500).json( {error: errorMsg} );
     }

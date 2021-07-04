@@ -11,6 +11,7 @@ module.exports = {
     idCounter_insuranceproducts: "insuranceproducts",
     idCounter_nominees: "nominees",
     idCounter_policyinfos: "policyinfos",
+    idCounter_paymentmethods: "paymentmethods",
     scenario_unlockUsers: 'unlockUsers',
     scenario_browseProducts: 'browseProducts',
     scenario_getUserInsurances: 'getUserInsurances',

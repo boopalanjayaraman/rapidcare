@@ -32,6 +32,9 @@ const paymentMethodSchema = new Schema({
     isActive: {
       type: Boolean,
       default: true  
+    },
+    createdDate : {
+        type: Date
     }
 });
 
