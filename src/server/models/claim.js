@@ -11,20 +11,16 @@ const claimSchema = new Schema({
         type: Number,
         required: true
     },
-    holderInfo : {
-        socialSecurityNumber : {
-            type: String
-        },
-        userId: {
+    holderId : {
             type: mongoose.Schema.Types.ObjectId,
             ref: "users",
-        }
     },
-    policyId: {
-        type: mongoose.Schema.Types.ObjectId, 
+    insuranceId: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "insuranceorders" 
     },
     claimType : {
-        type: String //// medical / death
+        type: String //// medical / life
     },
     documents:[{
         id: {
@@ -52,6 +48,7 @@ const claimSchema = new Schema({
     },
     raisedBy : {
         type: mongoose.Schema.Types.ObjectId, 
+        ref: "users",
     },
     raisedOn : {
         type: Date,
@@ -72,13 +69,30 @@ const claimSchema = new Schema({
     approvedAmount : {
         type : Number
     },
+    currency : {
+        type: String
+    },
     reviewInfo : {
         review1 : {
             type : String //// approved / needinfo
         },
         review2: {
             type : String //// approved / needinfo
+        },
+        remarks1 : {
+            type : String,
+        },
+        remarks2 : {
+            type: String,
         }
+    },
+    reviewer1 : {
+        type: mongoose.Schema.Types.ObjectId, 
+        ref: "users",
+    },
+    reviewer2 : {
+        type: mongoose.Schema.Types.ObjectId, 
+        ref: "users",
     },
     antiFraudAlgorithms :[
         {
@@ -92,7 +106,10 @@ const claimSchema = new Schema({
                 type: Date
             }
         }
-    ]
+    ],
+    closingRemarks : {
+        type: String
+    }
 });
 
 var Claim = mongoose.model("claims", claimSchema);

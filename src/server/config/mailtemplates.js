@@ -17,7 +17,7 @@ const templates = {
         subject: "Welcome to RapydCare.com!",
         text: ` Hello {{userName}},
 
-                Thanks for registering. We'd like to welcome you to the new era of health insurance. You made the right choice.
+                Thanks for registering. We'd like to welcome you to the new era of health and life insurances. You made the right choice.
                 
                 Feel free to explore the portal!
                 
@@ -74,6 +74,40 @@ const templates = {
                 This is to notify you that your password has been successfully changed. 
                 
                 Please login to the application with the new password to explore opportunities.
+
+                Thanks,
+                Team RapydCare.`
+    },
+    newInsuranceOrder : {
+        subject: "We've got you covered.",
+        text: `     Hello {{userName}},
+
+                This is to confirm that you bought one of our great insurance products. Details below.
+
+                Start Date - {{currentStartDate}}
+                End Date - {{currentEndDate}}
+                Price - {{policyPrice}} {{currency}}
+                Status - {{status}}
+                Payment Status - {{paymentStatus}}
+                Product Id - {{policyProduct}}
+                Policy Holder - {{holderName}}
+                Insurance Id - {{_id}}
+
+                Thanks,
+                Team RapydCare.`
+    },
+    raiseClaim : {
+        subject: "A new claim has been raised successfully.",
+        text: `     Hello {{userName}},
+
+                This is to confirm that you raised a new claim. Details below.
+
+                Claim Type - {{claimType}}
+                Claim Amount - {{claimAmount}} {{currency}}
+                Policy Holder - {{holderName}}
+                Insurance Id - {{insuranceId}}
+                Claim Id - {{_id}}
+
 
                 Thanks,
                 Team RapydCare.`

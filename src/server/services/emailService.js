@@ -116,6 +116,45 @@ class EmailService {
         await this.sendMail(message);
     }
 
+    async sendNewInsuranceOrder(user, insuranceOrder, policyInfo){
+        let userName = user.name;
+        let to = user.email;
+        let from = templates.fromId;
+        let subject = templates.newInsuranceOrder.subject;
+        let text = templates.newInsuranceOrder.text;
+        text = text.replace(/\{\{userName\}\}/g, userName);
+        text = text.replace(/\{\{currentStartDate\}\}/g, insuranceOrder.currentStartDate);
+        text = text.replace(/\{\{currentStartDate\}\}/g, insuranceOrder.currentStartDate);
+        text = text.replace(/\{\{policyPrice\}\}/g, insuranceOrder.policyPrice);
+        text = text.replace(/\{\{currency\}\}/g, insuranceOrder.currency);
+        text = text.replace(/\{\{status\}\}/g, insuranceOrder.status);
+        text = text.replace(/\{\{paymentStatus\}\}/g, insuranceOrder.paymentStatus);
+        text = text.replace(/\{\{policyProduct\}\}/g, insuranceOrder.policyProduct);
+        text = text.replace(/\{\{holderName\}\}/g, policyInfo.holderInfo.name);
+        text = text.replace(/\{\{_id\}\}/g, insuranceOrder._id);
+        //// send the email
+        let message = {from, to, subject, text};
+        await this.sendMail(message);
+    }
+
+    async sendRaiseClaim(user, claim){
+        let userName = user.name;
+        let to = user.email;
+        let from = templates.fromId;
+        let subject = templates.raiseClaim.subject;
+        let text = templates.raiseClaim.text;
+        text = text.replace(/\{\{userName\}\}/g, userName);
+        text = text.replace(/\{\{claimType\}\}/g, claim.claimType);
+        text = text.replace(/\{\{claimAmount\}\}/g, claim.claimAmount);
+        text = text.replace(/\{\{currency\}\}/g, claim.currency);
+        text = text.replace(/\{\{holderId\}\}/g, claim.holderId);
+        text = text.replace(/\{\{insuranceId\}\}/g, claim.insuranceId);
+        text = text.replace(/\{\{_id\}\}/g, claim._id);
+        //// send the email
+        let message = {from, to, subject, text};
+        await this.sendMail(message);
+    }
+
 }
 
 module.exports = EmailService;

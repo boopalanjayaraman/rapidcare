@@ -176,6 +176,7 @@ class UserService {
                         id: user._id,
                         name: user.name,
                         loginId: user.email,
+                        email : user.email,
                         isUser: user.roleInfo.isUser,
                         isAdmin: user.roleInfo.isAdmin,
                         isPartnerDoctor: user.roleInfo.isPartnerDoctor,
@@ -1040,6 +1041,54 @@ class UserService {
             this.logService.info('the user already has a paymentInfo.', response.result);
             return response;
         }
+    }
+
+    //// get random two partner doctors
+    //// This is internal query
+    async getRandomPartnerDoctors(currentUser){
+
+        this.logService.info('UserService - entered getRandomPartnerDoctors operation');
+
+        let response = {errors:{}, result: null};
+
+        let query = { "roleInfo.IsPartnerDoctor": true };
+        let limit = criteria.limit? criteria.limit : 10;
+
+        let getRandomArbitrary = (min, max) => {
+            return Math.random() * (max - min) + min;
+        };
+
+        //// find returns a promise so returning it - this is an async method.
+        return UserModel.find(query, this.getUserProjection())
+        .limit(limit)
+        .then(users => {
+            if(!users){
+                response.errors.exception = "Users information not found - getRandomPartnerDoctors";
+                this.logService.info(response.errors.exception, { _id: currentUser._id });
+                return response;
+            }
+
+            let doctor1 = getRandomArbitrary(0, users.length);
+            let doctor2 = getRandomArbitrary(0, users.length);
+
+            while(doctor1 === doctor2){
+                doctor2 = getRandomArbitrary(0, users.length);
+            }
+
+            let partnerDoctors = {
+                reviewer1 : users[doctor1]._id,
+                reviewer2 : users[doctor2]._id
+            };
+
+            response.result = partnerDoctors;
+            this.logService.info('getRandomPartnerDoctors info is fetched.', { data: response.result });
+            return response;
+        })
+        .catch(err => {
+            response.errors.exception = "Runtime Error occurred. Could not getRandomPartnerDoctors info for unknown reasons.";
+            this.logService.error('Runtime Error occurred during getRandomPartnerDoctors op.', { ...err, currentUser: currentUser});
+            return response;
+        });
     }
 };
 

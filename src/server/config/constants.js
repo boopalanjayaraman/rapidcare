@@ -15,6 +15,8 @@ module.exports = {
     scenario_unlockUsers: 'unlockUsers',
     scenario_browseProducts: 'browseProducts',
     scenario_getUserInsurances: 'getUserInsurances',
+    scenario_getUserClaims: 'getUserClaims',
+    scenario_getPendingClaims: 'getPendingClaims',
     rapydConstants : {
         http_get_method : 'get',
         http_post_method : 'post',

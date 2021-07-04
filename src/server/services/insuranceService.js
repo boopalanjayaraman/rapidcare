@@ -49,6 +49,10 @@ class InsuranceService {
 
         //// find returns a promise so returning it - this is an async method.
         return InsuranceOrderModel.findById(data._id)
+        .populate('ownerId', this.getUserProjectionArray())
+        .populate('holderId', this.getUserProjectionArray())
+        .populate('policyProduct')
+        .populate('policyInfo')
         .sort({ friendlyId : 'asc'})
         .then(order => {
             if(!order){
@@ -232,7 +236,9 @@ class InsuranceService {
                                         policyInfoData : policyInfo
                                      };
 
-                    //// async - TODO: mail the owner confirmation.
+                    //// async: mail the owner confirmation.
+                    this.emailService.sendNewInsuranceOrder(currentUser, insurance, policyInfo);
+                     
                     this.logService.info('new insurance order is created.', response.result);
                     //// return result
                     return response;
