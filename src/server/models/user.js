@@ -114,7 +114,7 @@ const userSchema = new Schema({
                 type: String 
             }
         },
-        licenseInfo:{
+        medicalLicenseInfo:{
             id: {
                 type: String
             },

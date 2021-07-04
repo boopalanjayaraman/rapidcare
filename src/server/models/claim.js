@@ -11,11 +11,20 @@ const claimSchema = new Schema({
         type: Number,
         required: true
     },
+    holderInfo : {
+        socialSecurityNumber : {
+            type: String
+        },
+        userId: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: "users",
+        }
+    },
     policyId: {
         type: mongoose.Schema.Types.ObjectId, 
     },
-    description : {
-        type: String
+    claimType : {
+        type: String //// medical / death
     },
     documents:[{
         id: {
@@ -25,7 +34,7 @@ const claimSchema = new Schema({
             type: mongoose.Schema.Types.ObjectId 
         },
         type: {
-            type: String // video / voicetext / id documents / medical reports / certificates
+            type: String // video / identity document / medical reports / certificate
         },
         description: {
             type: String 
@@ -35,7 +44,7 @@ const claimSchema = new Schema({
         }
     }],
     status : {
-        type: String
+        type: String //// initiated / in-review / processed / disbursed / rejected.
     },
     isActive: {
         type: Boolean,
@@ -59,6 +68,17 @@ const claimSchema = new Schema({
     },
     claimAmount : {
         type : Number
+    },
+    approvedAmount : {
+        type : Number
+    },
+    reviewInfo : {
+        review1 : {
+            type : String //// approved / needinfo
+        },
+        review2: {
+            type : String //// approved / needinfo
+        }
     },
     antiFraudAlgorithms :[
         {

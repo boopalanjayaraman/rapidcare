@@ -15,7 +15,8 @@ const { validateUpdateUserInput,
         validateGetUsers, 
         validateGetUsersPermissions,  
         validateChangePassword, 
-        validateForgotPassword } = require("../validation/userValidation");
+        validateForgotPassword,
+        validateCreateBeneficiary } = require("../validation/userValidation");
 
 const isEmpty = require("is-empty");
 const crypto = require("crypto");
@@ -26,6 +27,10 @@ const EmailService = require("./emailService");
 const LogService = require("./logService");
 const IdCounterService = require("./idCounterService");
 const { SSL_OP_NO_TLSv1_1 } = require("constants");
+
+
+const CryptoJS = require("crypto-js");
+const axios = require("axios");
 
 const Password_Allowed_Attempts = 6;
 
@@ -859,6 +864,148 @@ class UserService {
         } catch (error) {
             this.logService.error('Error occurred in sending email to admin user.', error);
         }
+    }
+
+    //// create rapyd customer method
+    async createCustomer(data, currentUser){
+        this.logService.info('entered createCustomer in userService.', {input: data});
+
+        let response = {errors: {}, result: null};
+
+        if(data.email !== currentUser.email){
+            this.logService.error('current user email and customer email are different.', err);
+            response.errors.exception = "Cannot create a customer for a different email id.";
+            return response;
+        }
+
+        //// get the basic configurations
+        let http_method = constants.rapydConstants.http_post_method;               
+        let create_customer_url_path = constants.rapydConstants.http_create_customer_url;
+        let full_post_url = configuration.rapydConfig.sandbox_base_url + create_customer_url_path;
+
+        let salt =  crypto.randomBytes(12).toString("hex");   
+        let timestamp = (Math.floor(new Date().getTime() / 1000) - 10).toString();
+
+        let access_key = configuration.rapydConfig.access_key;     
+        let secret_key = configuration.rapydConfig.secret_key;  
+        let body = '';  
+
+        //// form the request body
+        let request_data = {
+            name : data.name,
+            email : data.email
+        };
+
+        this.logService.info('create customer -  request_data.', {request_data: request_data});
+
+        //// generate signature
+        body = JSON.stringify(request_data);
+        let to_sign = http_method + create_customer_url_path + salt + timestamp + access_key + secret_key + body;
+
+        let signature = CryptoJS.enc.Hex.stringify(CryptoJS.HmacSHA256(to_sign, secret_key));
+        signature = CryptoJS.enc.Base64.stringify(CryptoJS.enc.Utf8.parse(signature));
+
+        const headers = {
+            'content-Type': 'application/json',
+            'access_key' : access_key,
+            'salt' : salt,
+            'timestamp' : timestamp,
+            'signature' : signature
+        };
+
+        this.logService.info('create customer -  headers.', {headers: headers});
+
+        //// post it to rapyd
+        return  axios.post(full_post_url, request_data, {headers : headers})
+            .then((resp) => {
+                response.result = { status: resp.status, customer_data : resp.data.data };
+
+                this.logService.info('create customer is done.', response.result);
+                return response;
+            })
+            .catch((err) => {
+                this.logService.error('Error occurred in createCustomer operation.', err);
+                response.errors.exception = "Error occurred in createCustomer operation.";
+                return response;
+            });
+    }
+
+    //// create rapyd beneficiary method
+    async createBeneficiary(data, currentUser){
+        this.logService.info('entered createBeneficiary in userService.', {input: data});
+
+        let { errors, isValid } = validateCreateBeneficiary(data);
+        let response = {errors, result: null};
+        //// if validation failed, send back the errors to front end.
+        if(!isValid){
+            return response;
+        }
+
+        //// get the basic configurations
+        let http_method = constants.rapydConstants.http_post_method;               
+        let create_beneficiary_url_path = constants.rapydConstants.http_create_beneficiary_url;
+        let full_post_url = configuration.rapydConfig.sandbox_base_url + create_beneficiary_url_path;
+
+        let salt =  crypto.randomBytes(12).toString("hex");   
+        let timestamp = (Math.floor(new Date().getTime() / 1000) - 10).toString();
+
+        let access_key = configuration.rapydConfig.access_key;     
+        let secret_key = configuration.rapydConfig.secret_key;  
+        let body = '';  
+
+        //// form the request body
+        let request_data = {
+                category : data.category,
+                country : data.country ? data.country.toUpperCase() : "US",
+                currency : data.currency ? data.currency.toUpperCase() : "USD", 
+                entity_type : data.entityType ? data.entityType : "individual",
+                first_name : data.firstName,
+                last_name : data.lastName,
+                payout_method_type : data.payoutMethodType,
+            };
+
+        if(data.beneficiaryCategory === constants.rapydConstants.beneficiary_category_card){
+            request_data['card_number'] = data.cardNumber;
+            request_data['card_expiration_month'] = data.cardExpirationMonth;
+            request_data['card_expiration_year'] = data.cardExpirationYear;
+            //request_data['card_cvv'] = data.cardCvv;
+        }
+        else if(data.beneficiaryCategory === constants.rapydConstants.beneficiary_category_bank){
+            request_data['account_number'] = data.accountNumber;
+        }
+
+        this.logService.info('create beneficiary -  request_data.', {request_data: request_data});
+
+        //// generate signature
+        body = JSON.stringify(request_data);
+        let to_sign = http_method + create_beneficiary_url_path + salt + timestamp + access_key + secret_key + body;
+
+        let signature = CryptoJS.enc.Hex.stringify(CryptoJS.HmacSHA256(to_sign, secret_key));
+        signature = CryptoJS.enc.Base64.stringify(CryptoJS.enc.Utf8.parse(signature));
+
+        const headers = {
+            'content-Type': 'application/json',
+            'access_key' : access_key,
+            'salt' : salt,
+            'timestamp' : timestamp,
+            'signature' : signature
+        };
+
+        this.logService.info('create beneficiary -  headers.', {headers: headers});
+
+        //// post it to rapyd
+        return  axios.post(full_post_url, request_data, {headers : headers})
+            .then((resp) => {
+                response.result = { status: resp.status, beneficiary_data : resp.data.data };
+
+                this.logService.info('create beneficiary is done.', response.result);
+                return response;
+            })
+            .catch((err) => {
+                this.logService.error('Error occurred in createBeneficiary operation.', err);
+                response.errors.exception = "Error occurred in createBeneficiary operation.";
+                return response;
+            });
     }
 
 };

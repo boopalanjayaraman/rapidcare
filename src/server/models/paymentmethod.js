@@ -11,20 +11,27 @@ const paymentMethodSchema = new Schema({
         type: Number,
         required: true
     },
-    accountName: {
+    rapydCustomerId : {
         type: String,
-        default: ''
     },
-    isVerified: {
-        type: Boolean,
-        default: false
+    rapydCardBeneficiaryId : {
+        type: String,
+    },
+    rapydBankBeneficiaryId : {
+        type: String,
+    },
+    rapydCardPayoutMethod : {
+        type: String,
+    },
+    rapydBankPayoutMethod : {
+        type: String,
+    },
+    rapydWalletId: {
+        type: String // rapydwallet 
     },
     isActive: {
       type: Boolean,
       default: true  
-    },
-    methodType: {
-        type: String // rapydwallet 
     }
 });
 

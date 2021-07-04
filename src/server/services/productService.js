@@ -87,6 +87,9 @@ class ProductService {
                                 friendlyId : {
                                     $gt : lastFriendlyId //// since it is sorted in ascending order
                                 }
+                            },
+                            {
+                                 isDeleted : false
                             }
                     ]
                 };

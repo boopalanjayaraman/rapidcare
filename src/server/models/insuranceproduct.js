@@ -52,6 +52,9 @@ const insuranceProductSchema = new Schema({
     },
     country : {
         type : String // "IN", "GB", "US"
+    },
+    isDeleted : {
+        type : Boolean
     }
 });
 

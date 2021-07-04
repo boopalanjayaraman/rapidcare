@@ -14,6 +14,9 @@ const businessSchema = new Schema({
     name: {
         type: String
     },
+    ownerId : {
+        type: mongoose.Schema.Types.ObjectId 
+    },
     isVerified: {
         type: Boolean,
         default: false

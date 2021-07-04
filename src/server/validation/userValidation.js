@@ -175,5 +175,56 @@ function validateChangePassword(data){
 
 };
 
+
+function validateCreateBeneficiary(data){
+
+    //// initialize errors object
+    let errors = {};
+
+    //// convert empty fields into empty string values
+    let category = isEmpty(data.category) ? "" : data.category;
+    let country = isEmpty(data.country) ? "" : data.country;
+    let currency = isEmpty(data.currency) ? "" : data.currency;
+    let entityType = isEmpty(data.entityType) ? "" : data.entityType;
+    let firstName = isEmpty(data.firstName) ? "" : data.firstName;
+    let lastName = isEmpty(data.lastName) ? "" : data.lastName;
+    let payoutMethodType = isEmpty(data.payoutMethodType) ? "" : data.payoutMethodType;
+    let beneficiaryCategory = isEmpty(data.beneficiaryCategory) ? "" : data.beneficiaryCategory;
+    
+    //// perform validations
+    if(Validator.isEmpty(category)){
+        errors.category = "category field is required.";
+    }
+    else if(Validator.isEmpty(country)){
+        errors.country = "country field is required.";
+    }
+    else if(Validator.isEmpty(currency)){
+        errors.currency = "currency field is required.";
+    }
+    else if(Validator.isEmpty(entityType)){
+        errors.entityType = "entityType field is required.";
+    }
+    else if(Validator.isEmpty(firstName)){
+        errors.firstName = "firstName field is required.";
+    }
+    else if(Validator.isEmpty(lastName)){
+        errors.lastName = "lastName field is required.";
+    }
+    else if(Validator.isEmpty(payoutMethodType)){
+        errors.payoutMethodType = "payoutMethodType field is required.";
+    }
+    else if(Validator.isEmpty(beneficiaryCategory)){
+        errors.beneficiaryCategory = "beneficiaryCategory field is required.";
+    }
+    
+
+    return {
+        errors,
+        isValid: isEmpty(errors)
+    };
+};
+
+
 module.exports = { validateUpdateUserInput, ValidateEditProfileInput, 
-                    validateGetUsers, validateGetUsersPermissions, validateChangePassword, validateForgotPassword };
+                    validateGetUsers, validateGetUsersPermissions, validateChangePassword, validateForgotPassword,
+                    validateCreateBeneficiary };

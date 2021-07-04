@@ -335,6 +335,54 @@ router.post("/changeforgotpassword", async (req, res) => {
     }
 });
 
+// @route POST api/users/createcustomer
+// @desc this is to let the user change the password with given tokens.
+router.post("/createcustomer", passport.authenticate('jwt', {session: false}), async (req, res) => {
+    
+    const data = req.body;
+    const currentUser = req.user;
+    logService.info('createcustomer operation is invoked by user.',  {currentUser: currentUser.email, userId: currentUser._id});
+
+    try {
+        //// call user service
+        const { errors, result } = await userService.createCustomer(data, currentUser);
+        if(!isEmpty(errors)){
+            return res.status(500).json(errors);
+        }
+        else{
+            return res.json(result);
+        } 
+    } catch (error) {
+        const errorMsg = 'Error in createcustomer operation.';
+        logService.error(errorMsg, error);
+        return res.status(500).json( {error: errorMsg} );
+    }
+});
+
+// @route POST api/users/createbeneficiary
+// @desc this is to create a beneficiary in rapyd
+router.post("/createbeneficiary", passport.authenticate('jwt', {session: false}), async (req, res) => {
+    
+    const data = req.body;
+    const currentUser = req.user;
+    logService.info('createbeneficiary operation is invoked by user.',  {currentUser: currentUser.email, userId: currentUser._id});
+
+    try {
+        //// call user service
+        const { errors, result } = await userService.createBeneficiary(data, currentUser);
+        if(!isEmpty(errors)){
+            return res.status(500).json(errors);
+        }
+        else{
+            return res.json(result);
+        } 
+    } catch (error) {
+        const errorMsg = 'Error in createbeneficiary operation.';
+        logService.error(errorMsg, error);
+        return res.status(500).json( {error: errorMsg} );
+    }
+});
+
 // @route GET api/users/ping
 // @desc User Ping Api
 // @access Public
