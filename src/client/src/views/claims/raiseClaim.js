@@ -363,7 +363,7 @@ class RaiseClaim extends Component {
                         <label> Insurance Type </label> 
                         <label className="black-text"> { this.state.insuranceOrderInfo.policyProduct ? this.state.insuranceOrderInfo.policyProduct.productType  : "-"  } </label> 
                         <label> | </label> 
-                        <label> sumAssuredText </label> 
+                        <label> { sumAssuredText } </label> 
                         <label className="black-text"> 
                         { this.state.insuranceOrderInfo.policyProduct ? this.state.insuranceOrderInfo.policyProduct.sumAssured  : "-"  } </label>
                     </div>
