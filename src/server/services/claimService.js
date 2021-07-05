@@ -16,6 +16,7 @@ const EmailService = require("./emailService");
 const LogService = require("./logService");
 const IdCounterService = require("./idCounterService");
 const UserService = require("./userService");
+const InsuranceService = require("./insuranceService");
 
 const CryptoJS = require("crypto-js");
 const crypto = require("crypto");
@@ -30,6 +31,7 @@ class ClaimService {
         this.logService = container.get(LogService);
         this.idCounterService = container.get(IdCounterService);
         this.userService = container.get(UserService);
+        this.insuranceService = container.get(InsuranceService);
     }
 
     //// create rapyd payout method
@@ -252,20 +254,50 @@ class ClaimService {
 
         this.logService.info('entered raiseClaim in claimService.', {data: data});
         //// perform form validation
-        let { errors, isValid } = validateRaiseClaim(data);
+        let { errors, isValid } = validateRaiseClaim(data, currentUser);
         let response = {errors, result: null};
         //// if validation failed, send back the errors to front end.
         if(!isValid){
-            return response;
+            return response; 
         }
 
         this.logService.info('primary validations are done.');
         //// check and perform validations & create accordingly
 
-        let friendlyId = await this.idCounterService.getNewId(constants.idCounter_claims);
-        if(friendlyId == -1){
-            throw "Could not generate a new friendly Id for claim.";
+        //// get insurance info 
+        const insuranceOrderResponse = await this.insuranceService.getInsuranceInfo({_id: data.insuranceOrderId}, currentUser);
+        if(isEmpty(insuranceOrderResponse.result) || !isEmpty(insuranceOrderResponse.errors)){
+            this.logService.info('Given insurance order does not exist.');
+            response.errors.insuranceOrderId = 'Given insurance order does not exist.';
+            return response;
         }
+        let fetchedInsuranceOrder = insuranceOrderResponse.result;
+        if(fetchedInsuranceOrder.holderId._id.toString() !== data.holderInfo._id){
+            this.logService.info('Given insurance id does not match with the holder information.');
+            response.errors.insuranceOrderId = 'Given insurance id does not match with the holder information.';
+            return response; 
+        }
+        if(fetchedInsuranceOrder.policyProduct.productType === constants.productType_term
+            && data.claimType != constants.claimType_life)
+        {
+            this.logService.info('Given insurance id does not match with the claim type.');
+            response.errors.insuranceOrderId = 'Given insurance id does not match with the claim type.';
+            return response; 
+        }
+        else if(fetchedInsuranceOrder.policyProduct.productType === constants.productType_health
+            && data.claimType != constants.claimType_medical)
+        {
+            this.logService.info('Given insurance id does not match with the claim type.');
+            response.errors.insuranceOrderId = 'Given insurance id does not match with the claim type.';
+            return response; 
+        }
+
+        this.logService.info('primary validations are done.');
+
+        let sumClaimed = fetchedInsuranceOrder.sumClaimed ? fetchedInsuranceOrder.sumClaimed : 0;
+        let sumAssured = fetchedInsuranceOrder.sumAssured;
+        //// TODO: validation of nominee 
+        //// TODO: check if the claim amount is greater than the available amount.
 
         //// get two random partner doctor ids.
         const randomDoctorsResponse = await this.userService.getRandomPartnerDoctors(currentUser);
@@ -277,18 +309,25 @@ class ClaimService {
         let randomDoctors = randomDoctorsResponse.result;
 
         //// create the claim and assign the reviewer doctors automatically.
+        let friendlyId = await this.idCounterService.getNewId(constants.idCounter_claims);
+        if(friendlyId == -1){
+            throw "Could not generate a new friendly Id for claim.";
+        }
 
+         
         var newClaim = new ClaimModel({
             _id: new mongoose.Types.ObjectId(),
             friendlyId: friendlyId,
+            name : data.name,
             raisedOn: Date.now(),
             holderId : data.holderInfo._id,
-            insuranceId: data.insuranceId,
+            insuranceId: data.insuranceOrderId,
             claimType : data.claimType,
+            dateOfOccurrence: data.dateOfOccurrence,
             status: "initiated",
             raisedBy : currentUser._id,
-            isNominee: data.isNominee,
-            isPartnerDoctor: data.isPartnerDoctor,
+            isNominee: data.claimRelationship === constants.claimRelationship_nominee,
+            isPartnerDoctor: data.claimRelationship === constants.claimRelationship_partnerdoctor,
             claimAmount: data.claimAmount,
             reviewInfo:  {
                 review1: "",

@@ -77,7 +77,7 @@ class HolderInfo extends Component{
                 <div>
                     <div className="s12">
                         <div>
-                            <span className="indigo-text"> <b>2. Identity Information</b> </span>
+                            <span className="indigo-text"> <b>Identity Information</b> </span>
                         </div>
                     </div>
                     <div className="s12">

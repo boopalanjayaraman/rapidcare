@@ -94,68 +94,64 @@ function validateRaiseClaim(data, currentUser){
     let errors = {};
 
     // for now no validations
-    let sumAssured = isEmpty(data.sumAssured)? "" : String(data.sumAssured);
-    let policyPrice = isEmpty(data.policyPrice)? "" : String(data.policyPrice);
-    let premiumInterval = isEmpty(data.premiumInterval)? "" : data.premiumInterval;
-    let currentStartDate = isEmpty(data.currentStartDate)? "" : data.currentStartDate;
-    let currentEndDate = isEmpty(data.currentEndDate)? "" : data.currentEndDate;
-    //let holderInfo = isEmpty(data.holderInfo)? "" : data.holderInfo;
-    //let healthDeclarationInfo = isEmpty(data.healthDeclarationInfo)? "" : data.healthDeclarationInfo;
-    let socialSecurityNumber = isEmpty(data.holderInfo.socialSecurityNumber)? "" : data.holderInfo.socialSecurityNumber;
+    let claimRelationship = isEmpty(data.claimRelationship)? "" : data.claimRelationship;
+    let claimType = isEmpty(data.claimType)? "" : data.claimType;
+    let claimAmount = isEmpty(data.claimAmount)? "" : String(data.claimAmount);
+    let holderInfo = isEmpty(data.holderInfo)? "" : data.holderInfo;
     let holderId = isEmpty(data.holderInfo._id)? "" : data.holderInfo._id;
-    let fullName = isEmpty(data.holderInfo.name)? "" : data.holderInfo.name;
+    let insuranceOrderId = isEmpty(data.insuranceOrderId)? "" : data.insuranceOrderId;
+    let dateOfOccurrence = isEmpty(data.dateOfOccurrence)? "" : String(data.dateOfOccurrence);
 
     //// perform required field validations
-    if(Validator.isEmpty(sumAssured)){
-        errors.exception = "sumAssured field is required for buying an insurance.";
+    if(Validator.isEmpty(claimAmount)){
+        errors.exception = "claim Amount field is required for raising a claim.";
     }
 
-    if(Validator.isEmpty(policyPrice)){
-        errors.exception = "policyPrice is required for buying an insurance.";
+    if(Validator.isEmpty(claimType)){
+        errors.claimType = "claimType field is required for raising a claim.";
     }
 
-    if(Validator.isEmpty(premiumInterval)){
-        errors.exception = "premiumInterval field is required for buying an insurance.";
+    if(claimType !== constants.claimType_medical
+        && claimType !== constants.claimType_life){
+            errors.claimType = "Invalid value for claim type.";
     }
 
-    if(Validator.isEmpty(currentStartDate)){
-        errors.exception = "currentStartDate field is required for buying an insurance.";
+    if(Validator.isEmpty(claimRelationship)){
+        errors.claimRelationship = "claim Relationship field is required for raising a claim.";
     }
 
-    if(Validator.isEmpty(currentEndDate)){
-        errors.exception = "currentEndDate field is required for buying an insurance.";
+    if(claimRelationship !== constants.claimRelationship_self
+        && claimRelationship !== constants.claimRelationship_nominee
+        && claimRelationship !== constants.claimRelationship_partnerdoctor){
+            errors.claimRelationship = "Invalid value for claim relationship.";
     }
 
+    if((claimRelationship === constants.claimRelationship_partnerdoctor)
+        && (currentUser.isPartnerDoctor === false || currentUser.isPartnerDoctor === undefined)){
+            errors.claimRelationship = "Invalid value for claim relationship. User is not a partner doctor.";
+    }
+
+     
+    if(Validator.isEmpty(dateOfOccurrence)){
+        errors.exception = "dateOfOccurrence field is required for raising a claim.";
+    }
+
+    if(Validator.isEmpty(insuranceOrderId)){
+        errors.exception = "insuranceOrderId field is required for raising a claim.";
+    }
     
     if(isEmpty(data.holderInfo)){
-        errors.exception = "holderInfo field is required for buying an insurance.";
+        errors.exception = "holderInfo field is required for raising a claim.";
     }
-
-    if(isEmpty(data.healthDeclarationInfo)){
-        errors.exception = "healthDeclarationInfo field is required for buying an insurance.";
-    }
-
-    if(Validator.isEmpty(socialSecurityNumber)){
-        errors.exception = "socialSecurityNumber field is required for buying an insurance.";
-    }
-
+ 
     if(Validator.isEmpty(holderId)){
-        errors.exception = "holderId field is required for buying an insurance.";
+        errors.exception = "holderId field is required for raising a claim.";
     }
 
-    if(Validator.isEmpty(fullName)){
-        errors.fullName = "Name field is required.";
-    }
-
-    if(data.healthDeclarationInfo.overweight == null
-        || data.healthDeclarationInfo.ped == null
-        || data.healthDeclarationInfo.ped2 == null
-        || data.healthDeclarationInfo.smoking == null
-        || data.healthDeclarationInfo.alcoholic == null
-        || data.healthDeclarationInfo.undergoneProcedure == null)
-    {
-        errors.healthDeclaration = "Health Declarations are required.";
-    }
+    if(claimType === constants.claimType_life
+        && holderId === currentUser._id){
+            errors.exception = "policy holder cannot raise a life claim. (A nominee or a partner doctor can).";
+    } 
 
     return {
         errors,

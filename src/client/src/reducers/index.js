@@ -4,12 +4,14 @@ import errorReducers from "./errorReducers";
 import productReducers from "./productReducers";
 import userReducers from "./userReducers";
 import insuranceReducers from "./insuranceReducers"
+import claimReducers from "./claimReducers";
 
 export default combineReducers({
   auth: authReducers,
   errors: errorReducers,
   userReducer: userReducers,
   productReducer: productReducers,
-  insuranceReducer: insuranceReducers
+  insuranceReducer: insuranceReducers,
+  claimReducer : claimReducers
 });
 

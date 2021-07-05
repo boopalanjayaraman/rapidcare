@@ -99,6 +99,14 @@ class BuyInsurance extends Component {
         }
     }
 
+    componentWillReceiveProps(nextProps) {
+        if(nextProps.errors){
+            this.setState({
+                errors: nextProps.errors
+            });
+        }
+    }
+
     onGetProduct(){
         var product = this.props.productReducer.setCurrentProduct; //// using "this", bind this method.
         this.setState({
@@ -349,7 +357,7 @@ class BuyInsurance extends Component {
                 </div>
                 <div className="row">
                     <div className="col s12 m8">
-                        <label className="pink-text">Instruction #1: </label><label>Nominees for term life and accident insurances are automatically assigned from the insured person's RapydCare profile. </label>
+                        <label className="pink-text">Instruction #1: </label><label>Nominees for term life insurances are automatically assigned from the insured person's RapydCare profile. </label>
                         <p><label className="pink-text">Instruction #2: </label><label>The KYC documents from the insured person's profile will be automatically used towards this insurance purchase. </label></p>
                         <label className="pink-text">Instruction #3: </label><label> For any claims disbursement, Bank / Card information from the Insured person's profile will be used.</label>         
                     </div>
@@ -357,7 +365,7 @@ class BuyInsurance extends Component {
                 <div className="row">
                 <div className="col s12">
                         <div>
-                            <span className="indigo-text"><b>{ "2.1 Coverage Period" }</b></span>
+                            <span className="indigo-text"><b>{ "Coverage Period" }</b></span>
                         </div>
                     </div>
                     <div className="col s12 m4">

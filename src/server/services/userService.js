@@ -388,6 +388,14 @@ class UserService {
         };
     }
 
+    getUserProjectionRandom(){
+        return {   
+            friendlyId : 1, 
+            name: 1, 
+            email : 1
+        };
+    }
+
     //// resendConfirmationEmail method
     async resendConfirmationEmail(userInfo, currentUser){
 
@@ -1051,18 +1059,17 @@ class UserService {
 
         let response = {errors:{}, result: null};
 
-        let query = { "roleInfo.IsPartnerDoctor": true };
-        let limit = criteria.limit? criteria.limit : 10;
+        let query = { "roleInfo.isPartnerDoctor": true };
 
         let getRandomArbitrary = (min, max) => {
-            return Math.random() * (max - min) + min;
+            return Math.round(Math.random() * (max - min) + min);
         };
 
         //// find returns a promise so returning it - this is an async method.
-        return UserModel.find(query, this.getUserProjection())
-        .limit(limit)
+        return UserModel.find(query, this.getUserProjectionRandom())
         .then(users => {
-            if(!users){
+            if(!users
+                || users.length === 0){
                 response.errors.exception = "Users information not found - getRandomPartnerDoctors";
                 this.logService.info(response.errors.exception, { _id: currentUser._id });
                 return response;

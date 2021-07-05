@@ -104,7 +104,7 @@ const templates = {
 
                 Claim Type - {{claimType}}
                 Claim Amount - {{claimAmount}} {{currency}}
-                Policy Holder - {{holderName}}
+                Policy Holder Id - {{holderId}}
                 Insurance Id - {{insuranceId}}
                 Claim Id - {{_id}}
 

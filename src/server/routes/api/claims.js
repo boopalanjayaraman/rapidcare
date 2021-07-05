@@ -17,7 +17,8 @@ let logService = Container.get(LogService);
 
 // @route POST api/users/createpayout
 // @desc this is to create a payout in rapyd
-router.post("/createpayout", passport.authenticate('jwt', {session: false}), async (req, res) => {
+// THIS WAS EXPOSED PUBLIC ONLY FOR TESTING PURPOSES.
+/*router.post("/createpayout", passport.authenticate('jwt', {session: false}), async (req, res) => {
     
     const data = req.body;
     const currentUser = req.user;
@@ -34,6 +35,87 @@ router.post("/createpayout", passport.authenticate('jwt', {session: false}), asy
         } 
     } catch (error) {
         const errorMsg = 'Error in createpayout operation.';
+        logService.error(errorMsg, error);
+        return res.status(500).json( {error: errorMsg} );
+    }
+});*/
+
+
+// @route GET api/claims/raiseClaim
+// @desc raises a new claim against an insurance 
+// @access Public
+router.post("/raiseClaim",passport.authenticate('jwt', {session: false}), async (req, res) => {
+    
+    const data = req.body;
+    const currentUser = req.user;
+    
+    logService.info('raiseClaim operation is invoked by user.',  { currentUser: currentUser.email , userId: currentUser._id, country: data.country});
+    
+    try {
+        //// call product service
+        const { errors, result } = await claimService.raiseClaim(data, currentUser);
+        if(!isEmpty(errors)){
+            return res.status(500).json(errors);
+        }
+        else{
+            return res.json(result);
+        } 
+    } catch (error) {
+        const errorMsg = 'Error in raiseClaim operation.';
+        logService.error(errorMsg, error);
+        return res.status(500).json( {error: errorMsg} );
+    }
+});
+
+
+// @route GET api/claims/getclaiminfo
+// @desc gets the claiminfo by id
+// @access Public
+router.get("/getclaiminfo", passport.authenticate('jwt', {session: false}), async (req, res) => {
+    
+    const data = req.query;
+    const currentUser = req.user;
+    
+    logService.info('getclaiminfo operation is invoked by user.',  { currentUser: currentUser.email , userId: currentUser._id, info: data });
+     
+
+    try {
+        //// call product service
+        const { errors, result } = await claimService.getClaimInfo(data, currentUser);
+        if(!isEmpty(errors)){
+            return res.status(500).json(errors);
+        }
+        else{
+            return res.json(result);
+        } 
+    } catch (error) {
+        const errorMsg = 'Error in getclaiminfo operation.';
+        logService.error(errorMsg, error);
+        return res.status(500).json( {error: errorMsg} );
+    }
+});
+
+// @route GET api/claims/getclaims
+// @desc gets the claims according to a criteria
+// @access Public
+router.get("/getclaims", passport.authenticate('jwt', {session: false}), async (req, res) => {
+    
+    const data = req.query;
+    const currentUser = req.user;
+     
+    logService.info('getclaims operation is invoked by user.',  { currentUser: currentUser.email , userId: currentUser._id, country: data.country});
+     
+    try {
+        //// call product service
+        const { errors, result } = await claimService.getClaims(data, currentUser);
+        if(!isEmpty(errors)){
+            return res.status(500).json(errors);
+        }
+        else{
+            return res.json(result);
+        } 
+    } catch (error) {
+        const errorMsg = 'Error in getclaims operation.';
         logService.error(errorMsg, error);
         return res.status(500).json( {error: errorMsg} );
     }

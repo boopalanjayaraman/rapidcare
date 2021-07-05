@@ -11,6 +11,9 @@ const claimSchema = new Schema({
         type: Number,
         required: true
     },
+    name: {
+        type: String,
+    },
     holderId : {
             type: mongoose.Schema.Types.ObjectId,
             ref: "users",
@@ -21,6 +24,9 @@ const claimSchema = new Schema({
     },
     claimType : {
         type: String //// medical / life
+    },
+    dateOfOccurrence : {
+        type: Date, 
     },
     documents:[{
         id: {

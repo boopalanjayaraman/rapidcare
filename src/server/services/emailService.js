@@ -124,7 +124,7 @@ class EmailService {
         let text = templates.newInsuranceOrder.text;
         text = text.replace(/\{\{userName\}\}/g, userName);
         text = text.replace(/\{\{currentStartDate\}\}/g, insuranceOrder.currentStartDate);
-        text = text.replace(/\{\{currentStartDate\}\}/g, insuranceOrder.currentStartDate);
+        text = text.replace(/\{\{currentEndDate\}\}/g, insuranceOrder.currentEndDate);
         text = text.replace(/\{\{policyPrice\}\}/g, insuranceOrder.policyPrice);
         text = text.replace(/\{\{currency\}\}/g, insuranceOrder.currency);
         text = text.replace(/\{\{status\}\}/g, insuranceOrder.status);

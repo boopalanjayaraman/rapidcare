@@ -214,6 +214,7 @@ class InsuranceService {
                     holderId : data.holderInfo._id,
                     policyProduct: data.policyProduct,
                     sumAssured : data.sumAssured,
+                    sumClaimed: 0.0,
                     policyPrice: data.policyPrice,
                     riskFactor : data.riskFactor,
                     premiumInterval: data.premiumInterval,
