@@ -10,16 +10,6 @@ const documentSchema = new Schema({
     friendlyId: {
         type: Number,
         required: true
-    },
-    filename: {
-        type: String
-    },
-    path: {
-        type: String
-    },
-    isActive: {
-        type: Boolean,
-        default: true  
     }
 });
 

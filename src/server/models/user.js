@@ -106,9 +106,8 @@ const userSchema = new Schema({
             id: {
                 type: String
             },
-            imageDocumentId: {
-                type: mongoose.Schema.Types.ObjectId,
-                ref: "documents", 
+            imageDocumentName: {
+                type: String
             },
             type: {
                 type: String 
@@ -118,9 +117,8 @@ const userSchema = new Schema({
             id: {
                 type: String
             },
-            imageDocumentId: {
-                type: mongoose.Schema.Types.ObjectId,
-                ref: "documents", 
+            imageDocumentName: {
+                type: String,
             },
             type: {
                 type: String 

@@ -43,7 +43,7 @@ module.exports = {
         http_create_payout_url : '/v1/payouts',
         service_fee : 0.25,
         review_fee_lifeClaim : 100.00,
-        review_fee_healthClaim : 30.00,
+        review_fee_medicalClaim : 30.00,
         paymentTypeCategories : {
             us : [
                 "card", "bank_transfer",

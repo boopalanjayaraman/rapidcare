@@ -13,6 +13,55 @@ const LogService = require("../../services/logService");
 let claimService = Container.get(ClaimService);
 let logService = Container.get(LogService);
 
+const AWS = require("aws-sdk");
+const multer = require("multer");
+const multerS3 = require("multer-s3");
+const constants = require("../../config/constants");
+const configuration = require("../../config/configuration");
+const path = require("path");
+
+const s3 = new AWS.S3({
+    accessKeyId: configuration.awsConfig.accessKeyId,
+    secretAccessKey: configuration.awsConfig.secretAccessKey,
+    region: configuration.awsConfig.region
+});
+
+const uploadS3 = multer({
+    storage: multerS3({
+        s3: s3,
+        bucket: configuration.awsConfig.bucketName,
+        metadata: (req, file, callBack) => {
+            callBack(null, { fieldName: file.fieldname })
+        },
+        key: (req, file, callBack) => {
+            let claimId = req.body.claimId;
+            let dateSuffix = Date.now().toString();
+            let extn = path.extname(file.originalname).toLowerCase()
+            let fullFileName = claimId + "_" + dateSuffix + extn
+            callBack(null, fullFileName);
+        }
+    }),
+    limits: { fileSize: 2000000 }, // In bytes: 2000000 bytes = 2 MB
+    fileFilter: function (req, file, cb) {
+        checkFileType(file, cb);
+    }
+});
+
+
+function checkFileType(file, cb){
+    // Allowed ext
+    const filetypes = /jpeg|jpg|png|pdf/;
+    // Check ext
+    const extname = filetypes.test(path.extname(file.originalname).toLowerCase());
+    // Check mime
+    const mimetype = filetypes.test(file.mimetype);
+  
+    if(mimetype && extname){
+      return cb(null,true);
+    } else {
+      cb('Error: Allowed File Types are - jpeg, jpg, png, pdf, txt only.');
+    }
+  }
 
 
 // @route POST api/users/createpayout
@@ -174,6 +223,113 @@ router.post("/processclaim",passport.authenticate('jwt', {session: false}), asyn
     }
 });
 
+// @route GET api/claims/uploaddocuments
+// @desc adds documents to the claim
+// @access Public
+router.post("/uploaddocuments",passport.authenticate('jwt', {session: false}), uploadS3.single('file'), async (req, res) => {
+    
+    const data = req.body;
+    const currentUser = req.user;
 
+    //// important line.
+    data['fileKey'] = req['file'].key;
+    
+    logService.info('uploaddocuments operation is invoked by user.',  { currentUser: currentUser.email , userId: currentUser._id, country: data.country});
+    
+    try {
+        //// call product service
+        const { errors, result } = await claimService.uploadDocuments(data, currentUser);
+        if(!isEmpty(errors)){
+            return res.status(500).json(errors);
+        }
+        else{
+            return res.json(result);
+        } 
+    } catch (error) {
+        const errorMsg = 'Error in uploaddocuments operation.';
+        logService.error(errorMsg, error);
+        return res.status(500).json( {error: errorMsg} );
+    }
+});
+
+
+// @route GET api/claims/getdocuments
+// @desc gets list of documents for the claim
+// @access Public
+router.post("/getdocuments",passport.authenticate('jwt', {session: false}), async (req, res) => {
+    
+    const data = req.body;
+    const currentUser = req.user;
+    
+    logService.info('getdocuments operation is invoked by user.',  { currentUser: currentUser.email , userId: currentUser._id, country: data.country});
+    
+    try {
+        //// call product service
+        const { errors, result } = await claimService.getDocuments(data, currentUser);
+        if(!isEmpty(errors)){
+            return res.status(500).json(errors);
+        }
+        else{
+            return res.json(result);
+        } 
+    } catch (error) {
+        const errorMsg = 'Error in getdocuments operation.';
+        logService.error(errorMsg, error);
+        return res.status(500).json( {error: errorMsg} );
+    }
+});
+
+// @route GET api/claims/getdocument
+// @desc gets a document from the claim
+// @access Public
+router.post("/getdocument",passport.authenticate('jwt', {session: false}), async (req, res) => {
+    
+    const data = req.body;
+    const currentUser = req.user;
+    
+    logService.info('getdocument operation is invoked by user.',  { currentUser: currentUser.email , userId: currentUser._id, country: data.country});
+    
+    try {
+        //// call product service
+        const { errors, result } = await claimService.getDocument(data, currentUser);
+        if(!isEmpty(errors)){
+            return res.status(500).json(errors);
+        }
+        else{
+            return res.json(result);
+        } 
+    } catch (error) {
+        const errorMsg = 'Error in getdocument operation.';
+        logService.error(errorMsg, error);
+        return res.status(500).json( {error: errorMsg} );
+    }
+});
+
+
+// @route GET api/claims/deletedocument
+// @desc deletes a document from the claim
+// @access Public
+router.post("/deletedocument",passport.authenticate('jwt', {session: false}), async (req, res) => {
+    
+    const data = req.body;
+    const currentUser = req.user;
+    
+    logService.info('deletedocument operation is invoked by user.',  { currentUser: currentUser.email , userId: currentUser._id, country: data.country});
+    
+    try {
+        //// call product service
+        const { errors, result } = await claimService.deleteDocument(data, currentUser);
+        if(!isEmpty(errors)){
+            return res.status(500).json(errors);
+        }
+        else{
+            return res.json(result);
+        } 
+    } catch (error) {
+        const errorMsg = 'Error in deletedocument operation.';
+        logService.error(errorMsg, error);
+        return res.status(500).json( {error: errorMsg} );
+    }
+});
 
 module.exports = router;

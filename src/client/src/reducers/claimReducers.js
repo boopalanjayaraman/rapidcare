@@ -1,9 +1,11 @@
-import { SET_CLAIMS, SET_CLAIM_INFO, SET_RAISED_CLAIM } from '../actions/types';
+import { SET_CLAIMS, SET_CLAIM_INFO, SET_RAISED_CLAIM, SET_CLAIM_DOCUMENT, SET_CLAIM_DOCUMENTSLIST } from '../actions/types';
 
 const initialState = {
     setClaims: [],
     setClaimInfo: {},
     setRaisedClaim : {},
+    setClaimDocument: {},
+    setClaimDocumentsList: []
 };
 
 function claimReducers(state = initialState, action) {
@@ -22,6 +24,16 @@ function claimReducers(state = initialState, action) {
             return {
                 ...state,
                 setRaisedClaim: action.payload,
+            };
+        case SET_CLAIM_DOCUMENT:
+            return {
+                ...state,
+                setClaimDocument: action.payload,
+            };
+        case SET_CLAIM_DOCUMENTSLIST:
+            return {
+                ...state,
+                setClaimDocumentsList: action.payload,
             };
         default:
             return state;

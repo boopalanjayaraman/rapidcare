@@ -29,20 +29,11 @@ const claimSchema = new Schema({
         type: Date, 
     },
     documents:[{
-        id: {
+        name: {
             type: String
-        },
-        documentId: {
-            type: mongoose.Schema.Types.ObjectId 
         },
         type: {
             type: String // video / identity document / medical reports / certificate
-        },
-        description: {
-            type: String 
-        },
-        generated: {
-            type: Boolean
         }
     }],
     status : {
@@ -66,8 +57,8 @@ const claimSchema = new Schema({
     isPartnerDoctor: {
         type: Boolean
     },
-    photoDocumentId: {
-        type: mongoose.Schema.Types.ObjectId 
+    photoDocumentName: {
+        type: String
     },
     claimAmount : {
         type : Number

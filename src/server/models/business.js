@@ -28,8 +28,8 @@ const businessSchema = new Schema({
         id: {
             type: String
         },
-        imageDocumentId: {
-            type: mongoose.Schema.Types.ObjectId 
+        imageDocumentName: {
+            type: String
         },
         type: {
             type: String 

@@ -648,6 +648,79 @@ class ClaimService {
         //// call create payout 
         await this.createPayout(payoutData, currentUser);
     }
+
+    //// adds claim documents
+    async uploadDocuments(reqBody, currentUser) {
+
+        this.logService.info('entered uploadDocuments in claimService.', {data: data});
+
+        let response = { errors: {}, result: null };
+
+        let claimId = reqBody.claimId;
+        let documentName = reqBody.fileKey;
+
+        this.logService.info('uploaded documents info : ', {claimId: claimId, documentName: documentName});
+
+        let updateInfo =  {};
+        let document = { name: documentName, type : reqBody.documentType? reqBody.documentType : ""};
+        //// change the claim status based on the reviewer's statuses.
+        updateInfo = {
+            $push: { documents: document }
+        };
+
+        //// update claim details to db
+        return ClaimModel.updateOne({_id: claimId}, updateInfo)
+        .then(async (updated) => {
+                response.result = { _id: data._id, action: "updated", documentName: documentName };
+                this.logService.info('the claim is updated with the document details.', response.result);
+                //// return result
+                return response;
+        })
+        .catch(err => {
+            this.logService.error('Error occurred in reviewClaim operation.', err);
+            response.errors.exception = "Error occurred in reviewClaim operation. Could not save for unknown reasons.";
+            return response;
+        });
+    }
+
+    //// gets the list of claim documents
+    async getDocuments(claimData, currentUser) {
+        this.logService.info('entered uploadDocuments in claimService.', {claimData: claimData});
+
+        let claimId = claimData.claimId;
+        let response = { errors: {}, result: null };
+
+        //// update claim details to db
+        return ClaimModel.findOne({_id: claimId})
+        .then((claim) => {
+                if(!claim){
+                    this.logService.info('the claim is not found.', {_id: claimId});
+                    response.errors.exception = "the claim is not found.";
+                    return response;
+                }
+                response.result = claim.documents;
+                this.logService.info('the claim is fetched with the document details.', response.result);
+                //// return result
+                return response;
+        })
+        .catch(err => {
+            this.logService.error('Error occurred in getDocuments operation.', err);
+            response.errors.exception = "Error occurred in getDocuments operation.";
+            return response;
+        });
+    }
+
+    //// get the claim document
+    async getDocument(claimData, currentUser) {
+        //// call document service
+        return { errors: {}, result: null };
+    }
+
+    //// deletes the claim document
+    async deleteDocument(claimData, currentUser) {
+        //// call document service
+        return { errors: {}, result: null };
+    }
 };
 
 

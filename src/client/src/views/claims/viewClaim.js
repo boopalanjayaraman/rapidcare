@@ -3,7 +3,7 @@ import PropTypes from "prop-types";
 import { connect } from "react-redux";
 import { textProvider } from "../../content/textProvider";
 import { withRouter } from "react-router";
-import { getClaimInfoAction, reviewClaimAction, processClaimAction } from '../../actions/claimActions';
+import { getClaimInfoAction, reviewClaimAction, processClaimAction, uploadDocumentsAction, getDocumentsAction, getDocumentAction } from '../../actions/claimActions';
 import { getInsuranceInfoAction } from '../../actions/insuranceActions';
 import { Link } from "react-router-dom";
 import { Modal, Button } from 'react-materialize';
@@ -68,6 +68,9 @@ class ViewClaim extends Component {
             },
             insuranceOrder : {},
             errors: {},
+            claimDocuments : [],
+            currentClaimDocument : {},
+            selectedFile : []
         };
 
         this.actionParam = '';
@@ -238,6 +241,25 @@ class ViewClaim extends Component {
         this.props.history.push(reloadPage);
     }
 
+    onFilesChange = e=> {
+        this.setState({ selectedFile: e.target.files[0] });
+    }
+
+    onFilesUpload = e=> {
+        const formData = new FormData();
+        formData.append("claimId", this.state.claimInfo._id);
+        
+        let file = this.state.selectedFile;
+        formData.append(
+                "file",
+                file,
+                file.name);
+             
+        this.props.uploadDocumentsAction(formData, ()=>{
+            alert('upload done');
+        });
+    }
+
 
     render() {
         const { user } = this.props.auth;
@@ -274,7 +296,7 @@ class ViewClaim extends Component {
                     </div>
                     <div className="col s12">
                         <h4 style={{color: "rgb(90, 114, 209)"}}>
-                             { "Claim information" } <span className="black-text">({ this.state.claimInfo.friendlyId }) { this.state.claimInfo.name }</span>
+                             { "Claim Summary" } <span className="black-text">({ this.state.claimInfo.friendlyId }) { this.state.claimInfo.name }</span>
                         </h4>
                     </div>
                 </div>
@@ -306,39 +328,39 @@ class ViewClaim extends Component {
                         </div>
                     </div>
                     <div className="col s12 m8">
-                         <span className="col s4 pink-text">Claim Name (if any)</span>
+                         <label className="col s4 pink-text">Claim Name (if any)</label>
                          <span className="black-text"> {this.state.claimInfo.name } &nbsp;</span>
                     </div>
                     <div className="col s12 m8">
-                         <span className="col s4 pink-text">Claim Id</span>
+                         <label className="col s4 pink-text">Claim Id</label>
                          <span className="black-text"> {this.state.claimInfo._id} </span>
                     </div>
                     <div className="col s12 m8">
-                         <span className="col s4 pink-text">Friendly Id</span>
+                         <label className="col s4 pink-text">Friendly Id</label>
                          <span className="black-text"> {this.state.claimInfo.friendlyId} </span> 
                     </div>
                     <div className="col s12 m8">
-                         <span className="col s4 pink-text">Claim Type</span>
+                         <label className="col s4 pink-text">Claim Type</label>
                          <span className="black-text"> {this.state.claimInfo.claimType} </span> 
                     </div>
                     <div className="col s12 m8">
-                         <span className="col s4 pink-text">Raised By</span>
+                         <label className="col s4 pink-text">Raised By</label>
                          <span className="black-text"> {this.state.claimInfo.raisedBy.name} </span> <span className="grey-text"> ({ raisedByText }) </span> 
                     </div>
                     <div className="col s12 m8" style={{ display: (this.state.claimInfo.claimType === 'life') ? 'none' : 'block'}}>
-                        <span className="col s4 pink-text"> Claim Amount </span>
+                        <label className="col s4 pink-text"> Claim Amount </label>
                         <span className="black-text"><b> { this.state.claimInfo.claimAmount } </b></span>
                     </div>
                     <div className="col s12 m8">
-                         <span className="col s4 pink-text">Raised On</span>
+                         <label className="col s4 pink-text">Raised On</label>
                          <span className="black-text"> {this.state.claimInfo.raisedOn} </span>
                     </div>
                     <div className="col s12 m8">
-                        <span className="col s4 pink-text"> { dateText} </span>  
+                        <label className="col s4 pink-text"> { dateText} </label>  
                         <span className="black-text" > { this.state.claimInfo.dateOfOccurrence} </span>
                     </div>
                     <div className="col s12 m8">
-                        <span className="col s4 pink-text"> Claim Status </span>  
+                        <label className="col s4 pink-text"> Claim Status </label>  
                         <span className="black-text"> <b>
                             { this.state.claimInfo.status ? this.state.claimInfo.status : "-" } </b> &nbsp; </span>
                     </div>
@@ -351,44 +373,44 @@ class ViewClaim extends Component {
                         </div>
                     </div>
                     <div className="col s12 m8">
-                        <span className="col s4 pink-text"> RapydCare Insurance Id </span>  
+                        <label className="col s4 pink-text"> RapydCare Insurance Id </label>  
                         <span className="black-text">{ this.state.claimInfo.insuranceId._id } </span>
                     </div>
                     <div className="col s12 m8">
-                        <span className="col s4 pink-text"> Holder Name </span>  
+                        <label className="col s4 pink-text"> Holder Name </label>  
                         <span className="black-text"> 
                             { this.state.insuranceOrder.holderId ? this.state.insuranceOrder.holderId.name : "-" } &nbsp; </span>
                     </div>
                     <div className="col s12 m8">
-                        <span className="col s4 pink-text"> Insurance Type </span> 
+                        <label className="col s4 pink-text"> Insurance Type </label> 
                         <span className="black-text"> { this.state.insuranceOrder.policyProduct ? this.state.insuranceOrder.policyProduct.productType  : "-"  } </span> 
                     </div>   
                     <div className="col s12 m8">
-                        <span className="col s4 pink-text"> { sumAssuredText } </span> 
+                        <label className="col s4 pink-text"> { sumAssuredText } </label> 
                         <span className="black-text"> { this.state.insuranceOrder.policyProduct ? this.state.insuranceOrder.policyProduct.sumAssured  : "-"  } </span>
                     </div>
                     <div className="col s12 m8">
-                        <span className="col s4 pink-text"> Current Start Date </span>  
+                        <label className="col s4 pink-text"> Current Start Date </label>  
                         <span className="black-text"> 
                             { this.state.insuranceOrder.currentStartDate ? this.state.insuranceOrder.currentStartDate : "-" } &nbsp; </span>
                     </div>
                     <div className="col s12 m8">
-                        <span className="col s4 pink-text"> Current End Date </span>  
+                        <label className="col s4 pink-text"> Current End Date </label>  
                         <span className="black-text"> 
                             { this.state.insuranceOrder.currentEndDate ? this.state.insuranceOrder.currentEndDate : "-" } &nbsp; </span>
                     </div>
                     <div className="col s12 m8">
-                        <span className="col s4 pink-text"> Insurance Status </span>  
+                        <label className="col s4 pink-text"> Insurance Status </label>  
                         <span className="black-text"> 
                             { this.state.insuranceOrder.status ? this.state.insuranceOrder.status : "-" } &nbsp; </span>
                     </div>
                     <div className="col s12 m8">
-                        <span className="col s4 pink-text"> Country </span>  
+                        <label className="col s4 pink-text"> Country </label>  
                         <span className="black-text"> 
                             { this.state.insuranceOrder.country ? this.state.insuranceOrder.country : "-" } &nbsp; </span>
                     </div>
                     <div className="col s12 m8">
-                        <span className="col s4 pink-text"> Currency </span>  
+                        <label className="col s4 pink-text"> Currency </label>  
                         <span className="black-text"> 
                             { this.state.insuranceOrder.currency ? this.state.insuranceOrder.currency : "-" } &nbsp; </span>
                     </div>
@@ -401,23 +423,23 @@ class ViewClaim extends Component {
                         </div>
                     </div>
                     <div className="col s12 m8">
-                         <span className="col s4 pink-text">First Review Status </span>
+                         <label className="col s4 pink-text">First Review Status </label>
                          <span className="black-text"> { this.state.claimInfo.reviewInfo.review1 ? this.state.claimInfo.reviewInfo.review1 : "-" } &nbsp;</span>
                     </div>
                     <div className="col s12 m8">
-                         <span className="col s4 pink-text">Second Review Status </span>
+                         <label className="col s4 pink-text">Second Review Status </label>
                          <span className="black-text"> { this.state.claimInfo.reviewInfo.review2 ? this.state.claimInfo.reviewInfo.review2 : "-" } &nbsp;</span>
                     </div>
                     <div className="col s12 m8">
-                         <span className="col s4 pink-text">First Level Reviewer </span>
+                         <label className="col s4 pink-text">First Level Reviewer </label>
                          <span className="black-text"> { this.state.claimInfo.reviewer1.name ? this.state.claimInfo.reviewer1.name : "-" } &nbsp;</span>
                     </div>
                     <div className="col s12 m8">
-                         <span className="col s4 pink-text">Second Level Reviewer </span>
+                         <label className="col s4 pink-text">Second Level Reviewer </label>
                          <span className="black-text"> { this.state.claimInfo.reviewer2.name ? this.state.claimInfo.reviewer2.name : "-" } &nbsp;</span>
                     </div>
                     <div className="col s12 m8" style={{ display: (isApprover) ? "block" : "none"  }}>
-                         <span className="col s4 pink-text">First Review Remarks </span>
+                         <label className="col s4 pink-text">First Review Remarks </label>
                          {/* <span className="black-text"> { this.state.claimInfo.reviewInfo.remarks1 ? this.state.claimInfo.reviewInfo.remarks1 : "-" }</span>  */}
                          <textarea 
                             value={  this.state.claimInfo.reviewInfo.remarks1 ? this.state.claimInfo.reviewInfo.remarks1 : ""}
@@ -432,7 +454,7 @@ class ViewClaim extends Component {
                         ></textarea>
                     </div>
                     <div className="col s12 m8" style={{ display: (isApprover) ? "block" : "none"  }}>
-                         <span className="col s4 pink-text">Second Review Remarks </span>
+                         <label className="col s4 pink-text">Second Review Remarks </label>
                          <textarea 
                             value={  this.state.claimInfo.reviewInfo.remarks2 ? this.state.claimInfo.reviewInfo.remarks2 : ""}
                             multiple={true}
@@ -562,6 +584,29 @@ class ViewClaim extends Component {
                     <span className="red-text">{errors.error}</span>
                 </div>
                 <div className="row">
+                    <div className="col s12">
+                        <span className="indigo-text"><b>{ "Upload Documents" }</b></span>
+                    </div>
+                    <div className="col s12  m8">
+                        <label className="pink-text">Upload one or more documents</label>
+                    </div>
+                    <div className="col s12 m5 file-field input-field">
+                        <div class="btn ">
+                            <span>File</span>
+                            <input type="file"  onChange={this.onFilesChange} ></input>
+                        </div>
+                        <div class="file-path-wrapper">
+                            <input class="file-path validate" type="text" placeholder="Upload one or more files"></input>
+                        </div>
+                    </div>
+                    <div className="col s12 m6 file-field input-field">
+                        <div>
+                            <button className="btn" onClick={this.onFilesUpload}><i className="material-icons center">upload</i></button>
+                        </div>
+                    </div>
+                </div>
+
+                <div className="row">
                     <div className="col s6 m4" style={{ display: ((isReviewer1 || isReviewer2) && (!disableReview)) ? "block" : "none"  }}>
                         <Modal
                             actions={[
@@ -635,6 +680,9 @@ ViewClaim.propTypes = {
     getInsuranceInfoAction: PropTypes.func.isRequired,
     reviewClaimAction :  PropTypes.func.isRequired,
     processClaimAction :  PropTypes.func.isRequired,
+    uploadDocumentsAction: PropTypes.func.isRequired, 
+    getDocumentsAction : PropTypes.func.isRequired, 
+    getDocumentAction : PropTypes.func.isRequired, 
     auth: PropTypes.object.isRequired
 };
 
@@ -647,4 +695,4 @@ const mapStateToProps = state => ({
 
 export default connect(
     mapStateToProps,
-    { getClaimInfoAction, getInsuranceInfoAction, reviewClaimAction, processClaimAction })(withRouter(ViewClaim)); 
+    { getClaimInfoAction, getInsuranceInfoAction, reviewClaimAction, processClaimAction, uploadDocumentsAction, getDocumentsAction, getDocumentAction })(withRouter(ViewClaim)); 

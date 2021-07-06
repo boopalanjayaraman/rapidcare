@@ -1,5 +1,5 @@
 import axios from "axios";
-import { GET_ERRORS, SET_CLAIMS, SET_CLAIM_INFO, SET_RAISED_CLAIM } from "./types";
+import { GET_ERRORS, SET_CLAIMS, SET_CLAIM_DOCUMENT, SET_CLAIM_DOCUMENTSLIST, SET_CLAIM_INFO, SET_RAISED_CLAIM } from "./types";
 
 
 
@@ -104,6 +104,70 @@ export const processClaimAction = (data, callback) => dispatch => {
         dispatch(publishError(err));
     });
 };
+
+
+export const uploadDocumentsAction = (data, callback) => dispatch => {
+
+    axios
+    .post("/api/claims/uploaddocuments", data)
+    .then(res => {
+        const docsRes  = res.data;
+        if(callback){
+            callback();
+        }
+    })
+    .catch(err => {
+        dispatch(publishError(err));
+    });
+};
+
+
+export const getDocumentsAction = (data, callback) => dispatch => {
+
+    axios
+    .get("/api/claims/getdocuments", data)
+    .then(res => {
+        const docsRes  = res.data;
+        dispatch(setClaimDocumentsList(docsRes)); 
+        if(callback){
+            callback();
+        }
+    })
+    .catch(err => {
+        dispatch(publishError(err));
+    });
+};
+
+export const setClaimDocumentsList = (docsRes) => {
+    return {
+        type: SET_CLAIM_DOCUMENTSLIST,
+        payload: docsRes
+    };
+}
+
+
+export const getDocumentAction = (data, callback) => dispatch => {
+
+    axios
+    .get("/api/claims/getdocument", data)
+    .then(res => {
+        const docRes  = res.data;
+        dispatch(setClaimDocument(docRes)); 
+        if(callback){
+            callback();
+        }
+    })
+    .catch(err => {
+        dispatch(publishError(err));
+    });
+};
+
+export const setClaimDocument = (docRes) => {
+    return {
+        type: SET_CLAIM_DOCUMENT,
+        payload: docRes
+    };
+}
 
 //// act on error
 export const publishError = (err) => {
