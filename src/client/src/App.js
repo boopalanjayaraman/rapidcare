@@ -77,7 +77,7 @@ class App extends Component {
                     <PrivateRoute exact path="/completePayment/:id/:paymentCompleteToken" component={CompletePayment} />
                     <PrivateRoute exact path="/errorPayment/:id/:paymentErrorToken" component={ErrorPayment} />
                     <PrivateRoute exact path="/newClaim" component={raiseClaim} />
-                    <PrivateRoute exact path="/viewClaim/:id" component={viewClaim} />
+                    <PrivateRoute exact path="/viewClaim/:id/:action?" component={viewClaim} />
                   </Switch>
                     <Route exact path="/TermsAndConditions" component={TermsAndConditions} />
                     <Route exact path="/ConfirmEmail/:id/:tokenCode" component={ConfirmEmail} />

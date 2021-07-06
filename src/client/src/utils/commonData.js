@@ -1,5 +1,5 @@
 const commonData = {
-    statuses: ['new', 'closed', 'expired', 'ongoing', 'awarded'],
+    statuses: ['new', 'closed', 'expired', 'active'],
     billingUnits: [
         { text: 'Every Day', value: 'daily'},
         { text: 'Every Hour', value: 'hourly'}
@@ -19,7 +19,11 @@ const commonData = {
     languages: [
         { text: 'English', value: 'en'},
         { text: 'தமிழ் (Tamil)', value: 'ta'}
-    ]
+    ],
+    reviewStatuses: [
+        { value: 'approved', text : 'Approved'},
+        { value: 'needinfo', text : 'Needs more information'}
+    ],
 };
 
 export default commonData;

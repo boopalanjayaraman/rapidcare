@@ -6,7 +6,7 @@ const settings = require("../config/configuration").environmentalSettings;
 const ClaimModel = require("../models/claim");
 
 //// load validations
-const { validateCreatePayout, validateGetClaims, validateGetClaimInfo, validateRaiseClaim } = require("../validation/claimValidation");
+const { validateCreatePayout, validateGetClaims, validateGetClaimInfo, validateRaiseClaim, validateReviewClaim } = require("../validation/claimValidation");
 
 const isEmpty = require("is-empty");
 const moment = require("moment");
@@ -220,10 +220,34 @@ class ClaimService {
                             {
                                 $or : [
                                     {
-                                        status : "initiated"
+                                        status : constants.claimStatus_initiated
                                     },
                                     {
-                                        status : "in-review"
+                                        status : constants.claimStatus_inreview
+                                    },
+                                    {
+                                        status : constants.claimStatus_review_complete
+                                    }
+                                ]
+                            },
+                            {
+                                friendlyId : {
+                                    $gt : lastFriendlyId //// since it is sorted in ascending order
+                                }
+                            }
+                        ]
+                };
+        }
+        else if(criteria.scenario === constants.scenario_getReviewClaims){
+            query = {
+                    $and : [
+                            {
+                                $or : [
+                                    {
+                                        status : constants.claimStatus_initiated
+                                    },
+                                    {
+                                        status : constants.claimStatus_inreview
                                     }
                                 ]
                             },
@@ -292,7 +316,7 @@ class ClaimService {
             return response; 
         }
 
-        this.logService.info('primary validations are done.');
+        this.logService.info('secondary validations are done.');
 
         let sumClaimed = fetchedInsuranceOrder.sumClaimed ? fetchedInsuranceOrder.sumClaimed : 0;
         let sumAssured = fetchedInsuranceOrder.sumAssured;
@@ -357,6 +381,274 @@ class ClaimService {
             return response;
         });
     }
+
+    //// reviewClaim method
+    async reviewClaim(data, currentUser) {
+
+        this.logService.info('entered reviewClaim in claimService.', {data: data});
+        //// perform form validation
+        let { errors, isValid } = validateReviewClaim(data, currentUser);
+        let response = {errors, result: null};
+        //// if validation failed, send back the errors to front end.
+        if(!isValid){
+            return response; 
+        }
+
+        this.logService.info('primary validations are done.');
+        //// check and perform validations & create accordingly
+        //// get claim info 
+        const claimResponse = await this.getClaimInfo({_id: data._id}, currentUser);
+        if(isEmpty(claimResponse.result) || !isEmpty(claimResponse.errors)){
+            this.logService.info('Given claim info does not exist.');
+            response.errors.exception = 'Given claim info does not exist.';
+            return response;
+        }
+        let fetchedClaim = claimResponse.result;
+        if(fetchedClaim.reviewInfo.reviewer1 !== currentUser._id &&
+            fetchedClaim.reviewInfo.reviewer2 !== currentUser._id){
+            this.logService.info('User is not allowed to submit review remarks for this claim.');
+            response.errors.exception = 'User is not allowed to submit review remarks for this claim.';
+            return response; 
+        }
+        if(fetchedClaim.status !== constants.claimStatus_initiated &&
+            fetchedClaim.status !== constants.claimStatus_inreview){
+            this.logService.info('this claim is not in a state for review. ');
+            response.errors.exception = 'this claim is not in a state for review.';
+            return response; 
+        }
+
+        this.logService.info('secondary validations are done.');
+
+        let updateInfo =  {};
+
+        //// change the claim status based on the reviewer's statuses.
+        if(fetchedClaim.reviewInfo.reviewer1 === currentUser._id){
+            updateInfo = {
+                'reviewInfo.review1' : data.reviewStatus,
+                'reviewInfo.remarks1' : data.remarks,
+            };
+            if(fetchedClaim.reviewInfo.review2 === constants.reviewStatus_approved){
+                updateInfo['status'] = constants.claimStatus_review_complete;
+            }
+            else{
+                updateInfo['status'] = constants.claimStatus_inreview;
+            }
+        }
+        if(fetchedClaim.reviewInfo.reviewer2 === currentUser._id){
+            updateInfo = {
+                'reviewInfo.review2' : data.reviewStatus,
+                'reviewInfo.remarks2' : data.remarks,
+            };
+            if(fetchedClaim.reviewInfo.review1 === constants.reviewStatus_approved){
+                updateInfo['status'] = constants.claimStatus_review_complete;
+            }
+            else{
+                updateInfo['status'] = constants.claimStatus_inreview;
+            }
+        }
+
+        //// update claim details to db
+        return ClaimModel.updateOne({_id: data._id}, { "$set": updateInfo })
+        .then(updated => {
+                response.result = { _id: data._id, action: "updated" };
+                this.logService.info('the claim is updated with the review remarks.', response.result);
+
+                //// trigger payout for doctor /// call rapyd api
+                this.handleReviewPayment(claimData, currentUser);
+
+                //// return result
+                return response;
+        })
+        .catch(err => {
+            this.logService.error('Error occurred in reviewClaim operation.', err);
+            response.errors.exception = "Error occurred in reviewClaim operation. Could not save for unknown reasons.";
+            return response;
+        });
+    }
+
+
+    
+    //// processClaim method
+    async processClaim(data, currentUser) {
+
+        this.logService.info('entered processClaim in claimService.', {data: data});
+        //// perform form validation
+        let { errors, isValid } = validateProcessClaim(data, currentUser);
+        let response = {errors, result: null};
+        //// if validation failed, send back the errors to front end.
+        if(!isValid){
+            return response; 
+        }
+
+        this.logService.info('primary validations are done.');
+        //// check and perform validations & create accordingly
+        //// get claim info 
+        const claimResponse = await this.getClaimInfo({_id: data._id}, currentUser);
+        if(isEmpty(claimResponse.result) || !isEmpty(claimResponse.errors)){
+            this.logService.info('Given claim info does not exist.');
+            response.errors.exception = 'Given claim info does not exist.';
+            return response;
+        }
+        let fetchedClaim = claimResponse.result;
+        if(!currentUser.isAdmin){
+            this.logService.info('User is not allowed to submit process this claim.');
+            response.errors.exception = 'User is not allowed to submit process this claim.';
+            return response; 
+        }
+        if(fetchedClaim.status !== constants.claimStatus_inreview &&
+            fetchedClaim.status !== constants.claimStatus_review_complete){
+            this.logService.info('this claim is not in a state for processing. ');
+            response.errors.exception = 'this claim is not in a state for processing.';
+            return response; 
+        }
+
+        this.logService.info('secondary validations are done.');
+
+        let updateInfo =  {};
+
+        //// change the claim status based on the reviewer's statuses.
+        updateInfo = {
+            'status' : data.status,
+            'closingRemarks' : data.closingRemarks,
+            'approvedAmount' : data.approvedAmount
+        };
+
+        //// update claim details to db
+        return ClaimModel.updateOne({_id: data._id}, { "$set": updateInfo })
+        .then(async (updated) => {
+                response.result = { _id: data._id, action: "updated" };
+                this.logService.info('the claim is updated with the review remarks.', response.result);
+
+                if(data.status === constants.claimStatus_approved){
+                    //// disburse the amount - call rapyd api
+                    await this.handleDisbursal(updated, currentUser);
+                }
+                //// return result
+                return response;
+        })
+        .catch(err => {
+            this.logService.error('Error occurred in reviewClaim operation.', err);
+            response.errors.exception = "Error occurred in reviewClaim operation. Could not save for unknown reasons.";
+            return response;
+        });
+    }
+
+    //// process Claim disbursal method - INTERNAL method
+    async handleDisbursal(claimData, currentUser) {
+
+        let insuranceId = claimData.insuranceId._id;
+        let holderId = claimData.insuranceId.holderId;
+        let payee = {};
+
+        const userInfoResponse = await this.userService.getUserPaymentInfo({_id: holderId}, currentUser);
+        if(isEmpty(userInfoResponse.result) || !isEmpty(userInfoResponse.errors)){
+            this.logService.info('Given user with payment info does not exist.');
+            response.errors.exception = 'Given user with payment info does not exist.';
+            return response;
+        }
+        let fetchedHolderInfo = userInfoResponse.result;
+
+        //// decide the payee
+        if(claimData.claimType === constants.claimType_life){
+            //// pay the nominee for life claims.
+            //// get the nominee payment information.
+            const nomineeInfoResponse = await this.userService.getUserPaymentInfo({ _id: fetchedHolderInfo.nomineeInfo.userId }, currentUser);
+            if(isEmpty(nomineeInfoResponse.result) || !isEmpty(nomineeInfoResponse.errors)){
+                this.logService.info('Given nominee user with payment info does not exist.');
+                response.errors.exception = 'Given nominee user with payment info does not exist.';
+                return response;
+            }
+            payee = nomineeInfoResponse.result;
+
+            this.logService.info('nominee is the payee.', { payee: payee});
+        }
+        if(claimData.claimType === constants.claimType_medical){
+            //// pay the holder for medical claims
+            payee = fetchedHolderInfo;
+            this.logService.info('holder is the payee.', { payee: payee});
+        }
+
+        //// Decide the payout mode
+        let payoutMethodType = "";
+        let beneficiary_id = "";
+
+        if(payee.paymentMethodInfo.rapydCardBeneficiaryId != null
+            && payee.paymentMethodInfo.rapydCardBeneficiaryId != ''){
+                payoutMethodType = payee.paymentMethodInfo.rapydCardPayoutMethod;
+                beneficiary_id = payee.paymentMethodInfo.rapydCardBeneficiaryId;
+        }
+        if(payee.paymentMethodInfo.rapydBankBeneficiaryId != null
+            && payee.paymentMethodInfo.rapydBankBeneficiaryId != ''){
+                payoutMethodType = payee.paymentMethodInfo.rapydBankPayoutMethod;
+                beneficiary_id = payee.paymentMethodInfo.rapydBankBeneficiaryId;
+        }
+
+        //// create the payout
+        let payoutData = {
+            amount : claimData.approvedAmount.toFixed(2),
+            payoutMethodType : payoutMethodType,
+            beneficiary_id : beneficiary_id,
+            description : "DISBURSAL/CLAIM/" + claimData.friendlyId,
+            country : null, //// leaving this empty since SANDBOX wont support IN / INR
+            currency: null //// leaving this empty since SANDBOX wont support IN / INR
+        };
+
+        //// call create payout 
+        await this.createPayout(payoutData, currentUser);
+
+    }
+
+    //// process Claim disbursal method - INTERNAL method
+    async handleReviewPayment(claimData, currentUser) {
+
+        let payee = {};
+
+        const reviewerInfoResponse = await this.userService.getUserPaymentInfo({_id: currentUser._id}, currentUser);
+        if(isEmpty(reviewerInfoResponse.result) || !isEmpty(reviewerInfoResponse.errors)){
+            this.logService.info('Given user with payment info does not exist.');
+            response.errors.exception = 'Given user with payment info does not exist.';
+            return response;
+        }
+        payee = reviewerInfoResponse.result;
+        let review_fee = 0.0;
+
+        //// decide the payee
+        if(claimData.claimType === constants.claimType_life){
+            review_fee = constants.rapydConstants.review_fee_lifeClaim;
+        }
+        if(claimData.claimType === constants.claimType_medical){
+            review_fee = constants.rapydConstants.review_fee_medicalClaim;
+        }
+
+        //// Decide the payout mode
+        let payoutMethodType = "";
+        let beneficiary_id = "";
+
+        if(payee.paymentMethodInfo.rapydCardBeneficiaryId != null
+            && payee.paymentMethodInfo.rapydCardBeneficiaryId != ''){
+                payoutMethodType = payee.paymentMethodInfo.rapydCardPayoutMethod;
+                beneficiary_id = payee.paymentMethodInfo.rapydCardBeneficiaryId;
+        }
+        if(payee.paymentMethodInfo.rapydBankBeneficiaryId != null
+            && payee.paymentMethodInfo.rapydBankBeneficiaryId != ''){
+                payoutMethodType = payee.paymentMethodInfo.rapydBankPayoutMethod;
+                beneficiary_id = payee.paymentMethodInfo.rapydBankBeneficiaryId;
+        }
+
+        //// create the payout
+        let payoutData = {
+            amount : review_fee.toFixed(2),
+            payoutMethodType : payoutMethodType,
+            beneficiary_id : beneficiary_id,
+            description : "REVIEW_FEE/CLAIM/" + claimData.friendlyId,
+            country : null, //// leaving this empty since SANDBOX wont support IN / INR
+            currency: null //// leaving this empty since SANDBOX wont support IN / INR
+        };
+
+        //// call create payout 
+        await this.createPayout(payoutData, currentUser);
+    }
 };
+
 
 module.exports = ClaimService;

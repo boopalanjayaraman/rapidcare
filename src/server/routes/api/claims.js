@@ -122,4 +122,58 @@ router.get("/getclaims", passport.authenticate('jwt', {session: false}), async (
 });
 
 
+// @route GET api/claims/reviewclaim
+// @desc reviews a claim 
+// @access Public
+router.post("/reviewclaim",passport.authenticate('jwt', {session: false}), async (req, res) => {
+    
+    const data = req.body;
+    const currentUser = req.user;
+    
+    logService.info('reviewclaim operation is invoked by user.',  { currentUser: currentUser.email , userId: currentUser._id, country: data.country});
+    
+    try {
+        //// call product service
+        const { errors, result } = await claimService.reviewClaim(data, currentUser);
+        if(!isEmpty(errors)){
+            return res.status(500).json(errors);
+        }
+        else{
+            return res.json(result);
+        } 
+    } catch (error) {
+        const errorMsg = 'Error in reviewclaim operation.';
+        logService.error(errorMsg, error);
+        return res.status(500).json( {error: errorMsg} );
+    }
+});
+
+// @route GET api/claims/processclaim
+// @desc processes a claim - triggers disbursal if approved.
+// @access Public
+router.post("/processclaim",passport.authenticate('jwt', {session: false}), async (req, res) => {
+    
+    const data = req.body;
+    const currentUser = req.user;
+    
+    logService.info('processclaim operation is invoked by user.',  { currentUser: currentUser.email , userId: currentUser._id, country: data.country});
+    
+    try {
+        //// call product service
+        const { errors, result } = await claimService.processClaim(data, currentUser);
+        if(!isEmpty(errors)){
+            return res.status(500).json(errors);
+        }
+        else{
+            return res.json(result);
+        } 
+    } catch (error) {
+        const errorMsg = 'Error in processclaim operation.';
+        logService.error(errorMsg, error);
+        return res.status(500).json( {error: errorMsg} );
+    }
+});
+
+
+
 module.exports = router;

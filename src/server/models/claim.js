@@ -46,7 +46,7 @@ const claimSchema = new Schema({
         }
     }],
     status : {
-        type: String //// initiated / in-review / processed / disbursed / rejected.
+        type: String //// initiated / in-review / review-complete / approved / rejected.
     },
     isActive: {
         type: Boolean,

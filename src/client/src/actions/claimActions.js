@@ -75,6 +75,36 @@ export const setRaisedClaim = (claimRes) => {
 };
  
 
+export const reviewClaimAction = (data, callback) => dispatch => {
+
+    axios
+    .post("/api/claims/reviewclaim", data)
+    .then(res => {
+        const claimRes  = res.data;
+        if(callback){
+            callback();
+        }
+    })
+    .catch(err => {
+        dispatch(publishError(err));
+    });
+};
+
+export const processClaimAction = (data, callback) => dispatch => {
+
+    axios
+    .post("/api/claims/processclaim", data)
+    .then(res => {
+        const claimRes  = res.data;
+        if(callback){
+            callback();
+        }
+    })
+    .catch(err => {
+        dispatch(publishError(err));
+    });
+};
+
 //// act on error
 export const publishError = (err) => {
     let payload_obj = null;

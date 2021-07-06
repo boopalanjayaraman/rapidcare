@@ -159,4 +159,74 @@ function validateRaiseClaim(data, currentUser){
     };
 }
 
-module.exports = { validateCreatePayout, validateGetClaims, validateGetClaimInfo, validateRaiseClaim };
+
+
+function validateReviewClaim(data, currentUser){
+    // initialize errors object
+    let errors = {};
+
+    // for now no validations
+    let _id =  isEmpty(data._id)? "" : data._id;
+    let remarks =  isEmpty(data.remarks)? "" : data.remarks;
+    let reviewStatus =  isEmpty(data.reviewStatus)? "" : data.reviewStatus;
+
+    //// perform required field validations
+    if(Validator.isEmpty(_id)){
+        errors.exception = "_id field is required for reviewing a claim.";
+    }
+    if(Validator.isEmpty(remarks)){
+        errors.exception = "remarks are required for reviewing a claim.";
+    }
+    if(Validator.isEmpty(reviewStatus)){
+        errors.exception = "reviewStatus is required for reviewing a claim.";
+    }
+
+    if(reviewStatus != constants.reviewStatus_needinfo &&
+        reviewStatus != constants.reviewStatus_approved){
+        errors.exception = "invalid value for review status.";
+    }
+
+    return {
+        errors,
+        isValid: isEmpty(errors)
+    };
+}
+
+
+function validateProcessClaim(data, currentUser){
+    // initialize errors object
+    let errors = {};
+
+    // for now no validations
+    let _id =  isEmpty(data._id)? "" : data._id;
+    let closingRemarks =  isEmpty(data.closingRemarks)? "" : data.closingRemarks;
+    let status =  isEmpty(data.status)? "" : data.status;
+    let approvedAmount =  isEmpty(data.approvedAmount)? "" : String(data.approvedAmount);
+
+    //// perform required field validations
+    if(Validator.isEmpty(_id)){
+        errors.exception = "_id field is required for processing a claim.";
+    }
+    if(Validator.isEmpty(closingRemarks)){
+        errors.exception = "closing Remarks are required for processing a claim.";
+    }
+    if(Validator.isEmpty(status)){
+        errors.exception = "status is required for processing a claim.";
+    }
+    if(Validator.isEmpty(approvedAmount)){
+        errors.exception = "approved Amount is required for processing a claim.";
+    }
+
+    if(status != constants.claimStatus_approved &&
+        status != constants.claimStatus_rejected){
+        errors.exception = "invalid value for status.";
+    }
+
+    return {
+        errors,
+        isValid: isEmpty(errors)
+    };
+}
+
+
+module.exports = { validateCreatePayout, validateGetClaims, validateGetClaimInfo, validateRaiseClaim, validateReviewClaim };

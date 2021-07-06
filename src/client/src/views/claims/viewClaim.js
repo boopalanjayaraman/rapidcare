@@ -3,12 +3,18 @@ import PropTypes from "prop-types";
 import { connect } from "react-redux";
 import { textProvider } from "../../content/textProvider";
 import { withRouter } from "react-router";
-import { getClaimInfoAction } from '../../actions/claimActions';
+import { getClaimInfoAction, reviewClaimAction, processClaimAction } from '../../actions/claimActions';
 import { getInsuranceInfoAction } from '../../actions/insuranceActions';
 import { Link } from "react-router-dom";
 import { Modal, Button } from 'react-materialize';
+
+import Select from '@material-ui/core/Select';
+import MenuItem from '@material-ui/core/MenuItem';
+import FormControl from '@material-ui/core/FormControl';
+
  
 import isEmpty from "is-empty";
+import commonData from '../../utils/commonData';
 
 class ViewClaim extends Component {
 
@@ -65,11 +71,16 @@ class ViewClaim extends Component {
         };
 
         this.actionParam = '';
+
+        this.reviewStatuses = commonData.reviewStatuses;
         
         this.onGetClaimInfo = this.onGetClaimInfo.bind(this);
         this.getClaimInfo = this.getClaimInfo.bind(this);
         this.onGetInsuranceOrder = this.onGetInsuranceOrder.bind(this);
         this.getInsuranceOrder = this.getInsuranceOrder.bind(this);
+        this.onReviewClaimCompleted = this.onReviewClaimCompleted.bind(this);
+        this.onApproveClaimCompleted = this.onApproveClaimCompleted.bind(this);
+        this.onRejectClaimCompleted = this.onRejectClaimCompleted.bind(this);
     }
 
     componentDidMount(){
@@ -132,6 +143,101 @@ class ViewClaim extends Component {
         }
     }
 
+    onApprovedAmountChange = e =>{
+        let claimInfo = this.state.claimInfo;
+        claimInfo.approvedAmount = e.target.value;
+        this.setState({
+            claimInfo : claimInfo
+        });
+    }
+
+    onClosingRemarksChange= e =>{
+        let claimInfo = this.state.claimInfo;
+        claimInfo.closingRemarks = e.target.value;
+        this.setState({
+            claimInfo : claimInfo
+        });
+    }
+
+    onReviewRemarks2Change= e =>{
+        let claimInfo = this.state.claimInfo;
+        claimInfo.reviewInfo.remarks2 = e.target.value;
+        this.setState({
+            claimInfo : claimInfo
+        });
+    }
+
+    onReviewRemarks1Change= e =>{
+        let claimInfo = this.state.claimInfo;
+        claimInfo.reviewInfo.remarks1 = e.target.value;
+        this.setState({
+            claimInfo : claimInfo
+        });
+    }
+
+    onReview2StatusChange = e=>{
+        let claimInfo = this.state.claimInfo;
+        claimInfo.reviewInfo.review2 = e.target.value;
+        this.setState({
+            claimInfo : claimInfo
+        });
+    }
+
+    onReview1StatusChange = e=>{
+        let claimInfo = this.state.claimInfo;
+        claimInfo.reviewInfo.review1 = e.target.value;
+        this.setState({
+            claimInfo : claimInfo
+        });
+    }
+
+    onApproveClick() {
+
+    }
+
+    onRejectClick() {
+
+    }
+
+    onReviewClick(){
+        let isReviewer1 = this.state.claimInfo.reviewer1._id === this.props.auth.user.id; 
+        let isReviewer2 = this.state.claimInfo.reviewer2._id === this.props.auth.user.id;
+
+        let data = {};
+
+        if(isReviewer1){
+            data = {
+                _id : this.state.claimInfo._id,
+                reviewStatus: this.state.claimInfo.reviewInfo.review1,
+                remarks : this.state.claimInfo.reviewInfo.remarks1,
+            };
+        }
+        else if(isReviewer2){
+            data = {
+                _id : this.state.claimInfo._id,
+                reviewStatus: this.state.claimInfo.reviewInfo.review2,
+                remarks : this.state.claimInfo.reviewInfo.remarks2,
+            };
+        }
+
+        this.props.reviewClaimAction(data, this.onReviewClaimCompleted);
+    }
+
+    onReviewClaimCompleted(){
+        let reloadPage = 'viewclaim/' + this.state.claimInfo._id + '/reviewed';
+        this.props.history.push(reloadPage);
+    }
+
+    onApproveClaimCompleted(){
+        let reloadPage = 'viewclaim/' + this.state.claimInfo._id + '/approved';
+        this.props.history.push(reloadPage);
+    }
+
+    onRejectClaimCompleted(){
+        let reloadPage = 'viewclaim/' + this.state.claimInfo._id + '/rejected';
+        this.props.history.push(reloadPage);
+    }
+
 
     render() {
         const { user } = this.props.auth;
@@ -171,6 +277,27 @@ class ViewClaim extends Component {
                              { "Claim information" } <span className="black-text">({ this.state.claimInfo.friendlyId }) { this.state.claimInfo.name }</span>
                         </h4>
                     </div>
+                </div>
+                <div className="row">
+                        <div style={{ display: (this.actionParam === 'reviewed')|| (this.actionParam === 'approved') || (this.actionParam === 'rejected')? 'block': 'none'}}>
+                            <div className="col m2"></div>
+                            <div className="col m8 s12 center" style={{ backgroundColor: "#fffed4", border:"solid 1px #edecc0", paddingTop: "5px", paddingBottom: "5px"}}>
+
+                                <span className = "black-text"
+                                    style={{display: (this.actionParam === 'reviewed')? 'block': 'none'}} >
+                                        Thanks, Your review has been submitted successfully. This helps.
+                                </span>
+                                <span className = "green-text"
+                                    style={{display: (this.actionParam === 'approved')? 'block': 'none'}} >
+                                        Your approval has been submitted successfully.
+                                </span>
+                                <span className = "red-text"
+                                    style={{display: (this.actionParam === 'rejected')? 'block': 'none'}} >
+                                        Your remarks have been submitted successfully.
+                                </span>
+                            </div>
+                            <div className="col m2"></div>
+                        </div>
                 </div>
                 <div className="row">
                     <div className="col s12">
@@ -331,7 +458,25 @@ class ViewClaim extends Component {
                         </div>
                     </div>
                 </div>
-                <div className="row" style={{ display: ((isReviewer1 || isApprover) && (!disableReview)) ? "block" : "none"  }}>
+                <div className="row" style={{ display: ((isReviewer1) && (!disableReview)) ? "block" : "none"  }}>
+                    <div className="col s12 m8">
+                            <label className="pink-text">First Review Status </label>
+                            <div>
+                                <FormControl style={{width:"250px"}}>
+                                    <Select
+                                        id= { "review1Options" }
+                                        value={ this.state.claimInfo.reviewInfo.review1 }
+                                        onChange={ this.onReview1StatusChange }
+                                        >
+                                            { this.reviewStatuses.map((status) => (
+                                                <MenuItem key={ status.value } value={ status.value } >
+                                                    { status.text }
+                                                </MenuItem>
+                                            ))}
+                                    </Select>
+                                </FormControl>
+                            </div>
+                        </div>
                     <div className="col s12 m8">
                          <div><label className="pink-text">First Review Remarks </label></div>
                          <textarea 
@@ -348,7 +493,25 @@ class ViewClaim extends Component {
                         ></textarea>
                     </div>
                 </div>
-                <div className="row" style={{ display: ((isReviewer2 || isApprover) && (!disableReview)) ? "block" : "none"  }}>
+                <div className="row" style={{ display: ((isReviewer2) && (!disableReview)) ? "block" : "none"  }}>
+                    <div className="col s12 m8">
+                         <label className="pink-text">Second Review Status </label>
+                         <div>
+                            <FormControl style={{width:"250px"}}>
+                                <Select
+                                    id= { "review2Options" }
+                                    value={ this.state.claimInfo.reviewInfo.review2 }
+                                    onChange={ this.onReview2StatusChange }
+                                    >
+                                        { this.reviewStatuses.map((status) => (
+                                            <MenuItem key={ status.value } value={ status.value } >
+                                                { status.text }
+                                            </MenuItem>
+                                        ))}
+                                </Select>
+                            </FormControl>
+                        </div>
+                    </div>
                     <div className="col s12 m8">
                          <label className="pink-text">Second Review Remarks </label>
                          <textarea 
@@ -399,11 +562,11 @@ class ViewClaim extends Component {
                     <span className="red-text">{errors.error}</span>
                 </div>
                 <div className="row">
-                    <div className="col s6 m4" style={{ display: ((isReviewer1 || isReviewer2 || isApprover) && (!disableReview)) ? "block" : "none"  }}>
+                    <div className="col s6 m4" style={{ display: ((isReviewer1 || isReviewer2) && (!disableReview)) ? "block" : "none"  }}>
                         <Modal
                             actions={[
                                 <Button modal="close" node="button" className="btn waves-effect waves-light hoverable red accent-3"
-                                onClick={this.onProceedClick}> Yes, go ahead. </Button>
+                                onClick={this.onReviewClick}> Yes, go ahead. </Button>
                             ]}
                             bottomSheet={true}
                             fixedFooter={false}
@@ -420,23 +583,43 @@ class ViewClaim extends Component {
                         </Modal>  
                     </div>
                  
-                    <div className="col s6 m4">
+                    <div className="col s6 m4" style={{ display: ((isApprover) && (enableApproval)) ? "block" : "none"  }}>
                         <Modal
                             actions={[
-                                <Button modal="close" node="button" className="btn waves-effect waves-light hoverable red accent-3"
-                                onClick={this.onProceedClick}> Yes, Approve and Disburse. </Button>
+                                <Button modal="close" node="button" className="btn waves-effect waves-light hoverable"
+                                onClick={this.onApproveClick}> Yes, Approve and Disburse. </Button>
                             ]}
                             bottomSheet={true}
                             fixedFooter={false}
-                            id="Modal-0"
+                            id="Modal-1"
                             open={false}
                             trigger={ 
                                 <button type="button" 
-                                className="btn btn-large waves-effect waves-light hoverable red accent-3">
+                                className="btn btn-large waves-effect waves-light hoverable">
                                     Approve Claim
                             </button>
                              }  >
                                 <p style={{fontSize:"14px"}}> { "Are you sure you want to approve the claim? This action will result in disbursing the claim money." }
+                                </p>
+                        </Modal>  
+                    </div>
+                    <div className="col s6 m4" style={{ display: ((isApprover) && (enableApproval)) ? "block" : "none"  }}>
+                        <Modal
+                            actions={[
+                                <Button modal="close" node="button" className="btn waves-effect waves-light hoverable red accent-3"
+                                onClick={this.onRejectClick}> Yes, Reject. </Button>
+                            ]}
+                            bottomSheet={true}
+                            fixedFooter={false}
+                            id="Modal-2"
+                            open={false}
+                            trigger={ 
+                                <button type="button" 
+                                className="btn btn-large waves-effect waves-light hoverable red accent-3">
+                                    REJECT Claim
+                            </button>
+                             }  >
+                                <p style={{fontSize:"14px"}}> { "Are you sure you want to reject the claim? This action cannot be undone." }
                                 </p>
                         </Modal>  
                     </div>
@@ -450,6 +633,8 @@ class ViewClaim extends Component {
 ViewClaim.propTypes = {
     getClaimInfoAction: PropTypes.func.isRequired,
     getInsuranceInfoAction: PropTypes.func.isRequired,
+    reviewClaimAction :  PropTypes.func.isRequired,
+    processClaimAction :  PropTypes.func.isRequired,
     auth: PropTypes.object.isRequired
 };
 
@@ -462,4 +647,4 @@ const mapStateToProps = state => ({
 
 export default connect(
     mapStateToProps,
-    { getClaimInfoAction, getInsuranceInfoAction })(withRouter(ViewClaim));
+    { getClaimInfoAction, getInsuranceInfoAction, reviewClaimAction, processClaimAction })(withRouter(ViewClaim)); 

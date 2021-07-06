@@ -978,6 +978,33 @@ class UserService {
             return response;
         });
     }
+
+    //// getUserpaymentinfo method - INTERNAL
+    async getUserPaymentInfo(userInfo, currentUser){
+
+        this.logService.info('UserService - entered getUserPaymentInfo operation', { data: userInfo, currentUserId : currentUser._id });
+
+        let response = { errors : {}, result : null};
+        
+        //// findOne returns a promise so returning it - this is an async method.
+        return UserModel.findById(userInfo._id, this.getUserPaymentProjection())
+        .populate('paymentMethodInfo')
+        .then(user => {
+            if(!user){
+                response.errors.exception = "User not found.";
+                this.logService.info(response.errors.exception, { _id: currentUser._id });
+                return response;
+            }
+            this.logService.info('User info is fetched.', user);
+            response.result = user;
+            return response;
+        })
+        .catch(err => {
+            response.errors.exception = "Runtime Error occurred. Could not get user's payment info for unknown reasons.";
+            this.logService.error('Runtime Error occurred during getUserPaymentInfo op.', { ...err, currentUser: currentUser});
+            return response;
+        });
+    }
  
     getUserPaymentProjection(){
         return {   
