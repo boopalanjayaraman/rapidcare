@@ -199,15 +199,32 @@ class ViewClaim extends Component {
         });
     }
 
-    onApproveClick() {
+    onApproveClick = e=> {
 
+        let data = {};
+        data = {
+            _id : this.state.claimInfo._id,
+            status: "approved",
+            closingRemarks : this.state.claimInfo.closingRemarks,
+            approvedAmount : this.state.claimInfo.approvedAmount,
+        };
+        
+        this.props.processClaimAction(data, this.onApproveClaimCompleted);
     }
 
-    onRejectClick() {
-
+    onRejectClick = e=> {
+        let data = {};
+        data = {
+            _id : this.state.claimInfo._id,
+            status: "rejected",
+            closingRemarks : this.state.claimInfo.closingRemarks,
+            approvedAmount : this.state.claimInfo.approvedAmount,
+        };
+        
+        this.props.processClaimAction(data, this.onRejectClaimCompleted);
     }
 
-    onReviewClick(){
+    onReviewClick = e=> {
         let isReviewer1 = this.state.claimInfo.reviewer1._id === this.props.auth.user.id; 
         let isReviewer2 = this.state.claimInfo.reviewer2._id === this.props.auth.user.id;
 
@@ -232,17 +249,17 @@ class ViewClaim extends Component {
     }
 
     onReviewClaimCompleted(){
-        let reloadPage = 'viewclaim/' + this.state.claimInfo._id + '/reviewed';
+        let reloadPage = '/viewclaim/' + this.state.claimInfo._id + '/reviewed';
         this.props.history.push(reloadPage);
     }
 
     onApproveClaimCompleted(){
-        let reloadPage = 'viewclaim/' + this.state.claimInfo._id + '/approved';
+        let reloadPage = '/viewclaim/' + this.state.claimInfo._id + '/approved';
         this.props.history.push(reloadPage);
     }
 
     onRejectClaimCompleted(){
-        let reloadPage = 'viewclaim/' + this.state.claimInfo._id + '/rejected';
+        let reloadPage = '/viewclaim/' + this.state.claimInfo._id + '/rejected';
         this.props.history.push(reloadPage);
     }
 
@@ -301,7 +318,7 @@ class ViewClaim extends Component {
         let isReviewer1 = this.state.claimInfo.reviewer1._id === user.id; 
         let isReviewer2 = this.state.claimInfo.reviewer2._id === user.id;
         let isApprover = user.isAdmin;
-        let claimOwner = this.state.claimInfo.raisedBy._id === user.id;
+        let isClaimOwner = this.state.claimInfo.raisedBy._id === user.id;
 
         let raisedByText = this.state.claimInfo.isNominee ? "Nominee" :
                         this.state.claimInfo.isPartnerDoctor ? "Partner Doctor" : "Self";
@@ -620,7 +637,7 @@ class ViewClaim extends Component {
                     <span className="red-text">{errors.exception}</span>
                     <span className="red-text">{errors.error}</span>
                 </div>
-                <div className="row">
+                <div className="row" style={{display: isClaimOwner? "block" : "none"}}>
                     <div className="col s12">
                         <span className="indigo-text"><b>{ "Upload Documents" }</b></span>
                     </div>

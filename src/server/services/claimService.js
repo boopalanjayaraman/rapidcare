@@ -6,7 +6,7 @@ const settings = require("../config/configuration").environmentalSettings;
 const ClaimModel = require("../models/claim");
 
 //// load validations
-const { validateCreatePayout, validateGetClaims, validateGetClaimInfo, validateRaiseClaim, validateReviewClaim } = require("../validation/claimValidation");
+const { validateCreatePayout, validateGetClaims, validateGetClaimInfo, validateRaiseClaim, validateReviewClaim, validateProcessClaim } = require("../validation/claimValidation");
 
 const isEmpty = require("is-empty");
 const moment = require("moment");
@@ -411,8 +411,8 @@ class ClaimService {
             return response;
         }
         let fetchedClaim = claimResponse.result;
-        if(fetchedClaim.reviewInfo.reviewer1 !== currentUser._id &&
-            fetchedClaim.reviewInfo.reviewer2 !== currentUser._id){
+        if(fetchedClaim.reviewer1._id.toString() !== currentUser._id.toString() &&
+            fetchedClaim.reviewer2._id.toString() !== currentUser._id.toString()){
             this.logService.info('User is not allowed to submit review remarks for this claim.');
             response.errors.exception = 'User is not allowed to submit review remarks for this claim.';
             return response; 
@@ -429,7 +429,7 @@ class ClaimService {
         let updateInfo =  {};
 
         //// change the claim status based on the reviewer's statuses.
-        if(fetchedClaim.reviewInfo.reviewer1 === currentUser._id){
+        if(fetchedClaim.reviewer1._id.toString() === currentUser._id.toString()){
             updateInfo = {
                 'reviewInfo.review1' : data.reviewStatus,
                 'reviewInfo.remarks1' : data.remarks,
@@ -441,7 +441,7 @@ class ClaimService {
                 updateInfo['status'] = constants.claimStatus_inreview;
             }
         }
-        if(fetchedClaim.reviewInfo.reviewer2 === currentUser._id){
+        if(fetchedClaim.reviewer2._id.toString() === currentUser._id.toString()){
             updateInfo = {
                 'reviewInfo.review2' : data.reviewStatus,
                 'reviewInfo.remarks2' : data.remarks,
@@ -461,7 +461,7 @@ class ClaimService {
                 this.logService.info('the claim is updated with the review remarks.', response.result);
 
                 //// trigger payout for doctor /// call rapyd api
-                this.handleReviewPayment(claimData, currentUser);
+                this.handleReviewPayment(fetchedClaim, currentUser);
 
                 //// return result
                 return response;
@@ -497,7 +497,7 @@ class ClaimService {
             return response;
         }
         let fetchedClaim = claimResponse.result;
-        if(!currentUser.isAdmin){
+        if(!currentUser.roleInfo.isAdmin){
             this.logService.info('User is not allowed to submit process this claim.');
             response.errors.exception = 'User is not allowed to submit process this claim.';
             return response; 
@@ -528,7 +528,7 @@ class ClaimService {
 
                 if(data.status === constants.claimStatus_approved){
                     //// disburse the amount - call rapyd api
-                    await this.handleDisbursal(updated, currentUser);
+                    await this.handleDisbursal(fetchedClaim, approvedAmount, currentUser);
                 }
                 //// return result
                 return response;
@@ -541,7 +541,7 @@ class ClaimService {
     }
 
     //// process Claim disbursal method - INTERNAL method
-    async handleDisbursal(claimData, currentUser) {
+    async handleDisbursal(claimData, approvedAmount, currentUser) {
 
         let insuranceId = claimData.insuranceId._id;
         let holderId = claimData.insuranceId.holderId;
@@ -590,9 +590,15 @@ class ClaimService {
                 beneficiary_id = payee.paymentMethodInfo.rapydBankBeneficiaryId;
         }
 
+        if(isEmpty(beneficiary_id)){
+            this.logService.info('Payee (holder / nominee) does not have the payment info configured.');
+            response.errors.exception = 'Payee (holder / nominee) does not have the payment info configured.';
+            return response;
+        }
+
         //// create the payout
         let payoutData = {
-            amount : claimData.approvedAmount.toFixed(2),
+            amount : approvedAmount.toFixed(2),
             payoutMethodType : payoutMethodType,
             beneficiary_id : beneficiary_id,
             description : "DISBURSAL/CLAIM/" + claimData.friendlyId,
@@ -640,6 +646,12 @@ class ClaimService {
             && payee.paymentMethodInfo.rapydBankBeneficiaryId != ''){
                 payoutMethodType = payee.paymentMethodInfo.rapydBankPayoutMethod;
                 beneficiary_id = payee.paymentMethodInfo.rapydBankBeneficiaryId;
+        }
+
+        if(isEmpty(beneficiary_id)){
+            this.logService.info('Reviewer does not have the payment info configured.');
+            response.errors.exception = 'Reviewer does not have the payment info configured.';
+            return response;
         }
 
         //// create the payout

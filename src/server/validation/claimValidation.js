@@ -217,9 +217,15 @@ function validateProcessClaim(data, currentUser){
         errors.exception = "approved Amount is required for processing a claim.";
     }
 
-    if(status != constants.claimStatus_approved &&
-        status != constants.claimStatus_rejected){
+    if(status !== constants.claimStatus_approved &&
+        status !== constants.claimStatus_rejected){
         errors.exception = "invalid value for status.";
+    }
+
+    if(status === constants.claimStatus_approved
+        && ((data.approvedAmount === 0)
+        || data.approvedAmount === 0.0)){
+            errors.exception = "invalid value for approved amount (when the claim is being approved).";
     }
 
     return {
@@ -229,4 +235,4 @@ function validateProcessClaim(data, currentUser){
 }
 
 
-module.exports = { validateCreatePayout, validateGetClaims, validateGetClaimInfo, validateRaiseClaim, validateReviewClaim };
+module.exports = { validateCreatePayout, validateGetClaims, validateGetClaimInfo, validateRaiseClaim, validateReviewClaim, validateProcessClaim };
