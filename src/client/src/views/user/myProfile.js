@@ -132,6 +132,7 @@ class MyProfile extends Component {
 
     onSaveCardComplete(){
         this.props.history.push("/myprofile/"+ "paymentupdated");
+        window.location.reload(); 
     }
 
     SaveBankPaymentMethod(paymentMethodInfoId){
@@ -149,6 +150,7 @@ class MyProfile extends Component {
 
     onSaveBankComplete(){
         this.props.history.push("/myprofile/"+ "paymentupdated");
+        window.location.reload(); 
     }
 
     SaveBankBeneficiaryClick =e =>{

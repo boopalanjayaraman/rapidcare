@@ -251,16 +251,19 @@ class ViewClaim extends Component {
     onReviewClaimCompleted(){
         let reloadPage = '/viewclaim/' + this.state.claimInfo._id + '/reviewed';
         this.props.history.push(reloadPage);
+        window.location.reload(); 
     }
 
     onApproveClaimCompleted(){
         let reloadPage = '/viewclaim/' + this.state.claimInfo._id + '/approved';
         this.props.history.push(reloadPage);
+        window.location.reload(); 
     }
 
     onRejectClaimCompleted(){
         let reloadPage = '/viewclaim/' + this.state.claimInfo._id + '/rejected';
         this.props.history.push(reloadPage);
+        window.location.reload(); 
     }
 
     onFilesChange = e=> {
