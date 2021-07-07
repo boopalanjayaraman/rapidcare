@@ -1,7 +1,7 @@
 import axios from "axios";
 import { GET_ERRORS, SET_CLAIMS, SET_CLAIM_DOCUMENT, SET_CLAIM_DOCUMENTSLIST, SET_CLAIM_INFO, SET_RAISED_CLAIM } from "./types";
 
-
+import download from "downloadjs";
 
 export const getClaimsAction = (criteria, callback) => dispatch => {
 
@@ -125,7 +125,7 @@ export const uploadDocumentsAction = (data, callback) => dispatch => {
 export const getDocumentsAction = (data, callback) => dispatch => {
 
     axios
-    .get("/api/claims/getdocuments", data)
+    .get("/api/claims/getdocuments", { params:{ ...data} })
     .then(res => {
         const docsRes  = res.data;
         dispatch(setClaimDocumentsList(docsRes)); 
@@ -149,10 +149,11 @@ export const setClaimDocumentsList = (docsRes) => {
 export const getDocumentAction = (data, callback) => dispatch => {
 
     axios
-    .get("/api/claims/getdocument", data)
+    .get("/api/claims/getdocument", { params:{ ...data}, responseType: 'blob' })
     .then(res => {
-        const docRes  = res.data;
-        dispatch(setClaimDocument(docRes)); 
+        //const docRes  = res.data;
+        download(res.data, data.documentName);
+        //dispatch(setClaimDocument(docRes)); 
         if(callback){
             callback();
         }

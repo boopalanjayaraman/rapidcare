@@ -22,6 +22,13 @@ const CryptoJS = require("crypto-js");
 const crypto = require("crypto");
 const axios = require("axios");
 
+const AWS = require("aws-sdk");
+
+const s3 = new AWS.S3({
+    accessKeyId: configuration.awsConfig.accessKeyId,
+    secretAccessKey: configuration.awsConfig.secretAccessKey,
+    region: configuration.awsConfig.region
+});
 
 class ClaimService {
 
@@ -652,7 +659,7 @@ class ClaimService {
     //// adds claim documents
     async uploadDocuments(reqBody, currentUser) {
 
-        this.logService.info('entered uploadDocuments in claimService.', {data: data});
+        this.logService.info('entered uploadDocuments in claimService.', {reqBody: reqBody  });
 
         let response = { errors: {}, result: null };
 
@@ -671,14 +678,14 @@ class ClaimService {
         //// update claim details to db
         return ClaimModel.updateOne({_id: claimId}, updateInfo)
         .then(async (updated) => {
-                response.result = { _id: data._id, action: "updated", documentName: documentName };
+                response.result = { _id: reqBody.claimId, action: "updated", documentName: documentName };
                 this.logService.info('the claim is updated with the document details.', response.result);
                 //// return result
                 return response;
         })
         .catch(err => {
             this.logService.error('Error occurred in reviewClaim operation.', err);
-            response.errors.exception = "Error occurred in reviewClaim operation. Could not save for unknown reasons.";
+            response.errors.exception = "Error occurred in uploadDocuments operation. Could not save for unknown reasons.";
             return response;
         });
     }
@@ -687,8 +694,19 @@ class ClaimService {
     async getDocuments(claimData, currentUser) {
         this.logService.info('entered uploadDocuments in claimService.', {claimData: claimData});
 
-        let claimId = claimData.claimId;
         let response = { errors: {}, result: null };
+
+        if(isEmpty(claimData)
+        || !claimData.claimId
+        || isEmpty(claimData.claimId)){
+            this.logService.info('Claim Id is required for gettin documents.');
+            response.errors.exception = "Claim Id is required for gettin documents.";
+            return response;
+        }
+
+        //// TODO: validate if the user is related to claim Info -- holder, raisedBy, reviwers, admin.
+
+        let claimId = claimData.claimId;
 
         //// update claim details to db
         return ClaimModel.findOne({_id: claimId})
@@ -712,8 +730,39 @@ class ClaimService {
 
     //// get the claim document
     async getDocument(claimData, currentUser) {
+
+        this.logService.info('entered getDocument in claimService.', {claimData: claimData});
         //// call document service
-        return { errors: {}, result: null };
+        let response = { errors: {}, result: null };
+
+        if(isEmpty(claimData)
+        || !claimData.documentName
+        || isEmpty(claimData.documentName)){
+            this.logService.info('Document Name is required.');
+            response.errors.exception = "Document Name is required.";
+            return response;
+        }
+
+        //// TODO: validate if the user is related to claim Info -- holder, raisedBy, reviwers, admin.
+
+        var params = {
+            Key: claimData.documentName,
+            Bucket: configuration.awsConfig.bucketName
+        };
+
+        return s3.getObject(params).promise().then((data) =>{
+            if(data.Body){
+                response.result =  data.Body;
+                this.logService.info('the claim document is fetched from the s3 bucket.');
+                return response;
+            }
+            return response;
+
+        }).catch((err) => {
+            this.logService.error('Error occurred in getDocument operation.', err);
+            response.errors.exception = "Error occurred in getDocument operation.";
+            return response;
+        });
     }
 
     //// deletes the claim document

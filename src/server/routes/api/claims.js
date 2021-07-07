@@ -256,9 +256,9 @@ router.post("/uploaddocuments",passport.authenticate('jwt', {session: false}), u
 // @route GET api/claims/getdocuments
 // @desc gets list of documents for the claim
 // @access Public
-router.post("/getdocuments",passport.authenticate('jwt', {session: false}), async (req, res) => {
+router.get("/getdocuments",passport.authenticate('jwt', {session: false}), async (req, res) => {
     
-    const data = req.body;
+    const data = req.query;
     const currentUser = req.user;
     
     logService.info('getdocuments operation is invoked by user.',  { currentUser: currentUser.email , userId: currentUser._id, country: data.country});
@@ -282,9 +282,9 @@ router.post("/getdocuments",passport.authenticate('jwt', {session: false}), asyn
 // @route GET api/claims/getdocument
 // @desc gets a document from the claim
 // @access Public
-router.post("/getdocument",passport.authenticate('jwt', {session: false}), async (req, res) => {
+router.get("/getdocument",passport.authenticate('jwt', {session: false}), async (req, res) => {
     
-    const data = req.body;
+    const data = req.query;
     const currentUser = req.user;
     
     logService.info('getdocument operation is invoked by user.',  { currentUser: currentUser.email , userId: currentUser._id, country: data.country});
@@ -296,7 +296,12 @@ router.post("/getdocument",passport.authenticate('jwt', {session: false}), async
             return res.status(500).json(errors);
         }
         else{
-            return res.json(result);
+            res.writeHead(200, {
+                'Content-Type': 'application/octet-stream',
+                'Content-Length': result.length
+            });
+            return res.write(result);
+            //return res.json(result);
         } 
     } catch (error) {
         const errorMsg = 'Error in getdocument operation.';

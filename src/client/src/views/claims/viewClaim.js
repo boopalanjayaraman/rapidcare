@@ -84,6 +84,9 @@ class ViewClaim extends Component {
         this.onReviewClaimCompleted = this.onReviewClaimCompleted.bind(this);
         this.onApproveClaimCompleted = this.onApproveClaimCompleted.bind(this);
         this.onRejectClaimCompleted = this.onRejectClaimCompleted.bind(this);
+        this.getDocuments = this.getDocuments.bind(this);
+        this.onGetDocuments = this.onGetDocuments.bind(this);
+
     }
 
     componentDidMount(){
@@ -123,6 +126,8 @@ class ViewClaim extends Component {
             //// call back
             let insuranceId = this.state.claimInfo.insuranceId._id;
             this.getInsuranceOrder(insuranceId);
+            //// get the documents in parallel.
+            this.getDocuments();
         });
     }
 
@@ -248,16 +253,41 @@ class ViewClaim extends Component {
     onFilesUpload = e=> {
         const formData = new FormData();
         formData.append("claimId", this.state.claimInfo._id);
-        
-        let file = this.state.selectedFile;
-        formData.append(
+
+        if(this.state.selectedFile !== null &&  this.state.selectedFile.name !== undefined){
+
+            let file = this.state.selectedFile;
+            formData.append(
                 "file",
                 file,
                 file.name);
              
-        this.props.uploadDocumentsAction(formData, ()=>{
-            alert('upload done');
+            this.props.uploadDocumentsAction(formData, this.getDocuments);
+        }
+    }
+
+    getDocuments(){
+        let data = { claimId : this.state.claimInfo._id};
+        this.props.getDocumentsAction(data, this.onGetDocuments);
+    }
+
+    onGetDocuments(){
+        let claimDocuments = this.props.claimReducer.setClaimDocumentsList;
+        this.setState({
+            claimDocuments  : claimDocuments
         });
+        this.setState({ selectedFile : []});
+    }
+
+    onClickDocument = e => {
+        let documentName = e.target.outerText;
+        let data = { claimId : this.state.claimInfo._id, documentName: documentName };
+        this.props.getDocumentAction(data, this.onGetDocument);
+    }
+
+    onGetDocument(){
+        //let documentContent = this.props.claimReducer.setClaimDocument;
+        
     }
 
 
@@ -476,7 +506,14 @@ class ViewClaim extends Component {
                     </div>
                     <div className="col s12">
                         <div className="">
-                            <span className="black-text"> None to display </span>
+                            <span style={{ display:   (this.state.claimDocuments.length === 0) ? "block" : "none" }} className="black-text"> None to display </span>
+                        </div>
+                        <div className="">
+                                { this.state.claimDocuments.map((document) => (
+                                    <div>
+                                        <Link onClick={this.onClickDocument } value={ document.name } to="#">{ document.name }</Link>
+                                    </div>
+                                ))}
                         </div>
                     </div>
                 </div>
@@ -588,7 +625,7 @@ class ViewClaim extends Component {
                         <span className="indigo-text"><b>{ "Upload Documents" }</b></span>
                     </div>
                     <div className="col s12  m8">
-                        <label className="pink-text">Upload one or more documents</label>
+                        <label className="pink-text">Upload a document (max size: 2 MB) </label>
                     </div>
                     <div className="col s12 m5 file-field input-field">
                         <div class="btn ">
@@ -596,7 +633,7 @@ class ViewClaim extends Component {
                             <input type="file"  onChange={this.onFilesChange} ></input>
                         </div>
                         <div class="file-path-wrapper">
-                            <input class="file-path validate" type="text" placeholder="Upload one or more files"></input>
+                            <input class="file-path validate" value={ (this.state.selectedFile.file !== undefined && this.state.selectedFile.file.name !== undefined) ? this.state.selectedFile.file.name : ""} type="text" placeholder="Upload a file"></input>
                         </div>
                     </div>
                     <div className="col s12 m6 file-field input-field">
