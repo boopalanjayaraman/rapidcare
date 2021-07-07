@@ -32,6 +32,8 @@ module.exports = {
     claimStatus_review_complete : 'review-complete',
     claimStatus_approved : 'approved',
     claimStatus_rejected : 'rejected',
+    payment_method_card : 'card',
+    payment_method_bank : 'bank',
     rapydConstants : {
         http_get_method : 'get',
         http_post_method : 'post',

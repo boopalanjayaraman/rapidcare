@@ -93,7 +93,7 @@ class Landing extends Component{
             <div className="row center-align">
                 <div className="col s12">
                     <span className="grey-text text-darken-1"> { text.landing_time_caption } </span>
-                    <p><span className="grey-text text-darken-1"> { text.landing_claim_caption } </span> </p>
+                    <p><span className="grey-text text-darken-1 pink-text"> { text.landing_claim_caption } </span> </p>
                 </div>
                 <div>&nbsp;</div>
             </div>

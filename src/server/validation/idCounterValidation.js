@@ -22,7 +22,8 @@ module.exports = function validateIdCounterInput(modelId){
        && !Validator.equals(modelId, constants.idCounter_insuranceproducts) 
        && !Validator.equals(modelId, constants.idCounter_nominees) 
        && !Validator.equals(modelId, constants.idCounter_policyinfos)
-       && !Validator.equals(modelId, constants.idCounter_products)){
+       && !Validator.equals(modelId, constants.idCounter_products)
+       && !Validator.equals(modelId, constants.idCounter_paymentmethods)){
         errors._id = "Invalid _id field for IdCounter."
     }
 

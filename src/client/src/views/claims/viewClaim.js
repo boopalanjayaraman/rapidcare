@@ -644,7 +644,7 @@ class ViewClaim extends Component {
                     <div className="col s12  m8">
                         <label className="pink-text">Upload a document (max size: 2 MB) </label>
                     </div>
-                    <div className="col s12 m5 file-field input-field">
+                    <div className="col s8 m5 file-field input-field">
                         <div class="btn ">
                             <span>File</span>
                             <input type="file"  onChange={this.onFilesChange} ></input>
@@ -653,7 +653,7 @@ class ViewClaim extends Component {
                             <input class="file-path validate" value={ (this.state.selectedFile.file !== undefined && this.state.selectedFile.file.name !== undefined) ? this.state.selectedFile.file.name : ""} type="text" placeholder="Upload a file"></input>
                         </div>
                     </div>
-                    <div className="col s12 m6 file-field input-field">
+                    <div className="col s4 m6 file-field input-field">
                         <div>
                             <button className="btn" onClick={this.onFilesUpload}><i className="material-icons center">upload</i></button>
                         </div>

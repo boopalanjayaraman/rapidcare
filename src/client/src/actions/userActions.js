@@ -1,5 +1,5 @@
 import axios from "axios";
-import { GET_ERRORS, SET_MY_PROFILE, SET_PROFILE_USER, BROWSE_UNLOCK_USERS } from "./types";
+import { GET_ERRORS, SET_MY_PROFILE, SET_PROFILE_USER, BROWSE_UNLOCK_USERS, SET_PAYMENTINFO_ID } from "./types";
 
 
 export const getUserInfoToViewAction = (userId, callback) => dispatch => {
@@ -26,6 +26,23 @@ export const getMyInfoToViewAction = (userId, callback) => dispatch => {
 
     axios
     .get("/api/users/getmyinfo", { params:{ _id: userId} })
+    .then(res => {
+        const user  = res.data;
+        dispatch(setMyProfile(user));
+        if(callback){
+            callback();
+        }
+    })
+    .catch(err => {
+        dispatch(publishError(err));
+    });
+};
+
+
+export const getMyInfoWithPaymentAction = (userId, callback) => dispatch => {
+
+    axios
+    .get("/api/users/getmyinfowithpayment", { params:{ _id: userId} })
     .then(res => {
         const user  = res.data;
         dispatch(setMyProfile(user));
@@ -136,6 +153,31 @@ export const changeForgotPasswordAction = (userData, callBack) => dispatch => {
     );
 };
 
+
+//// add payment method Action
+export const addPaymentInfoAction = (userData, callback) => dispatch => {
+    axios
+    .post("/api/users/addpaymentinfo", userData)
+    .then(res => {
+        const { paymentMethodId } = res.data;
+        dispatch(setPaymentInfoId({_id: paymentMethodId}));
+        if(callback){
+            callback(paymentMethodId);
+        }
+    })  
+    .catch(err => {
+            dispatch(publishError(err));
+        }
+    );
+};
+
+export const setPaymentInfoId = (paymentInfo) => {
+    return {
+            type: SET_PAYMENTINFO_ID,
+            payload: paymentInfo 
+        };
+};
+
 //// set current user object for view / edit
 export const setProfileUser = (user) => {
     return {
@@ -143,6 +185,8 @@ export const setProfileUser = (user) => {
             payload: user 
         };
 };
+
+
 
 //// set my user object for view / edit
 export const setMyProfile = (user) => {

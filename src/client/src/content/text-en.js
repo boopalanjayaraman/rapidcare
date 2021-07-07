@@ -13,7 +13,7 @@ const englishText = {
     landing_time_caption : "Five minutes to get insured. Zero minutes on Paper work.",
     landing_Language : "Language",
     landing_Country : "Country",
-    landing_claim_caption: 'Artificial Intelligence backed. Super fast Claims. Automated services.',
+    landing_claim_caption: 'Artificial Intelligence backed. Super fast Claims. Automated services. Cashback rewards.',
     // register
     register_back:"Back to home",
     register_title: "Great. Let's get you signed up.",

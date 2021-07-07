@@ -6,6 +6,7 @@ const settings = require("../config/configuration").environmentalSettings;
 const PaymentMethodModel = require("../models/paymentmethod");
 
 const { validateCreateBeneficiary } = require("../validation/userValidation");
+const { validateSavePaymentMethod } = require("../validation/paymentMethodValidation");
 
 const isEmpty = require("is-empty");
 const moment = require("moment");
@@ -74,7 +75,7 @@ class PaymentMethodService {
         let response = {errors, result: null};
         //// if validation failed, send back the errors to front end.
         if(!isValid){
-            return response;
+            return response; 
         }
 
         //// get the basic configurations
@@ -143,29 +144,36 @@ class PaymentMethodService {
             });
     }
 
-    //// create payment method
-    //// This is an internal method
+    //// save payment method
     async savePaymentMethod(data, currentUser) {
 
         this.logService.info('entered savePaymentMethod in PaymentMethodService.', {data: data});
-         
-        let response = {errors : { }, result: null}; 
+
+        let { errors, isValid } = validateSavePaymentMethod(data);
+        let response = {errors, result: null};
+        //// if validation failed, send back the errors to front end.
+        if(!isValid){
+            return response;
+        }
  
         let updateInfo = {};
 
-        if(data.method === 'card'){
+        if(data.method === constants.payment_method_card){
             data['beneficiaryCategory'] = constants.rapydConstants.beneficiary_category_card;
+            data['category'] = constants.rapydConstants.beneficiary_category_card;
+            
             const { errors, result } = await this.createBeneficiary(data, currentUser);
 
             let beneficiary_id = result.beneficiary_data.id;
             updateInfo = {
-                _id : data.paymentMethodId,
                 rapydCardBeneficiaryId : beneficiary_id,
                 rapydCardPayoutMethod : data.payoutMethodType
             };
         }
-        else if(data.method === 'bank'){
+        else if(data.method === constants.payment_method_bank){
             data['beneficiaryCategory'] = constants.rapydConstants.beneficiary_category_bank;
+            data['category'] = constants.rapydConstants.beneficiary_category_bank;
+
             const { errors, result } = await this.createBeneficiary(data, currentUser);
 
             let beneficiary_id = result.beneficiary_data.id;

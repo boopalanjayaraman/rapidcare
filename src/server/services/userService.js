@@ -1058,9 +1058,9 @@ class UserService {
                 let updateInfo = { paymentMethodInfo : paymentMethodId};
 
                 //// returns a promise
-                return UserModel.updateOne({_id: currentUser._id}, { "$set": updateInfo })
+                return UserModel.updateOne({_id: userData._id}, { "$set": updateInfo })
                     .then(updated => {
-                        response.result = { _id: userData._id, action: "updated" };
+                        response.result = { _id: userData._id, action: "updated", paymentMethodId : paymentMethodId };
                         this.logService.info('the user is updated with PaymentInfo.', response.result);
                         //// return result
                         return response;

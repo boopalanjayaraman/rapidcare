@@ -13,6 +13,7 @@ const users = require("./routes/api/users");
 const products = require("./routes/api/products");
 const insurances = require("./routes/api/insurances");
 const claims = require("./routes/api/claims");
+const paymentmethods = require("./routes/api/paymentmethods");
 
 const app = express();
 
@@ -50,6 +51,7 @@ app.use("/api/users", users);
 app.use("/api/products", products);
 app.use("/api/insurances", insurances);
 app.use("/api/claims", claims);
+app.use("/api/paymentmethods", paymentmethods);
 
 /// render client build directory content
 /*app.use(express.static(path.join(__dirname, '../client/build')));

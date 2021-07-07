@@ -336,7 +336,7 @@ router.post("/changeforgotpassword", async (req, res) => {
 });
 
 // @route POST api/users/createcustomer
-// @desc this is to let the user change the password with given tokens.
+// @desc this is to create a customer in rapyd.
 router.post("/createcustomer", passport.authenticate('jwt', {session: false}), async (req, res) => {
     
     const data = req.body;
@@ -354,6 +354,30 @@ router.post("/createcustomer", passport.authenticate('jwt', {session: false}), a
         } 
     } catch (error) {
         const errorMsg = 'Error in createcustomer operation.';
+        logService.error(errorMsg, error);
+        return res.status(500).json( {error: errorMsg} );
+    }
+});
+
+// @route POST api/users/addpaymentinfo
+// @desc this is to let the user create a payment info object.
+router.post("/addpaymentinfo", passport.authenticate('jwt', {session: false}), async (req, res) => {
+    
+    const data = req.body;
+    const currentUser = req.user;
+    logService.info('addPaymentInfo operation is invoked by user.',  {currentUser: currentUser.email, userId: currentUser._id});
+
+    try {
+        //// call user service
+        const { errors, result } = await userService.addPaymentInfo(data, currentUser);
+        if(!isEmpty(errors)){
+            return res.status(500).json(errors);
+        }
+        else{
+            return res.json(result);
+        } 
+    } catch (error) {
+        const errorMsg = 'Error in addPaymentInfo operation.';
         logService.error(errorMsg, error);
         return res.status(500).json( {error: errorMsg} );
     }
