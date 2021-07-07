@@ -5,6 +5,9 @@ import { connect } from "react-redux";
 import { registerUser } from "../actions/authActions";
 import classnames from "classnames";
 
+import DatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
+
 import { Modal, Button } from 'react-materialize';
 
 import { withStyles } from "@material-ui/core/styles";
@@ -32,6 +35,8 @@ class Register extends Component{
           password: "",
           password2: "",
           userType: "individual",
+          socialSecurityNumber : "",
+          dateOfBirth : new Date(),
           errors: {}
         };
     }
@@ -61,6 +66,13 @@ class Register extends Component{
         this.setState({ userType : e.target.value });
     };
 
+    onDateOfBirthChange = e=> {
+        let dob = new Date(e);
+        this.setState({
+            dateOfBirth :  dob
+        });
+    }
+
     //define onSubmit handler
     onSubmit = e => {
         e.preventDefault();
@@ -71,6 +83,8 @@ class Register extends Component{
             password: this.state.password,
             password2: this.state.password2,
             userType: this.state.userType,
+            socialSecurityNumber : this.state.socialSecurityNumber,
+            dateOfBirth : this.state.dateOfBirth
         };
 
         this.props.registerUser(freshUser, this.props.history);
@@ -172,6 +186,26 @@ class Register extends Component{
                         <span className="red-text">{errors.userType}</span>
                         {/* <label htmlFor="userType">User Type</label> */}
                 </div>
+                <div className="input-field col s12 m8">
+                    <input
+                    onChange={this.onChange}
+                    value={this.state.socialSecurityNumber}
+                    error={errors.socialSecurityNumber}
+                    id="socialSecurityNumber"
+                    type="text"
+                    className={classnames("", {
+                        invalid: errors.socialSecurityNumber
+                      })}
+                    />
+                    <label htmlFor="socialSecurityNumber">{ text.register_socialSecurityNumber }</label>
+                    <span className="red-text">{errors.socialSecurityNumber}</span>
+                </div>
+                <div className="col s12 m4">
+                    <label htmlFor="dateOfBirth">{ "Date Of Birth" }</label>
+                    <DatePicker selected={ this.state.dateOfBirth } onChange={ this.onDateOfBirthChange } dateFormat="dd-MMM-yyyy" /> 
+                    <span className="red-text">{errors.dateOfBirth}</span>
+                </div>
+
                 <div>
                     <span className="red-text">{errors.exception}</span>
                     <span className="red-text">{errors.error}</span>

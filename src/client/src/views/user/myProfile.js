@@ -51,10 +51,15 @@ class MyProfile extends Component {
         this.onSaveBankComplete = this.onSaveBankComplete.bind(this);
         this.SaveCardPaymentMethod = this.SaveCardPaymentMethod.bind(this);
         this.SaveBankPaymentMethod = this.SaveBankPaymentMethod.bind(this);
+        this.fetchUser = this.fetchUser.bind(this);
     }
 
 
     componentDidMount(){
+        this.fetchUser();
+    }
+
+    fetchUser(){
         let userId = this.props.auth.user.id;
          
         if(userId){
@@ -67,7 +72,6 @@ class MyProfile extends Component {
         if(this.props.match.params.action){
             this.actionParam = this.props.match.params.action;
         }
-        
     }
 
     
@@ -77,14 +81,19 @@ class MyProfile extends Component {
                 errors: nextProps.errors
             });
         }
+        this.fetchUser();
     }
     
     onGetUserInfoWithPayment() {
         let userInfo = this.props.userReducer.setMyProfile;
-
-        this.setState({
-            myInfo  : userInfo
-        });
+        try{
+            this.setState({
+                myInfo  : userInfo
+            });
+        }
+        catch(err){
+            console.log(err);
+        }
     }
 
     getUserInfoWithPayment(userId) {
@@ -188,19 +197,19 @@ class MyProfile extends Component {
 
         let chosen_language = localStorage['chosen_language'] ?? 'en'; 
         
-        let cardBeneficiaryExists = (this.state.myInfo.paymentMethodInfo) && 
+        let cardBeneficiaryExists = (this.state.myInfo.paymentMethodInfo !== undefined) && 
                                     (this.state.myInfo.paymentMethodInfo.rapydCardBeneficiaryId !== null) &&
                                     (this.state.myInfo.paymentMethodInfo.rapydCardBeneficiaryId !== '');
 
-        let bankBeneficiaryExists = (this.state.myInfo.paymentMethodInfo) && 
+        let bankBeneficiaryExists = (this.state.myInfo.paymentMethodInfo !== undefined) && 
                                     (this.state.myInfo.paymentMethodInfo.rapydBankBeneficiaryId !== null) &&
                                     (this.state.myInfo.paymentMethodInfo.rapydBankBeneficiaryId !== '');
 
-        let cardBeneficiaryId = isEmpty(this.state.myInfo.paymentMethodInfo.rapydCardBeneficiaryId) ?
+        let cardBeneficiaryId = isEmpty(this.state.myInfo.paymentMethodInfo) || isEmpty(this.state.myInfo.  paymentMethodInfo.rapydCardBeneficiaryId) ?
                                 "-" :
                                 this.state.myInfo.paymentMethodInfo.rapydCardBeneficiaryId;
 
-        let cardPayout = isEmpty(this.state.myInfo.paymentMethodInfo.rapydCardPayoutMethod) ?
+        let cardPayout = isEmpty(this.state.myInfo.paymentMethodInfo) || isEmpty(this.state.myInfo.paymentMethodInfo.rapydCardPayoutMethod) ?
                         "-" :
                         this.state.myInfo.paymentMethodInfo.rapydCardPayoutMethod;
 
@@ -209,11 +218,11 @@ class MyProfile extends Component {
                                     : " (None) ";
 
 
-        let bankBeneficiaryId = isEmpty(this.state.myInfo.paymentMethodInfo.rapydBankBeneficiaryId) ?
+        let bankBeneficiaryId = isEmpty(this.state.myInfo.paymentMethodInfo) || isEmpty(this.state.myInfo.paymentMethodInfo.rapydBankBeneficiaryId) ?
                                     "-" :
                                     this.state.myInfo.paymentMethodInfo.rapydBankBeneficiaryId;
     
-        let bankPayout = isEmpty(this.state.myInfo.paymentMethodInfo.rapydBankPayoutMethod) ?
+        let bankPayout = isEmpty(this.state.myInfo.paymentMethodInfo) || isEmpty(this.state.myInfo.paymentMethodInfo.rapydBankPayoutMethod) ?
                             "-" :
                             this.state.myInfo.paymentMethodInfo.rapydBankPayoutMethod;
         
@@ -257,17 +266,31 @@ class MyProfile extends Component {
                         </div>
                 </div>
                 <div className="row">
-                    <div className="col s12">
+                    <div className="col s12 m8">
+                        <div >
+                            <span className="indigo-text"><b>{ "Your RapydCare Id" }</b></span>
+                            &nbsp; <span className="black-text"> <b>{ user.id } </b></span>
+                        </div>
+                        <div>
+                            <label className="grey-text"> Share this with another user if the person is your employer who wants to get you an insurance, your nominee / your doctor who wants to raise a claim on your behalf.</label>
+                        </div>
+                    </div>
+                </div>
+                <div className="row">
+                    <div className="col s12 m8">
                         <div >
                             <span className="indigo-text"><b>{ "Card Information" }</b></span>
                         </div>
                         <div>
-                            <label className="grey-text"><b>Note:</b> Beneficiary information will be saved for all card / bank information, but <b>Rapyd Sandbox supports only US-based card payouts. </b></label>
+                            <label className="grey-text"><b>Note:</b> Beneficiary information can be saved for all available card / bank information, but <b>Rapyd Sandbox currently supports only US-based card payouts. </b></label>
                         </div>
                     </div>
                     <div className="col s12" style={{paddingTop : "10px", paddingBottom: "10px"}}>
-                        <div >
-                            <label className="black-text">{ "Existing Card Beneficiary information" } : </label ><label className="pink-text"><b>{cardBeneficiaryText} </b></label>
+                        <div className="s12 m8">
+                            <label className="black-text">{ "Existing Card Beneficiary information" } : </label >
+                        </div>
+                        <div>
+                            <label className="pink-text"><b>{cardBeneficiaryText} </b></label>
                         </div>
                     </div>
                     <div className="s12 m8">
@@ -343,7 +366,9 @@ class MyProfile extends Component {
                     <div className="col s12" style={{paddingTop : "10px", paddingBottom: "10px"}}>
                         <div >
                             <label className="black-text">{ "Existing Bank Beneficiary information" } : </label >
-                            <label className="pink-text"><b>{bankBeneficiaryText} </b></label>
+                        </div>
+                        <div>
+                            <label className="pink-text"><b>{bankBeneficiaryText} </b></label>  
                         </div>
                     </div>
                     <div className="s12 m8">

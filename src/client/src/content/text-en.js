@@ -20,6 +20,7 @@ const englishText = {
     register_accountExists: "Already have an account?",
     register_Login: "Log in",
     register_fullName: "Full Name",
+    register_socialSecurityNumber: "Social Security Number / Aadhar",
     register_LoginId: "LoginId (Email)",
     register_Password: "Password",
     register_ConfirmPassword: "Confirm Password",
@@ -80,6 +81,13 @@ const englishText = {
     buyinsurance_insuredType : "Insured Type",
     buyinsurance_FewSteps : "1. Just a few steps, and you are done! Let us know about the insured.",
     buyinsurance_fullName: "Full Name (official)",
+    // holderInfo 
+    holderInfo_identityInformation : "Identity Information",
+    holderInfo_RapydCareUserId : "RapydCare User Id (Necessary)",
+    holderInfo_SocialSecurityNumber : "Social Security Number / Aadhar Number",
+    holderInfo_NameAsPerOurRecords : "Name (as per our records)",
+    holderInfo_DateOfBirth : "Date of Birth",
+    holderInfo_NomineeName : "Nominee Name",
     //productType
     productType : {
         health : "Health Insurance",

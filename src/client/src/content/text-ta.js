@@ -20,6 +20,7 @@ const tamilText = {
     register_accountExists: "ஏற்கனவே பதிவு செய்தவரா?",
     register_Login: "உள் நுழைக",
     register_fullName: "முழுப்பெயர்",
+    register_socialSecurityNumber: "சமூக பாதுகாப்பு எண் / ஆதார் எண்",
     register_LoginId: "கணக்கின் பெயர் (மின்னஞ்சல் முகவரி)",
     register_Password: "ரகசிய கடவுச் சொல்",
     register_ConfirmPassword: "ரகசிய கடவுச் சொல் மறுபடியும்",
@@ -79,6 +80,13 @@ const tamilText = {
     buyinsurance_insuredType : "காப்பீடு பெறுபவர் வகை",
     buyinsurance_FewSteps : "1. இன்னும் சில படிகள் மட்டுமே. காப்பீடு பெறும் நபரை பற்றி கூறுங்கள்.",
     buyinsurance_fullName: "(அங்கீகரிக்கப்பட்ட) முழுப் பெயர்",
+    // holderInfo 
+    holderInfo_identityInformation : "அடையாள விவரங்கள்",
+    holderInfo_RapydCareUserId : "ராபிட்கேர் பயனர் எண் (தேவை)",
+    holderInfo_SocialSecurityNumber : "சமூக பாதுகாப்பு எண் / ஆதார் எண்",
+    holderInfo_NameAsPerOurRecords : "பெயர் (எங்கள் பதிவுகளில் இருந்து)",
+    holderInfo_DateOfBirth : "பிறந்த தேதி",
+    holderInfo_NomineeName : "வாரிசுதாரர் பெயர்",
     //productType
     productType : {
         health : "மருத்துவ காப்பீடு",

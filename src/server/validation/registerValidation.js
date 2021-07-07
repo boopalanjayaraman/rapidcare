@@ -13,6 +13,8 @@ module.exports = function validateRegisterInput(data){
     data.password = isEmpty(data.password) ? "" : data.password;
     data.password2 = isEmpty(data.password2) ? "" : data.password2;
     data.userType =  isEmpty(data.userType) ? "" : data.userType;
+    data.socialSecurityNumber =  isEmpty(data.socialSecurityNumber) ? "" : data.socialSecurityNumber;
+    data.dateOfBirth =  isEmpty(data.dateOfBirth) ? "" : String(data.dateOfBirth);
 
     //// perform validations
     if(Validator.isEmpty(data.username)){
@@ -41,6 +43,15 @@ module.exports = function validateRegisterInput(data){
     if(!Validator.equals(data.password, data.password2)){
         errors.password2 = "Passwords must match."
     }
+
+    if(Validator.isEmpty(data.socialSecurityNumber)){
+        errors.socialSecurityNumber = "social Security Number field is required.";
+    }
+
+    if(Validator.isEmpty(data.dateOfBirth)){
+        errors.dateOfBirth = "date Of Birth field is required.";
+    }
+
 
     //// strong password check. isStrongPassword method has a bug for "@" symbol.
     //// Min 1 upper case, 1 lower case, 1 number, 8 characters policy.

@@ -4,6 +4,7 @@ import FormControlLabel from '@material-ui/core/FormControlLabel';
 import FormGroup from '@material-ui/core/FormGroup';
 import dateFormat from 'dateformat';
 import constants from '../../utils/constants';
+import { textProvider } from '../../content/textProvider';
 
 
 class HolderInfo extends Component{
@@ -71,17 +72,20 @@ class HolderInfo extends Component{
         const { errors } = this.state;
         let holderInfo = this.state.holderInfo;
 
+        const text = textProvider();
+        let chosen_language = localStorage['chosen_language'] ?? 'en'; 
+
         let dobText = this.state.holderInfo._id === "" ? "" : dateFormat(this.state.holderInfo.dateOfBirth, constants.dateDisplayFormat);
 
         return(
                 <div>
                     <div className="s12">
                         <div>
-                            <span className="indigo-text"> <b>Identity Information</b> </span>
+                            <span className="indigo-text"> <b>{text.holderInfo_identityInformation}</b> </span>
                         </div>
                     </div>
                     <div className="s12">
-                        <label className="pink-text"> RapydCare User Id (Necessary) </label>
+                        <label className="pink-text"> {text.holderInfo_RapydCareUserId} </label>
                         <input
                             value= { this.state.userId }
                             error={ errors.userId}
@@ -99,7 +103,7 @@ class HolderInfo extends Component{
                         </button> */}
                     </div>
                     <div className="s12">
-                        <label> Social Security Number / Aadhar Number </label> 
+                        <label> { text.holderInfo_SocialSecurityNumber } </label> 
                         <input
                             value= { holderInfo.socialSecurityNumber }
                             error={ errors.socialSecurityNumber}
@@ -109,17 +113,16 @@ class HolderInfo extends Component{
                         />
                     </div>
                     <div className="s12">
-                        <label> Name (as per our records) </label> 
+                        <label>  { text.holderInfo_NameAsPerOurRecords } </label> 
                         <label className="black-text"> 
                             { holderInfo.name } </label>
                         <label> | </label> 
-                        <label> Date of Birth </label> 
+                        <label> {text.holderInfo_DateOfBirth} </label> 
                         <label className="black-text"> { dobText } </label> 
                         <label> | </label> 
-                        <label> Nominee </label> 
-                        <label> Name </label>
+                        <label> { text.holderInfo_NomineeName } </label>
                         <label className="black-text"> 
-                            { holderInfo.nomineeInfo.name } </label>
+                            { holderInfo.nomineeInfo === undefined? "-" : holderInfo.nomineeInfo.name } </label>
                         
                          
                     </div>

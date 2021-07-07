@@ -82,7 +82,9 @@ class UserService {
                     email: data.loginId,
                     password: data.password,
                     userType: data.userType,
-                    friendlyId: friendlyId
+                    friendlyId: friendlyId,
+                    socialSecurityNumber : data.socialSecurityNumber,
+                    dateOfBirth : data.dateOfBirth
                 });
 
                 //// add salt & hash password before saving.

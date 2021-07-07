@@ -502,12 +502,12 @@ class ClaimService {
             response.errors.exception = 'User is not allowed to submit process this claim.';
             return response; 
         }
-        if(fetchedClaim.status !== constants.claimStatus_inreview &&
-            fetchedClaim.status !== constants.claimStatus_review_complete){
-            this.logService.info('this claim is not in a state for processing. ');
-            response.errors.exception = 'this claim is not in a state for processing.';
-            return response; 
-        }
+        // if(fetchedClaim.status !== constants.claimStatus_inreview &&
+        //     fetchedClaim.status !== constants.claimStatus_review_complete){
+        //     this.logService.info('this claim is not in a state for processing. ');
+        //     response.errors.exception = 'this claim is not in a state for processing.';
+        //     return response; 
+        // }
 
         this.logService.info('secondary validations are done.');
 
@@ -528,14 +528,14 @@ class ClaimService {
 
                 if(data.status === constants.claimStatus_approved){
                     //// disburse the amount - call rapyd api
-                    await this.handleDisbursal(fetchedClaim, approvedAmount, currentUser);
+                    await this.handleDisbursal(fetchedClaim, data.approvedAmount, currentUser);
                 }
                 //// return result
                 return response;
         })
         .catch(err => {
-            this.logService.error('Error occurred in reviewClaim operation.', err);
-            response.errors.exception = "Error occurred in reviewClaim operation. Could not save for unknown reasons.";
+            this.logService.error('Error occurred in processClaim operation.', err);
+            response.errors.exception = "Error occurred in processClaim operation. Could not save for unknown reasons.";
             return response;
         });
     }
@@ -584,7 +584,7 @@ class ClaimService {
                 payoutMethodType = payee.paymentMethodInfo.rapydCardPayoutMethod;
                 beneficiary_id = payee.paymentMethodInfo.rapydCardBeneficiaryId;
         }
-        if(payee.paymentMethodInfo.rapydBankBeneficiaryId != null
+        else if(payee.paymentMethodInfo.rapydBankBeneficiaryId != null
             && payee.paymentMethodInfo.rapydBankBeneficiaryId != ''){
                 payoutMethodType = payee.paymentMethodInfo.rapydBankPayoutMethod;
                 beneficiary_id = payee.paymentMethodInfo.rapydBankBeneficiaryId;
@@ -598,7 +598,7 @@ class ClaimService {
 
         //// create the payout
         let payoutData = {
-            amount : approvedAmount.toFixed(2),
+            amount : Number(approvedAmount).toFixed(2),
             payoutMethodType : payoutMethodType,
             beneficiary_id : beneficiary_id,
             description : "DISBURSAL/CLAIM/" + claimData.friendlyId,

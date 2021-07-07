@@ -9,9 +9,9 @@ function validateCreatePayout(data, currentUser){
 
     //// convert empty fields into empty string values
     let amount = isEmpty(data.amount) ? "" : String(data.amount);
-    let country = isEmpty(data.country) ? "" : data.country;
-    let currency = isEmpty(data.currency) ? "" : data.currency;
-    let entityType = isEmpty(data.entityType) ? "" : data.entityType;
+    //let country = isEmpty(data.country) ? "" : data.country;
+    //let currency = isEmpty(data.currency) ? "" : data.currency;
+    //let entityType = isEmpty(data.entityType) ? "" : data.entityType;
     let beneficiary_id = isEmpty(data.beneficiary_id) ? "" : data.beneficiary_id;
     let description = isEmpty(data.description) ? "" : data.description;
     let payoutMethodType = isEmpty(data.payoutMethodType) ? "" : data.payoutMethodType;
@@ -20,15 +20,15 @@ function validateCreatePayout(data, currentUser){
     if(Validator.isEmpty(amount)){
         errors.amount = "amount field is required.";
     }
-    else if(Validator.isEmpty(country)){
-        errors.country = "country field is required.";
-    }
-    else if(Validator.isEmpty(currency)){
-        errors.currency = "currency field is required.";
-    }
-    else if(Validator.isEmpty(entityType)){
-        errors.entityType = "entityType field is required.";
-    }
+    // else if(Validator.isEmpty(country)){
+    //     errors.country = "country field is required.";
+    // }
+    // else if(Validator.isEmpty(currency)){
+    //     errors.currency = "currency field is required.";
+    // }
+    // else if(Validator.isEmpty(entityType)){
+    //     errors.entityType = "entityType field is required.";
+    // }
     else if(Validator.isEmpty(beneficiary_id)){
         errors.beneficiary_id = "beneficiary_id field is required.";
     }
