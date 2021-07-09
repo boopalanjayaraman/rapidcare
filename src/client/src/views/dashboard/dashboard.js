@@ -52,7 +52,7 @@ class Dashboard extends Component {
 
     onViewMyClaimsClick = e => {
         e.preventDefault();
-        this.props.history.push("/viewMyClaims"); 
+        this.props.history.push("/myclaims"); 
     };
 
     onViewMyProfileClick = e => {
@@ -131,7 +131,7 @@ class Dashboard extends Component {
                                 <span style={{fontSize: "13px"}}> { text.dashboard_myClaimsDesc }  </span>
                             </div>
                             <div class="card-action white-text #1e88e blue darken-2">
-                                <a href="#" class='white-text' onClick={this.onViewMyBidsClick}>{ text.dashboard_go } <i className="material-icons left">arrow_forward</i> </a>
+                                <a href="#" class='white-text' onClick={this.onViewMyClaimsClick}>{ text.dashboard_go } <i className="material-icons left">arrow_forward</i> </a>
                             </div>
                         </div>
                     </div>

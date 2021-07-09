@@ -168,6 +168,13 @@ class ClaimService {
 
         this.logService.info('primary validations are done.');
 
+        if(!currentUser.roleInfo.isAdmin 
+            && criteria.scenario === constants.scenario_getPendingClaims){
+                response.errors.exception = "Pending claims cannot be accessed by non-admin users.";
+                this.logService.info(response.errors.exception, { _id: currentUser._id });
+                return response;
+        }
+
         let query = {};
         let skip = criteria.skip? criteria.skip : 0;
         let limit = criteria.limit? criteria.limit : 25;
@@ -255,6 +262,16 @@ class ClaimService {
                                     },
                                     {
                                         status : constants.claimStatus_inreview
+                                    }
+                                ]
+                            },
+                            {
+                                $or : [
+                                    {
+                                        reviewer1 : currentUser.id
+                                    },
+                                    {
+                                        reviewer2 : currentUser.id
                                     }
                                 ]
                             },

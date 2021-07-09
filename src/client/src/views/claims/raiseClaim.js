@@ -235,7 +235,7 @@ class RaiseClaim extends Component {
             <div className="container">
                 <div className="row">
                     <div className="col s12">
-                        <Link to="/browseProducts" className="btn-flat waves-effect">
+                        <Link to="/dashboard" className="btn-flat waves-effect">
                             <i className="material-icons left">keyboard_backspace</i> { "Back to dashboard" }
                         </Link>
                     </div>

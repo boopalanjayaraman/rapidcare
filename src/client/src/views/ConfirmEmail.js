@@ -45,7 +45,7 @@ class ConfirmEmail extends Component {
     }
 
     onConfirmEmailExecuted(){
-        this.setState({ confirmationResult: "Email confirmation is successful. Thanks for verifying your email. You can now participate in the opportunities." });
+        this.setState({ confirmationResult: "Email confirmation is successful. Thanks for verifying your email." });
     }
 
 
@@ -57,7 +57,7 @@ class ConfirmEmail extends Component {
             <div>
                 <div class="row">
                     <div className="col s12 m10">
-                        <h6 className="sectionheading">Email Confirmation - CoverMyPager</h6>
+                        <h6 className="sectionheading">Email Confirmation - RapydCare</h6>
                         <div>
                             <span> {this.state.confirmationResult} </span>
                             <span className="red-text"> {errors.exception} {errors.error} </span>

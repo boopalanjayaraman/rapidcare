@@ -35,6 +35,7 @@ import ErrorPayment from './views/products/errorPayment';
 import CompletePayment from './views/products/completePayment';
 import raiseClaim from './views/claims/raiseClaim';
 import viewClaim from './views/claims/viewClaim';
+import myClaims from './views/claims/myClaims';
 
 // Check for token to keep user logged in
 if (localStorage.jwtToken) {
@@ -78,6 +79,7 @@ class App extends Component {
                     <PrivateRoute exact path="/errorPayment/:id/:paymentErrorToken" component={ErrorPayment} />
                     <PrivateRoute exact path="/newClaim" component={raiseClaim} />
                     <PrivateRoute exact path="/viewClaim/:id/:action?" component={viewClaim} />
+                    <PrivateRoute exact path="/myclaims" component={myClaims} />
                   </Switch>
                     <Route exact path="/TermsAndConditions" component={TermsAndConditions} />
                     <Route exact path="/ConfirmEmail/:id/:tokenCode" component={ConfirmEmail} />

@@ -1,5 +1,5 @@
 import axios from "axios";
-import { GET_ERRORS, SET_CLAIMS, SET_CLAIM_DOCUMENT, SET_CLAIM_DOCUMENTSLIST, SET_CLAIM_INFO, SET_RAISED_CLAIM } from "./types";
+import { GET_ERRORS, SET_CLAIMS, SET_CLAIM_DOCUMENT, SET_REVIEW_CLAIMS, SET_CLAIM_DOCUMENTSLIST, SET_CLAIM_INFO, SET_RAISED_CLAIM, SET_APPROVAL_CLAIMS } from "./types";
 
 import download from "downloadjs";
 
@@ -43,6 +43,60 @@ export const getClaimInfoAction = (claimId, callback) => dispatch => {
         dispatch(publishError(err));
     });
 };
+
+
+export const getReviewClaimsAction = (criteria, callback) => dispatch => {
+
+    dispatch(publishError({ response : { data: {} }}));
+
+    axios
+    .get("/api/claims/getclaims", { params:{ ...criteria} })
+    .then(res => {
+        const claims = res.data;
+        dispatch(setReviewClaims(claims));
+        if(callback){
+            callback();
+        }
+    })
+    .catch(err => {
+        dispatch(publishError(err));
+    });
+};
+
+
+export const setReviewClaims = (claims) => {
+    return {
+        type: SET_REVIEW_CLAIMS,
+        payload: claims
+    };
+}; 
+
+
+
+export const getApprovalsClaimsAction = (criteria, callback) => dispatch => {
+
+    dispatch(publishError({ response : { data: {} }}));
+
+    axios
+    .get("/api/claims/getclaims", { params:{ ...criteria} })
+    .then(res => {
+        const claims = res.data;
+        dispatch(setApprovalClaims(claims));
+        if(callback){
+            callback();
+        }
+    })
+    .catch(err => {
+        dispatch(publishError(err));
+    });
+};
+
+export const setApprovalClaims = (claims) => {
+    return {
+        type: SET_APPROVAL_CLAIMS,
+        payload: claims
+    };
+}; 
 
 export const setClaimInfo = (claim) => {
     return {
