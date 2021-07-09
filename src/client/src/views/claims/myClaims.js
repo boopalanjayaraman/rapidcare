@@ -121,6 +121,11 @@ class MyClaims extends Component {
         return (
             <div style={{ height: "75vh" }} className="container">
                 <div className="row">
+                    <div className="col s12">
+                        <Link to="/dashboard" className="btn-flat waves-effect">
+                            <i className="material-icons left">keyboard_backspace</i> { "Back to dashboard" }
+                        </Link>
+                    </div>
                     <div className="col s8 m8 left-align">
                         <h4 style={{color: "rgb(90, 114, 209)"}}>
                             { "My Claims" }
