@@ -47,7 +47,7 @@ class Dashboard extends Component {
 
     onViewMyInsurancesClick = e => {
         e.preventDefault();
-        this.props.history.push("/viewMyInsurances");
+        this.props.history.push("/myinsurances");
     };
 
     onViewMyClaimsClick = e => {

@@ -1,3 +1,4 @@
 node_modules
 /src/logs
 /src/ml_service/__pycache__
+/src/server/config/configuration - bck.js
