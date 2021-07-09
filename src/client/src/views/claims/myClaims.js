@@ -140,6 +140,11 @@ class MyClaims extends Component {
                     ))
                 }
                 </div>
+                <div class="row" style={{display: this.state.claims.length > 0 ? "none" :"block" }}>
+                        <div className="col s8 m8 left-align">
+                            <span className="grey-text">No claims to display</span>
+                        </div>
+                </div>
                 <div style={{ display: user.isPartnerDoctor? "block" : "none" }}>
                     <div className="row">
                         <div className="col s8 m8 left-align">
@@ -156,9 +161,9 @@ class MyClaims extends Component {
                         ))
                     }   
                     </div>
-                    <div class="row">
+                    <div class="row" style={{display: this.state.reviewClaims.length > 0 ? "none" :"block" }}>
                         <div className="col s8 m8 left-align">
-                            <span className="grey-text" style={{display: this.state.reviewClaims.length > 0 ? "none" :"block" }}>No claims to display</span>
+                            <span className="grey-text" >No claims to display</span>
                         </div>
                     </div>
                 </div>
@@ -178,9 +183,9 @@ class MyClaims extends Component {
                         ))
                     }   
                     </div>
-                    <div class="row">
+                    <div class="row" style={{display: this.state.approvalClaims.length > 0 ? "none" :"block" }}>
                         <div className="col s8 m8 left-align">
-                            <span className="grey-text" style={{display: this.state.approvalClaims.length > 0 ? "none" :"block" }}>No claims to display</span>
+                            <span className="grey-text" >No claims to display</span>
                         </div>
                     </div>
                 </div>
