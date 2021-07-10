@@ -54,10 +54,10 @@ app.use("/api/claims", claims);
 app.use("/api/paymentmethods", paymentmethods);
 
 /// render client build directory content
-/*app.use(express.static(path.join(__dirname, '../client/build')));
+app.use(express.static(path.join(__dirname, '../client/build')));
 app.get('/*', function (req, res) {
   res.sendFile(path.join(__dirname, '../client/build', 'index.html'));
-});*/
+});
 
 
 const port = process.env.PORT || 5000;
