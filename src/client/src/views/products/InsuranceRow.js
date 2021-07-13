@@ -4,6 +4,8 @@ import { connect } from "react-redux";
 import { textProvider } from "../../content/textProvider";
 import { withRouter } from "react-router"; 
 import { Link } from "react-router-dom";
+import dateFormat from 'dateformat';
+import constants from '../../utils/constants';
 
 class InsuranceRow extends Component {
 
@@ -64,7 +66,7 @@ class InsuranceRow extends Component {
                             <label className="black-text"> { insurance.ownerId._id }</label> </div>
                         </div>
                         <div style={{ paddingLeft: "11.250px", paddingBottom: "5px"}}>
-                            <label>Purchased on </label><label className="black-text">{ insurance.createdOn }</label>  
+                            <label>Purchased on </label><label className="black-text">{ dateFormat(insurance.createdDate, constants.dateDisplayFormatFull) }</label>  
                         </div>
                     </div>
                     <div style={{ paddingLeft: "11.250px",  borderBottom: "dotted 1px gray" }}>

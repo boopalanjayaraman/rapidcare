@@ -59,8 +59,9 @@ function validateGetClaims(criteria, currentUser){
         errors.exception = "scenario field is required for getting claims.";
     }
     else if((scenario !== constants.scenario_getUserClaims)
-            && (scenario !== constants.scenario_getPendingClaims)) {
-        errors.exception = 'Invalid scenario value';
+            && (scenario !== constants.scenario_getPendingClaims)
+            && (scenario !== constants.scenario_getReviewClaims)) {
+        errors.exception = 'Invalid scenario value.';
     }
 
     return {

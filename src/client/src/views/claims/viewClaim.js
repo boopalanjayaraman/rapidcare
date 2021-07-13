@@ -12,7 +12,9 @@ import Select from '@material-ui/core/Select';
 import MenuItem from '@material-ui/core/MenuItem';
 import FormControl from '@material-ui/core/FormControl';
 
- 
+import dateFormat from 'dateformat';
+import constants from '../../utils/constants'; 
+
 import isEmpty from "is-empty";
 import commonData from '../../utils/commonData';
 
@@ -403,11 +405,11 @@ class ViewClaim extends Component {
                     </div>
                     <div className="col s12 m8">
                          <label className="col s4 pink-text">Raised On</label>
-                         <span className="black-text"> {this.state.claimInfo.raisedOn} </span>
+                         <span className="black-text"> { dateFormat(this.state.claimInfo.raisedOn, constants.dateDisplayFormatFull)  } </span>
                     </div>
                     <div className="col s12 m8">
                         <label className="col s4 pink-text"> { dateText} </label>  
-                        <span className="black-text" > { this.state.claimInfo.dateOfOccurrence} </span>
+                        <span className="black-text" > { dateFormat(this.state.claimInfo.dateOfOccurrence, constants.dateDisplayFormatFull) } </span>
                     </div>
                     <div className="col s12 m8">
                         <label className="col s4 pink-text"> Claim Status </label>  
@@ -442,12 +444,12 @@ class ViewClaim extends Component {
                     <div className="col s12 m8">
                         <label className="col s4 pink-text"> Current Start Date </label>  
                         <span className="black-text"> 
-                            { this.state.insuranceOrder.currentStartDate ? this.state.insuranceOrder.currentStartDate : "-" } &nbsp; </span>
+                            { this.state.insuranceOrder.currentStartDate ? dateFormat(this.state.insuranceOrder.currentStartDate, constants.dateDisplayFormatFull) : "-" } &nbsp; </span>
                     </div>
                     <div className="col s12 m8">
                         <label className="col s4 pink-text"> Current End Date </label>  
                         <span className="black-text"> 
-                            { this.state.insuranceOrder.currentEndDate ? this.state.insuranceOrder.currentEndDate : "-" } &nbsp; </span>
+                            { this.state.insuranceOrder.currentEndDate ? dateFormat(this.state.insuranceOrder.currentEndDate, constants.dateDisplayFormatFull) : "-" } &nbsp; </span>
                     </div>
                     <div className="col s12 m8">
                         <label className="col s4 pink-text"> Insurance Status </label>  

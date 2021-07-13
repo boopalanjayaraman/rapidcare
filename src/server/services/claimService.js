@@ -190,7 +190,7 @@ class ClaimService {
         .populate('reviewer1', this.getUserProjectionArray())
         .populate('reviewer2', this.getUserProjectionArray())
         .populate('insuranceId')
-        .sort({ createdDate : 'desc'})
+        .sort({ raisedOn : 'desc'}) 
         .limit(limit)
         .then(claims => {
             if(!claims){
@@ -596,12 +596,14 @@ class ClaimService {
         let payoutMethodType = "";
         let beneficiary_id = "";
 
-        if(payee.paymentMethodInfo.rapydCardBeneficiaryId != null
+        if(payee.paymentMethodInfo !== undefined
+            && payee.paymentMethodInfo.rapydCardBeneficiaryId != null
             && payee.paymentMethodInfo.rapydCardBeneficiaryId != ''){
                 payoutMethodType = payee.paymentMethodInfo.rapydCardPayoutMethod;
                 beneficiary_id = payee.paymentMethodInfo.rapydCardBeneficiaryId;
         }
-        else if(payee.paymentMethodInfo.rapydBankBeneficiaryId != null
+        else if(payee.paymentMethodInfo != undefined
+            && payee.paymentMethodInfo.rapydBankBeneficiaryId != null
             && payee.paymentMethodInfo.rapydBankBeneficiaryId != ''){
                 payoutMethodType = payee.paymentMethodInfo.rapydBankPayoutMethod;
                 beneficiary_id = payee.paymentMethodInfo.rapydBankBeneficiaryId;
@@ -654,12 +656,14 @@ class ClaimService {
         let payoutMethodType = "";
         let beneficiary_id = "";
 
-        if(payee.paymentMethodInfo.rapydCardBeneficiaryId != null
+        if(payee.paymentMethodInfo != undefined
+            && payee.paymentMethodInfo.rapydCardBeneficiaryId != null
             && payee.paymentMethodInfo.rapydCardBeneficiaryId != ''){
                 payoutMethodType = payee.paymentMethodInfo.rapydCardPayoutMethod;
                 beneficiary_id = payee.paymentMethodInfo.rapydCardBeneficiaryId;
         }
-        if(payee.paymentMethodInfo.rapydBankBeneficiaryId != null
+        else if(payee.paymentMethodInfo != undefined
+            && payee.paymentMethodInfo.rapydBankBeneficiaryId != null
             && payee.paymentMethodInfo.rapydBankBeneficiaryId != ''){
                 payoutMethodType = payee.paymentMethodInfo.rapydBankPayoutMethod;
                 beneficiary_id = payee.paymentMethodInfo.rapydBankBeneficiaryId;

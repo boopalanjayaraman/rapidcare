@@ -34,8 +34,16 @@ class MyClaims extends Component {
 
     componentDidMount(){
         this.getMyClaims();
-        this.getMyReviewClaims();
-        this.getApprovalClaims();
+        
+        //// get review claims
+        if(this.props.auth.user.isPartnerDoctor){
+            this.getMyReviewClaims();
+        }
+        
+        //// get approval claims
+        if(this.props.auth.user.isAdmin){
+            this.getApprovalClaims();
+        }
     }
 
 

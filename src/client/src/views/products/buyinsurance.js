@@ -165,7 +165,7 @@ class BuyInsurance extends Component {
             currentEndDate : this.state.currentEndDate,
             autoRenew : this.state.autoRenew,
             currency : this.state.insuranceProduct.currency,
-            country : localStorage['chosen_country'],
+            country : localStorage['chosen_country'] ?? 'in',
             policyProduct : this.state.insuranceProduct._id
         };
         this.props.buyInsuranceAction(data, this.onInsuranceOrderCompleted);

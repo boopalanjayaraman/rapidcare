@@ -6,6 +6,8 @@ import ChooseLanguage from "../components/ChooseLanguage";
 import ChooseCountry from "../components/ChooseCountry";
 import { withRouter } from "react-router"; 
 import { Link } from "react-router-dom";
+import dateFormat from 'dateformat';
+import constants from '../../utils/constants';
 
 class ClaimRow extends Component {
 
@@ -58,7 +60,7 @@ class ClaimRow extends Component {
                             <label className="black-text"> { claim.holderId._id }</label> </div>
                         </div>
                         <div style={{ paddingLeft: "11.250px", paddingBottom: "5px"}}>
-                            <label>Raised on </label><label className="black-text">{ claim.raisedOn }</label> <label>by</label> 
+                            <label>Raised on </label><label className="black-text">{ dateFormat(claim.raisedOn, constants.dateDisplayFormatFull)  }</label> <label>by</label> 
                             <label className="black-text"> { claim.raisedBy.name }</label> 
                         </div>
                     </div>
