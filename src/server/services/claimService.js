@@ -218,11 +218,11 @@ class ClaimService {
             query = {
                     $and : [
                             {  
-                                holderId : currentUser.id
+                                raisedBy : currentUser.id
                             },
                             {
                                 friendlyId : {
-                                    $gt : lastFriendlyId //// since it is sorted in ascending order
+                                    $gt : Number(lastFriendlyId) //// since it is sorted in ascending order
                                 }
                             }
                     ]
@@ -246,7 +246,7 @@ class ClaimService {
                             },
                             {
                                 friendlyId : {
-                                    $gt : lastFriendlyId //// since it is sorted in ascending order
+                                    $gt : Number(lastFriendlyId) //// since it is sorted in ascending order
                                 }
                             }
                         ]
@@ -277,7 +277,7 @@ class ClaimService {
                             },
                             {
                                 friendlyId : {
-                                    $gt : lastFriendlyId //// since it is sorted in ascending order
+                                    $gt : Number(lastFriendlyId) //// since it is sorted in ascending order
                                 }
                             }
                         ]

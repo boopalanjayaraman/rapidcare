@@ -5,7 +5,7 @@ import { textProvider } from "../../content/textProvider";
 import ChooseLanguage from "../components/ChooseLanguage";
 import ChooseCountry from "../components/ChooseCountry";
 import { withRouter } from "react-router";
-import { getClaimsAction, getReviewClaimsAction } from '../../actions/claimActions';
+import { getClaimsAction, getReviewClaimsAction, getApprovalsClaimsAction } from '../../actions/claimActions';
 import Select from '@material-ui/core/Select';
 import MenuItem from '@material-ui/core/MenuItem';
 import { Link } from "react-router-dom";
@@ -59,7 +59,7 @@ class MyClaims extends Component {
 
     getApprovalClaims(){
         let criteria = { scenario: "getPendingClaims",   lastFriendlyId: this.lastFriendlyId };
-        this.props.getReviewClaimsAction(criteria, this.onGetApprovalClaims);
+        this.props.getApprovalsClaimsAction(criteria, this.onGetApprovalClaims);
     }
 
     
@@ -223,4 +223,4 @@ const mapStateToProps = state => ({
 
 export default connect(
     mapStateToProps,
-    { getClaimsAction, getReviewClaimsAction })(withRouter(MyClaims));
+    { getClaimsAction, getReviewClaimsAction, getApprovalsClaimsAction })(withRouter(MyClaims));
